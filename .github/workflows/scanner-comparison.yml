@@ -49,7 +49,7 @@ jobs:
         run: pipx install zizmor
       - name: Run zizmor
         run: zizmor --format sarif . > zizmor.sarif || true
-      - uses: github/codeql-action/upload-sarif@v3
+      - uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: zizmor.sarif
           category: zizmor
@@ -69,9 +69,10 @@ jobs:
       - name: Run poutine
         uses: boostsecurityio/poutine-action@main
         with:
-          args: 'analyze_local . --format=sarif --output=poutine.sarif'
+          format: sarif
+          output: poutine.sarif
         continue-on-error: true
-      - uses: github/codeql-action/upload-sarif@v3
+      - uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: poutine.sarif
@@ -96,7 +97,7 @@ jobs:
           output_format: sarif
           output_file_path: checkov-out
           soft_fail: true
-      - uses: github/codeql-action/upload-sarif@v3
+      - uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: checkov-out/results_sarif.sarif
@@ -121,7 +122,7 @@ jobs:
           output_path: kics-results
           output_formats: 'sarif'
           ignore_on_exit: results
-      - uses: github/codeql-action/upload-sarif@v3
+      - uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: kics-results/results.sarif
@@ -146,7 +147,7 @@ jobs:
           format: sarif
           output: trivy.sarif
           exit-code: '0'
-      - uses: github/codeql-action/upload-sarif@v3
+      - uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: trivy.sarif
@@ -176,7 +177,7 @@ jobs:
           chmod +x gitleaks
       - name: Run gitleaks
         run: ./gitleaks detect --no-banner --report-format sarif --report-path gitleaks.sarif --exit-code 0
-      - uses: github/codeql-action/upload-sarif@v3
+      - uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: gitleaks.sarif
