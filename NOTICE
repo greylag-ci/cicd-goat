@@ -1,0 +1,39 @@
+cicd-goat (greylag-ci soft fork)
+================================
+
+This repository is a soft fork of:
+
+  Upstream: https://github.com/cider-security-research/cicd-goat
+  Imported at upstream commit: 0ed10925f3983857cf219b2ac1c327b861fcccca
+  License: Apache License 2.0 (see LICENSE)
+  Original copyright: Cider Security (acquired by Palo Alto Networks)
+
+Why a squashed import (rather than a GitHub fork or preserved history)
+----------------------------------------------------------------------
+The greylag-ci fork exists to run GitHub Actions that compare findings
+across CI/CD security scanners against a known-vulnerable target.
+
+GitHub forks have several limitations that would block this purpose:
+  * Workflows must be re-enabled per-fork and run with read-only tokens.
+  * Secrets / Code Scanning uploads behave differently across the fork
+    boundary, which would distort the scanner comparison.
+
+The upstream history was squashed into a single commit because the
+upstream's *first* commit contains an intentional example PyPI token
+(part of the "Duchess" challenge walkthrough) that GitHub free-tier
+push protection rejects. The example token has been redacted in
+solutions/duchess.md and replaced with "REDACTED-EXAMPLE-PYPI-TOKEN-
+see-NOTICE". Nothing else has been modified from the upstream HEAD.
+
+The redacted token was a teaching artifact, not a live credential.
+To see the original walkthrough output verbatim, consult the upstream
+repository at the SHA above.
+
+Modifications made by the greylag-ci fork
+-----------------------------------------
+  * NOTICE (this file) added.
+  * solutions/duchess.md: example PyPI token redacted (see above).
+  * .github/workflows/scanner-comparison.yml added (multi-tool scan).
+  * README updates pointing to the upstream and explaining the fork.
+
+All other files are unchanged from the upstream import.

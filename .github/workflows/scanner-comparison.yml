@@ -1,0 +1,218 @@
+name: scanner-comparison
+
+# Runs multiple CI/CD-focused security scanners against the cicd-goat
+# tree and uploads each result as a separate SARIF category to Code
+# Scanning. The intent is to compare what each tool catches on the
+# same known-vulnerable target.
+#
+# Scanners (initial set):
+#   - zizmor    : GitHub Actions static analysis (Rust)
+#   - poutine   : Pipeline supply-chain & misconfig (multi-CI)
+#   - checkov   : IaC + GHA misconfiguration (Bridgecrew / Prisma)
+#   - kics      : IaC + GHA misconfiguration (Checkmarx)
+#   - trivy     : Config / IaC / Docker misconfig (Aqua)
+#   - gitleaks  : Secret detection
+#
+# Each job uploads its own SARIF with a unique `category` so findings
+# from different scanners stay grouped separately in the Security tab.
+# The final `summary` job aggregates per-scanner finding counts into
+# the workflow run summary for at-a-glance comparison.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 7 * * 1'
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  zizmor:
+    name: zizmor
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install zizmor
+        run: pipx install zizmor
+      - name: Run zizmor
+        run: zizmor --format sarif . > zizmor.sarif || true
+      - uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: zizmor.sarif
+          category: zizmor
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zizmor-sarif
+          path: zizmor.sarif
+
+  poutine:
+    name: poutine
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Run poutine
+        uses: boostsecurityio/poutine-action@main
+        with:
+          args: 'analyze_local . --format=sarif --output=poutine.sarif'
+        continue-on-error: true
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: poutine.sarif
+          category: poutine
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: poutine-sarif
+          path: poutine.sarif
+
+  checkov:
+    name: checkov
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Run checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          output_format: sarif
+          output_file_path: checkov-out
+          soft_fail: true
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: checkov-out/results_sarif.sarif
+          category: checkov
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: checkov-sarif
+          path: checkov-out
+
+  kics:
+    name: kics
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Run KICS
+        uses: checkmarx/kics-github-action@master
+        with:
+          path: '.'
+          output_path: kics-results
+          output_formats: 'sarif'
+          ignore_on_exit: results
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: kics-results/results.sarif
+          category: kics
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: kics-sarif
+          path: kics-results
+
+  trivy:
+    name: trivy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Run Trivy config scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: config
+          format: sarif
+          output: trivy.sarif
+          exit-code: '0'
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy.sarif
+          category: trivy
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trivy-sarif
+          path: trivy.sarif
+
+  gitleaks:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Install gitleaks
+        env:
+          GL_VERSION: 8.21.2
+        run: |
+          set -euo pipefail
+          curl -sSL -o gitleaks.tgz \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GL_VERSION}/gitleaks_${GL_VERSION}_linux_x64.tar.gz"
+          tar -xzf gitleaks.tgz gitleaks
+          chmod +x gitleaks
+      - name: Run gitleaks
+        run: ./gitleaks detect --no-banner --report-format sarif --report-path gitleaks.sarif --exit-code 0
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: gitleaks.sarif
+          category: gitleaks
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gitleaks-sarif
+          path: gitleaks.sarif
+
+  summary:
+    name: comparison-summary
+    needs: [zizmor, poutine, checkov, kics, trivy, gitleaks]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: sarif
+      - name: Aggregate finding counts
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo '## Scanner finding counts'
+            echo
+            echo '| Scanner | Total findings | SARIF file |'
+            echo '|---|---:|---|'
+          } >> "$GITHUB_STEP_SUMMARY"
+          shopt -s nullglob
+          for dir in sarif/*/; do
+            name="$(basename "$dir")"
+            file="$(find "$dir" -name '*.sarif' -type f | head -n 1 || true)"
+            count="-"
+            if [ -n "$file" ] && [ -s "$file" ]; then
+              count="$(jq '[.runs[]?.results[]?] | length' "$file" 2>/dev/null || echo "-")"
+            fi
+            printf '| %s | %s | `%s` |\n' "$name" "$count" "${file:-(none)}" >> "$GITHUB_STEP_SUMMARY"
+          done
