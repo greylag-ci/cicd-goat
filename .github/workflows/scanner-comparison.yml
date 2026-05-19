@@ -35,6 +35,49 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  pipeline-check:
+    name: pipeline-check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5
+        with:
+          python-version: '3.12'
+      - name: Install pipeline-check (verified)
+        # Pinned to 1.1.0 + sha256 of the wheel from PyPI.  --no-deps
+        # is intentional: pipeline-check's runtime deps (boto3, click,
+        # PyYAML, rich) are installed in a separate, unhashed step
+        # so we don't have to track the full transitive hash list.
+        # The CLI doesn't execute attacker input from the scanned
+        # tree, so its deps can be looser than the scanner itself.
+        run: |
+          set -euo pipefail
+          pip install --require-hashes --no-deps -r /dev/stdin <<'REQ'
+          pipeline-check==1.1.0 --hash=sha256:9fa7ce91cd2603926c224ae83a976909156e0463d48a412a226c84b831fd6dc8
+          REQ
+          pip install 'boto3' 'click' 'PyYAML' 'rich'
+      - name: Run pipeline-check
+        run: |
+          set -euo pipefail
+          python -m pipeline_check \
+            --pipeline github \
+            --gha-path .github/workflows \
+            --output sarif \
+            > pipeline-check.sarif || [ $? -eq 1 ]
+      - uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba  # v4
+        if: always()
+        with:
+          sarif_file: pipeline-check.sarif
+          category: pipeline-check
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
+        if: always()
+        with:
+          name: pipeline-check-sarif
+          path: pipeline-check.sarif
+
   zizmor:
     name: zizmor
     runs-on: ubuntu-latest
