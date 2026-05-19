@@ -38,8 +38,13 @@ Six community scanners + **`pipeline-check`** (the engine behind the
 [Pipeline-Check VSCode extension](https://github.com/greylag-ci/pipeline-check-vscode))
 get the same input. What the data shows: every scanner has a narrow
 lane. **Some scenarios nobody catches.** The matrix below is built
-from actual SARIF (community scanners) and the verbatim `pipeline_check
---output json` for this branch.
+from real SARIF: every scanner — including pipeline-check — runs in
+the [`scanner-comparison`](../../actions/workflows/scanner-comparison.yml)
+workflow and uploads its results to Code Scanning under its own
+category. Verdicts are computed by
+[`tools/regen-readme.py`](tools/regen-readme.py) from those SARIF
+artifacts; the source of truth for the per-(scenario, scanner)
+expected rule IDs is [`tools/scenarios.yaml`](tools/scenarios.yaml).
 
 > [!NOTE]
 > **Scoring methodology.** A scanner gets ✅ on a scenario only if it
@@ -77,7 +82,7 @@ from actual SARIF (community scanners) and the verbatim `pipeline_check
 | **pipeline-check** |   ✅    | `GHA-001` — _Action not pinned to commit SHA: 4 refs (actions/checkout@v4, third-party-org/..., another-org/..., yet-another-org/...)_ |
 | zizmor             |   ✅    | `unpinned-uses`                                                          |
 | KICS               |   ✅    | `555ab8f9-…` — _Unpinned Actions Full Length Commit SHA_                 |
-| poutine            |   ⚠️   | `github_action_from_unverified_creator_used` — adjacent (creator trust, not SHA pinning), but routes to investigation |
+| poutine            |   ✅    | `github_action_from_unverified_creator_used` — routes through creator trust, not SHA pinning, but still flags the action for review |
 | Checkov            |   ❌    | —                                                                        |
 | Trivy              |   ❌    | —                                                                        |
 | Gitleaks           |   —     | _(secret scanner)_                                                       |
@@ -109,18 +114,21 @@ from actual SARIF (community scanners) and the verbatim `pipeline_check
 
 | scanner            | sees workflow                                         | sees trust-policy.json |
 | :----------------- | :--------------------------------------------------- | :--------------------: |
-| **pipeline-check** | ⚠️&nbsp;_Hygiene fires (no SBOM, no SLSA, no signing); no IAM-aware rule yet_ | ❌                     |
+| **pipeline-check** | ❌&nbsp;_Hygiene fires (no SBOM/SLSA/signing/vuln-scan); no IAM-aware rule yet_ | ❌                     |
 | zizmor             | ❌                                                    | ❌                     |
 | poutine            | ❌                                                    | ❌                     |
-| KICS               | ⚠️&nbsp;_Catches `aws-actions/...@v4` as unpinned_ref, not the wildcard sub_ | ❌                     |
+| KICS               | ❌&nbsp;_Catches `aws-actions/...@v4` as unpinned action; misses the wildcard sub_ | ❌                     |
 | Checkov            | ❌                                                    | ❌                     |
 | Trivy              | ❌                                                    | ❌                     |
 
-> **This is a scanner-comparison miss.** None of the seven scanners
-> currently catches the wildcard-sub bug from the workflow side; KICS
-> can be made to fire on the IaC side with a different scan config
-> (Terraform input, not just Actions). Honest finding; included as
-> a benchmark for the hard end.
+> **This is a comparison-wide miss.** Both halves of the canonical bug
+> — the workflow's `role-to-assume` ARN reference and the IAM trust
+> policy's wildcard `sub` — go uncaught by every scanner in this run.
+> Pipeline-check fires the supply-chain hygiene rules on the workflow
+> (no SBOM / SLSA / signing) and KICS fires its unpinned-actions rule,
+> but neither lands on the actual OIDC misconfig. Honest benchmark for
+> the hard end; the kind of scenario the *next* generation of cross-
+> scope rules needs to learn.
 
 ---
 
@@ -191,9 +199,10 @@ from actual SARIF (community scanners) and the verbatim `pipeline_check
 The strict per-scenario matrix shows pipeline-check leading on
 canonical-bug coverage but not by a wide margin. The bigger story is
 **what fires on every scenario, that no other scanner ships at all.**
-Pipeline-check carries 63 GitHub Actions rules; ~20 of them are
-"absence-of-control" hygiene rules that fire on any workflow lacking
-the corresponding step. Verbatim findings from this branch:
+Pipeline-check 1.1.0 carries **65 rules** across the `GHA-*`,
+`TAINT-*`, and `AC-*` (attack-chain) families; the absence-of-control
+hygiene rules fire on any workflow lacking the corresponding step.
+Verbatim rule list from the latest run:
 
 ```
 GHA-006   Artifacts not signed (no cosign/sigstore step)
@@ -207,10 +216,11 @@ GHA-001   Action not pinned to commit SHA — fires on actions/checkout@v4
 GHA-037   actions/checkout persists GITHUB_TOKEN into .git/config
 ```
 
-Hygiene findings on the deploy-style scenarios (01, 10, 17, 22) reach
-**7 simultaneous real fires** each — every category SLSA Level 3 cares
-about, plus the bug under test. **No other scanner in this comparison
-emits SBOM, SLSA, signing, or vuln-scan absence findings at all.**
+The four supply-chain hygiene rules (`GHA-006`/`007`/`020`/`024`) fire
+together on **scenarios 10, 17, and 22** — the deploy-style workflows
+whose targets look like production releases — bringing their total
+real-fire count to **8 rules each.** No other scanner in this
+comparison emits any of those four rules at all.
 
 The strict matrix below scores only the canonical bug per scenario.
 The hygiene-baseline edge is what makes pipeline-check the only
@@ -228,8 +238,9 @@ attack-class coverage" from one scan.
 | ❌  | scanner misses the canonical bug                         |
 | —   | not applicable to that scanner's class                   |
 
-Sourced from the latest [`scanner-comparison`](../../actions/workflows/scanner-comparison.yml) SARIF
-(`commit 86a4c92`) for the community scanners and `python -m pipeline_check --pipeline github --output json` for pipeline-check.
+Auto-generated from the latest successful [`scanner-comparison`](../../actions/workflows/scanner-comparison.yml)
+run on `main`. Rebuild: `python tools/regen-readme.py --sarif-dir ./sarif`
+(see the [Regenerate the stats](#contributing) details block).
 
 <!-- AUTOGEN:matrix -->
 | #  | Scenario | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | Trivy | Gitleaks |
@@ -326,7 +337,8 @@ Sourced from the latest [`scanner-comparison`](../../actions/workflows/scanner-c
     ┌─────────────────────────────────────────────────────────┐
     │  .github/workflows/scanner-comparison.yml               │
     │                                                         │
-    │   zizmor ▸ poutine ▸ checkov ▸ kics ▸ trivy ▸ gitleaks  │
+    │   pipeline-check ▸ zizmor ▸ poutine ▸ checkov           │
+    │      ▸ kics ▸ trivy ▸ gitleaks                          │
     │                        │                                │
     │                        ▼                                │
     │              upload SARIF                               │
@@ -354,8 +366,12 @@ python tools/comparison-report.py ./sarif-out --output report.md
 ```
 
 > [!NOTE]
-> `pipeline-check` is currently scored from local `python -m pipeline_check --output json` runs against the scenario tree.
-> A dedicated SARIF-emitting job in `scanner-comparison.yml` is the next addition — see [Contributing](#contributing).
+> All seven scanners — including `pipeline-check` — run in
+> `scanner-comparison.yml` and upload SARIF under their own Code
+> Scanning category. The matrix is rebuilt from those SARIF artifacts
+> by [`tools/regen-readme.py`](tools/regen-readme.py), driven by
+> [`tools/scenarios.yaml`](tools/scenarios.yaml). See
+> [Regenerate the stats](#contributing) below.
 
 ---
 
@@ -451,7 +467,7 @@ is one of the engines being tested. Its differentiators on this corpus:
   signing, vuln-scan presence, environment binding, `timeout-minutes`,
   container digest pinning). Other scanners don't have these rules at
   all, not just don't fire them.
-- **Provider breadth**: 23 CI/CD providers and manifest types — AWS,
+- **Provider breadth**: 22 CI/CD providers and manifest types — AWS,
   Terraform, CloudFormation, GitHub Actions, GitLab CI, Azure DevOps,
   Bitbucket Pipelines, Jenkins, CircleCI, Google Cloud Build,
   Buildkite, Drone CI, Tekton, Argo Workflows, Dockerfile, Kubernetes,
