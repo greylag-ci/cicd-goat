@@ -1,0 +1,11 @@
+{
+  "name": "scenario-20-dep-confusion-target",
+  "version": "0.0.0",
+  "private": true,
+  "comment": "DELIBERATELY VULNERABLE — see scenarios/20-dependency-confusion/README.md. Scoped internal package with no .npmrc pinning the @acme-internal scope to a private registry; npm will resolve it from the public registry, where an attacker can claim the unscoped name.",
+  "dependencies": {
+    "@acme-internal/ui-toolkit": "^1.4.2",
+    "@acme-internal/build-utils": "^0.9.0",
+    "lodash": "^4.17.21"
+  }
+}

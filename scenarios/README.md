@@ -1,8 +1,8 @@
 # Scenarios
 
-Eighteen deliberately-vulnerable GitHub Actions workflows, each demonstrating
-one canonical attack pattern from the modern threat landscape. Every
-scenario lives as a runnable-but-gated workflow at
+Twenty-seven deliberately-vulnerable GitHub Actions workflows, each
+demonstrating one canonical attack pattern from the modern threat
+landscape. Every scenario lives as a runnable-but-gated workflow at
 [`.github/workflows/scenario-NN-*.yml`](../.github/workflows/) so every
 GHA-aware static scanner can analyze it, plus a writeup here.
 
@@ -30,23 +30,31 @@ but no runner is ever assigned.
 | 16 | [`curl \| sh` toolcache poisoning](16-curl-pipe-sh/README.md) | 3 | TOFU install script |
 | 17 | [`upload-artifact` includes `.git/`](17-artipacked-git-dir/README.md) | 6, 9 | Artifact-packed token |
 | 18 | [Composite action `${{ inputs.* }}` injection](18-composite-action-input-injection/README.md) | 4 | Composite expansion |
+| 19 | [Codecov-style trusted-installer compromise](19-codecov-style-installer/README.md) | 3, 9 | Signed-but-malicious supply chain |
+| 20 | [Dependency confusion (Birsan attack)](20-dependency-confusion/README.md) | 3 | Internal package name hijack |
+| 21 | [Matrix expansion injection](21-matrix-expansion-injection/README.md) | 4 | Matrix-mediated taint flow |
+| 22 | [GCP OIDC over-broad workload identity](22-gcp-oidc-broad-wif/README.md) | 2, 7 | Federation misconfig |
+| 23 | [Branch-protection bypass via `github-actions[bot]`](23-actions-bot-branch-protection-bypass/README.md) | 1 | Bypass allowlist amplifier |
+| 24 | [Third-party webhook exfiltration](24-third-party-webhook-exfil/README.md) | 8 | Egress to ungoverned service |
+| 25 | [Environment branch-pattern bypass](25-environment-branch-pattern-bypass/README.md) | 1, 5 | Glob-pattern bypass |
+| 26 | [GitHub App token over-scope](26-app-token-over-scope/README.md) | 5 | Token minted without `permissions:` |
+| 27 | [Secret leak in workflow logs](27-secret-leak-in-logs/README.md) | 10 | `set -x` + URL-embedded + derived values |
 
-## OWASP CICD-SEC top 10
+## OWASP CICD-SEC top 10 — full coverage
 
-- CICD-SEC-1: Insufficient Flow Control Mechanisms
-- CICD-SEC-2: Inadequate Identity and Access Management — scenarios 10
-- CICD-SEC-3: Dependency Chain Abuse — scenarios 3, 9, 11, 12, 16
-- CICD-SEC-4: Poisoned Pipeline Execution — scenarios 1, 2, 5, 7, 13, 14, 18
-- CICD-SEC-5: Insufficient Pipeline-Based Access Controls — scenarios 1, 4, 6
-- CICD-SEC-6: Insufficient Credential Hygiene — scenarios 6, 12, 15, 17
-- CICD-SEC-7: Insecure System Configuration — scenarios 8, 10
-- CICD-SEC-8: Ungoverned Usage of Third-Party Services
-- CICD-SEC-9: Improper Artifact Integrity Validation — scenarios 5, 7, 9, 16, 17
-- CICD-SEC-10: Insufficient Logging and Visibility
+| Risk | Coverage | Scenarios |
+|:---|:---|:---|
+| CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25 |
+| CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22 |
+| CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20 |
+| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21 |
+| CICD-SEC-5: Insufficient Pipeline-Based Access Controls       | ✅ | 1, 4, 6, 25, 26 |
+| CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17 |
+| CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22 |
+| CICD-SEC-8: Ungoverned Usage of Third-Party Services          | ✅ | 24 |
+| CICD-SEC-9: Improper Artifact Integrity Validation            | ✅ | 5, 7, 9, 16, 17, 19 |
+| CICD-SEC-10: Insufficient Logging and Visibility              | ✅ | 27 |
 
-CICD-SEC-1, CICD-SEC-8, and CICD-SEC-10 don't have dedicated scenarios
-yet — they're harder to surface as a single static-analyzable workflow
-file. Candidate additions welcome.
-
-See the [OWASP Top 10 CI/CD Security Risks](https://owasp.org/www-project-top-10-ci-cd-security-risks/)
+Every risk in the top 10 has at least one scenario. See the
+[OWASP Top 10 CI/CD Security Risks](https://owasp.org/www-project-top-10-ci-cd-security-risks/)
 for the canonical definitions.

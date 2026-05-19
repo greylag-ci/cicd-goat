@@ -1,0 +1,38 @@
+# scenarios/22-gcp-oidc-broad-wif
+# CICD-SEC-2 (Inadequate IAM) + CICD-SEC-7 (Insecure System Configuration)
+# Pattern: GCP Workload Identity Federation with an attribute condition
+# scoped to an org-wide string match rather than to a specific
+# repository:branch pair.  Direct GCP analogue of scenario 10's AWS
+# OIDC misconfig.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios/22-gcp-oidc-broad-wif/README.md and the matching
+# workload-identity-pool.tf for the misconfigured WIF.
+
+name: scenario-22-gcp-oidc-broad-wif
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    if: false
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          # DANGER: the workload identity pool's attribute condition is
+          #   attribute.repository.startsWith('greylag-ci/')
+          # which lets every repo in the org assume this service
+          # account — including any future repo created in the org.
+          # See scenarios/22-gcp-oidc-broad-wif/workload-identity-pool.tf
+          workload_identity_provider: projects/12345/locations/global/workloadIdentityPools/overly-broad/providers/github
+          service_account: example-prod-deployer@example.iam.gserviceaccount.com
+      - run: gcloud run deploy example --image gcr.io/example/api:latest --region us-central1

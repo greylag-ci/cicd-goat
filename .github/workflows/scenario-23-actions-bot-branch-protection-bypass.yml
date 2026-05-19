@@ -1,0 +1,47 @@
+# scenarios/23-actions-bot-branch-protection-bypass
+# CICD-SEC-1 (Insufficient Flow Control Mechanisms)
+# Pattern: a "trusted" automation actor (github-actions[bot] or a repo
+# admin's PAT) is added to branch protection's bypass allowlist for
+# operational convenience.  Any workflow that uses that actor's
+# credential can now push to the protected branch with zero review.
+# A single template injection (scenario 02) or unsafe checkout
+# (scenario 01) becomes a direct write-to-main primitive.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios/23-actions-bot-branch-protection-bypass/README.md for details.
+
+name: scenario-23-actions-bot-branch-protection-bypass
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 3 * * 1'
+
+permissions:
+  contents: write
+
+jobs:
+  auto-format:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - run: |
+          set -euo pipefail
+          npm install
+          npm run format
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: auto-format"
+            # DANGER: bypasses required reviews + status checks if
+            # branch protection has "Allow specified actors to bypass
+            # required pull requests" enabled for github-actions[bot]
+            # (the documented operational convenience for this exact
+            # workflow).
+            git push origin HEAD:main
+          fi

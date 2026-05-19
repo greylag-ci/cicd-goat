@@ -1,0 +1,44 @@
+# scenarios/26-app-token-over-scope
+# CICD-SEC-5 (Insufficient Pipeline-Based Access Controls)
+# Pattern: actions/create-github-app-token mints a token from the App
+# install with no `permissions:` filter, so the token inherits every
+# permission the App has org-wide.  GitHub Apps are commonly installed
+# with broad scopes ("contents: write, packages: write, actions: write,
+# pull-requests: write, ...") because granular per-install permissions
+# are tedious to manage.  A workflow that only needs `contents: write`
+# ends up with an actions-write token in its env.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios/26-app-token-over-scope/README.md for details.
+
+name: scenario-26-app-token-over-scope
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_KEY }}
+          owner: ${{ github.repository_owner }}
+          # DANGER: no `permissions:` field — token inherits every
+          # permission the App has on the org.  The job below only
+          # needs contents: write to push a tag, but the minted token
+          # can also write packages, actions, deployments, etc.
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+      - run: |
+          set -euo pipefail
+          npm version patch -m "chore: release %s"
+          git push --follow-tags

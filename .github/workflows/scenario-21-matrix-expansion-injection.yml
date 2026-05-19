@@ -1,0 +1,53 @@
+# scenarios/21-matrix-expansion-injection
+# CICD-SEC-4 (Poisoned Pipeline Execution)
+# Pattern: a job matrix built from PR-controlled data.  Two failure
+# modes: (1) attacker injects matrix values that splice shell syntax
+# into subsequent `run:` blocks; (2) attacker injects N matrix entries
+# to fan out into an N-job DoS / runner cost-bomb.  Real, documented in
+# GitHub Security Lab research and several public bug bounties.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios/21-matrix-expansion-injection/README.md for details.
+
+name: scenario-21-matrix-expansion-injection
+
+on:
+  pull_request:
+    types: [opened, synchronize, labeled]
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    if: false
+    runs-on: ubuntu-latest
+    outputs:
+      targets: ${{ steps.set.outputs.targets }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: set
+        env:
+          # PR labels are attacker-controllable on fork PRs as soon as
+          # a maintainer adds the first label, or unconditionally if
+          # the repo allows fork-author label edits.
+          LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        run: |
+          echo "targets=$LABELS" >> "$GITHUB_OUTPUT"
+
+  build:
+    if: false
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      # DANGER: matrix values derived from PR labels — attacker controls
+      # both the job count and every individual matrix entry's shell
+      # context downstream.
+      matrix:
+        target: ${{ fromJSON(needs.prepare.outputs.targets) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Echo target (DANGER — matrix.target in a run:)
+        run: |
+          echo "Building for ${{ matrix.target }}"
+          make build TARGET="${{ matrix.target }}"

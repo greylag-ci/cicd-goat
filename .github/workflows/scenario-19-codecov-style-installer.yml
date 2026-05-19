@@ -1,0 +1,40 @@
+# scenarios/19-codecov-style-installer
+# CICD-SEC-3 (Dependency Chain Abuse) + CICD-SEC-9 (Artifact Integrity)
+# Pattern: a "responsible" install flow — curl the binary, curl its
+# signature, verify, run — that still fails open against the original
+# Codecov 2021 incident.  The attacker modified the script BEFORE
+# signing; the signing key didn't have to leak.  Pinning to a digest
+# of a known-good release (not just verifying any signature) is the
+# only mitigation that catches "the maintainer's own CI is owned."
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios/19-codecov-style-installer/README.md for details.
+
+name: scenario-19-codecov-style-installer
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  upload-coverage:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install signed uploader (DANGER — signature is not enough)
+        run: |
+          set -euo pipefail
+          curl -fLso codecov           "https://uploader.coverage-provider.example/latest/linux/codecov"
+          curl -fLso codecov.sha256sum "https://uploader.coverage-provider.example/latest/linux/codecov.SHA256SUM"
+          curl -fLso codecov.sig       "https://uploader.coverage-provider.example/latest/linux/codecov.SHA256SUM.sig"
+          # Looks responsible, fails open: the binary was malicious BEFORE
+          # the publisher's own build pipeline signed it.  Codecov, 2021.
+          gpg --verify codecov.sig codecov.sha256sum
+          sha256sum --check codecov.sha256sum
+          chmod +x codecov
+      - run: ./codecov -t ${{ secrets.COVERAGE_TOKEN }}

@@ -1,0 +1,41 @@
+# scenarios/25-environment-branch-pattern-bypass
+# CICD-SEC-1 (Insufficient Flow Control Mechanisms) + CICD-SEC-5 (Insufficient PBAC)
+# Pattern: a protected `production` environment whose "Deployment
+# branches" rule is configured with a wildcard pattern like `main*` or
+# `release/*` instead of an exact branch or environment-protected
+# tag.  Anyone with push access (which may include fork-PR authors if
+# the maintainer flips one switch) can push a branch matching the
+# pattern and trigger the production deploy job, inheriting the
+# environment's required reviewers... or not, depending on the
+# protection-rule order.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios/25-environment-branch-pattern-bypass/README.md for details.
+
+name: scenario-25-environment-branch-pattern-bypass
+
+on:
+  push:
+    # DANGER: the workflow trigger itself uses a wildcard.  Combined
+    # with the matching environment "Deployment branches" rule (set
+    # via repo settings to `main*`), this lets branch `main-evil`
+    # trigger production deploys.
+    branches: ['main*']
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    if: false
+    runs-on: ubuntu-latest
+    environment:
+      # The `production` environment in repo settings is configured
+      # with Deployment branches rule = `main*` — meaning the
+      # required-reviewer gate the team set up is bypassable.
+      name: production
+      url: https://prod.example.com
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./deploy.sh

@@ -1,0 +1,40 @@
+# scenarios/20-dependency-confusion
+# CICD-SEC-3 (Dependency Chain Abuse)
+# Pattern: Alex Birsan's 2021 research — an internal package name not
+# scoped to a private registry can be claimed on the public registry,
+# which most resolvers prefer.  Hit Apple, Microsoft, PayPal, Tesla,
+# Yelp, Shopify and dozens of others in the original disclosure.
+#
+# Safety: every job is gated with `if: false`.  The vulnerable
+# package.json is in scenarios/20-dependency-confusion/.
+# See scenarios/20-dependency-confusion/README.md for details.
+
+name: scenario-20-dependency-confusion
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          # DANGER: no `always-auth` / no `registry-url` pointing at
+          # the internal registry.  npm defaults to the public registry
+          # for any package whose scope isn't configured in .npmrc.
+      - name: Install (DANGER — public-first resolution)
+        working-directory: scenarios/20-dependency-confusion
+        run: |
+          # @acme-internal/ui-toolkit is supposed to come from
+          # https://npm.acme-internal.example, but with no .npmrc
+          # the resolver checks npmjs.com first.
+          npm ci
+      - run: node scenarios/20-dependency-confusion/index.js
