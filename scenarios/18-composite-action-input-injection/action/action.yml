@@ -1,0 +1,22 @@
+name: 'Triage notifier (vulnerable composite)'
+description: |
+  Demonstrates how a composite action that interpolates ${{ inputs.* }}
+  into a run: block becomes an RCE primitive in the hands of any caller
+  that passes attacker-controlled data.
+
+  Safety: this action is only referenced from
+  scenario-18-composite-action-input-injection.yml, which is gated with
+  `if: false` and never runs.
+
+inputs:
+  message:
+    description: 'Untrusted message body to log'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Log message (DANGER - inputs.message in run:)
+      shell: bash
+      run: |
+        echo "TRIAGE: ${{ inputs.message }}"

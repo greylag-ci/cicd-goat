@@ -1,11 +1,11 @@
-# scenarios-greylag/05-cache-poisoning-pr-controlled
+# scenarios/05-cache-poisoning-pr-controlled
 # CICD-SEC-4 + CICD-SEC-9 (Improper Artifact Integrity Validation)
 # Pattern: actions/cache key contains attacker-controllable PR metadata.  A
 # malicious PR can poison the cache that subsequent main-branch CI restores,
 # letting fork code execute under base-branch privileges.
 #
 # Safety: every job is gated with `if: false`.
-# See scenarios-greylag/05-cache-poisoning-pr-controlled/README.md for details.
+# See scenarios/05-cache-poisoning-pr-controlled/README.md for details.
 
 name: scenario-05-cache-poisoning-pr-controlled
 

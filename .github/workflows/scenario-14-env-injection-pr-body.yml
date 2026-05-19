@@ -1,0 +1,38 @@
+# scenarios/14-env-injection-pr-body
+# CICD-SEC-4 (Poisoned Pipeline Execution)
+# Pattern: writing untrusted text directly to $GITHUB_ENV.  The env file
+# is parsed as KEY=VALUE per line; a payload containing a newline can
+# inject *additional* env variables — including ones that override
+# PATH, LD_PRELOAD, or NODE_OPTIONS in later steps.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios/14-env-injection-pr-body/README.md for details.
+
+name: scenario-14-env-injection-pr-body
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  parse-pr:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Capture PR body to env (DANGER)
+        run: |
+          # Naively splat the PR body into GITHUB_ENV expecting it to
+          # behave like one big string variable.  It doesn't — newlines
+          # in the body create new env entries.
+          echo "PR_BODY=${{ github.event.pull_request.body }}" >> "$GITHUB_ENV"
+      - name: Later step that trusts the env
+        run: |
+          echo "Captured: $PR_BODY"
+          # Anything attacker-set in env (LD_PRELOAD, PATH, NODE_OPTIONS)
+          # now applies to this step.
+          node -e "console.log('ok')"

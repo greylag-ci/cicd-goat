@@ -1,11 +1,11 @@
-# scenarios-greylag/02-script-injection-issue-title
+# scenarios/02-script-injection-issue-title
 # CICD-SEC-4 (Poisoned Pipeline Execution)
 # Pattern: untrusted github.event.* expression interpolated into a `run:` block
 # is evaluated by bash, giving anyone who can open an issue arbitrary shell
 # execution on the runner.
 #
 # Safety: every job is gated with `if: false`.
-# See scenarios-greylag/02-script-injection-issue-title/README.md for details.
+# See scenarios/02-script-injection-issue-title/README.md for details.
 
 name: scenario-02-script-injection-issue-title
 

@@ -1,0 +1,34 @@
+# scenarios/18-composite-action-input-injection
+# CICD-SEC-4 (Poisoned Pipeline Execution)
+# Pattern: a local composite action interpolates one of its `inputs`
+# directly into a `run:` block.  Composite actions feel like trusted
+# library code but they evaluate ${{ inputs.* }} the same way the
+# calling workflow would — any caller passing attacker-controlled data
+# turns the composite into an RCE primitive.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios/18-composite-action-input-injection/README.md for details
+# and the action definition at scenarios/18-.../action.yml.
+
+name: scenario-18-composite-action-input-injection
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: read
+
+jobs:
+  triage:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Call local composite with untrusted input (DANGER)
+        uses: ./scenarios/18-composite-action-input-injection/action
+        with:
+          # The comment body is fully attacker-controlled by anyone
+          # who can comment on an issue or PR.
+          message: ${{ github.event.comment.body }}

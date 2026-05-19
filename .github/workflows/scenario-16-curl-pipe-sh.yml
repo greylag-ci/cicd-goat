@@ -1,0 +1,32 @@
+# scenarios/16-curl-pipe-sh
+# CICD-SEC-3 (Dependency Chain Abuse) + CICD-SEC-9 (Improper Artifact Integrity)
+# Pattern: `curl ... | sh` of a remote install script with no integrity
+# check.  The runner trusts whatever the upstream URL serves at that
+# moment — DNS hijack, registrar takeover, account compromise on the
+# host, or "just a bad commit" all turn into RCE on the runner.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios/16-curl-pipe-sh/README.md for details.
+
+name: scenario-16-curl-pipe-sh
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  setup:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install some-tool via curl | sh (DANGER)
+        run: curl -sSL https://install.some-tool.example/ | sh
+      - name: Also unverified, with elevated privilege
+        run: |
+          wget -qO- https://get.another-tool.example/install.sh | sudo bash
+      - run: some-tool build

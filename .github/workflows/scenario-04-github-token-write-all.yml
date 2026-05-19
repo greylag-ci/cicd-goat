@@ -1,11 +1,11 @@
-# scenarios-greylag/04-github-token-write-all
+# scenarios/04-github-token-write-all
 # CICD-SEC-5 (Insufficient PBAC) + least-privilege violation
 # Pattern: workflow grants the auto-issued GITHUB_TOKEN write access to every
 # scope.  Combined with any later vuln (script injection, untrusted action,
 # checkout of fork head) this enables full repo takeover via the token alone.
 #
 # Safety: every job is gated with `if: false`.
-# See scenarios-greylag/04-github-token-write-all/README.md for details.
+# See scenarios/04-github-token-write-all/README.md for details.
 
 name: scenario-04-github-token-write-all
 

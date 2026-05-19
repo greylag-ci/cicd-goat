@@ -1,0 +1,37 @@
+# scenarios/17-artipacked-git-dir
+# CICD-SEC-6 (Insufficient Credential Hygiene) + CICD-SEC-9 (Artifact Integrity)
+# Pattern: actions/checkout with persist-credentials=true writes the
+# GITHUB_TOKEN into .git/config.  If a later step then uploads the
+# checkout directory as an artifact (including .git/), the artifact
+# now contains the token — downloadable by anyone with read access
+# to the run.  Coined "ArtiPACKED" by Palo Alto Unit 42.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios/17-artipacked-git-dir/README.md for details.
+
+name: scenario-17-artipacked-git-dir
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        # persist-credentials defaults to true; token now lives in
+        # .git/config
+      - run: |
+          make build
+      - name: Upload artifact for downstream jobs (DANGER)
+        uses: actions/upload-artifact@v4
+        with:
+          name: workspace
+          # Uploads the entire workspace, including .git/, including
+          # .git/config with the extraheader containing GITHUB_TOKEN.
+          path: .

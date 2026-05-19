@@ -1,108 +1,96 @@
-[![cicd-goat](images/banner.png)](https://www.paloaltonetworks.com/prisma/cloud/cloud-code-security)
+# cicd-goat (greylag-ci)
 
-[![maintained by](https://img.shields.io/badge/maintained%20by-Palo%20Alto%20Networks-orange)](https://www.paloaltonetworks.com/prisma/cloud/cloud-code-security)
-[![top 10](https://img.shields.io/badge/Top%2010%20Risks-8%2F10-2de4fd)](https://owasp.org/www-project-top-10-ci-cd-security-risks/)
-[![.github/workflows/release.yaml](https://github.com/cider-security-research/cicd-goat/actions/workflows/release.yaml/badge.svg)](https://github.com/cider-security-research/cicd-goat/actions/workflows/release.yaml)
-[![CircleCI](https://circleci.com/gh/cider-security-research/cicd-goat/tree/main.svg?style=svg)](https://circleci.com/gh/cider-security-research/cicd-goat/tree/main)
-![Docker pulls](https://badgen.net/docker/pulls/cidersecurity/goat-jenkins-server)
-![Version](https://img.shields.io/docker/v/cidersecurity/goat-jenkins-server?sort=semver&style=plastic)
+A deliberately-vulnerable GitHub Actions playground built for one purpose:
+**comparing what different CI/CD security scanners find when pointed at
+the same known-vulnerable target.**
 
+Every scanner ships with a different rule set, a different default
+sensitivity, and a different blind spot. The only honest way to compare
+them is on a target where the bugs are catalogued in advance. This repo
+is that target.
 
-Deliberately vulnerable CI/CD environment.
-Hack CI/CD pipelines, capture the flags. :triangular_flag_on_post:
+## What's in here
 
-Created by Cider Security [(Acquired by Palo Alto Networks)](https://www.paloaltonetworks.com/prisma/cloud/cloud-code-security).
+- **18 scenario workflows** at [`.github/workflows/scenario-NN-*.yml`](.github/workflows),
+  each demonstrating one canonical GitHub Actions vulnerability. Every
+  job is gated with `if: false` — the workflow shows up in run history,
+  but no runner is ever assigned, so the scenarios serve only as
+  static-analysis fodder.
+- **Per-scenario writeups** at [`scenarios/`](scenarios/) covering the
+  OWASP CICD-SEC mapping, exploitation walkthrough, expected per-scanner
+  coverage, and the fix.
+- **A scanner-comparison workflow** at
+  [`.github/workflows/scanner-comparison.yml`](.github/workflows/scanner-comparison.yml)
+  that runs six scanners on every push and uploads each result as a
+  separate Code Scanning category.
+- **A comparison report tool** at [`tools/comparison-report.py`](tools/comparison-report.py)
+  that ingests the SARIF artifacts from a workflow run and produces a
+  markdown matrix of which scanner flagged which scenario.
 
-## Table of Contents
+## Quickstart
 
-* [Description](#Description)
-* [Download & Run](#Download--Run)
-  * [Linux & Mac](#Linux--Mac)
-  * [Windows (Powershell)](#Windows-Powershell)
-* [Usage](#Usage)
-  * [Instructions](#Instructions)
-  * [Take the challenge](#Take-the-challenge)
-  * [Troubleshooting](#Troubleshooting)
-* [Solutions](#Solutions)
-* [Contributing](#Contributing)
+1. Browse [`scenarios/`](scenarios/) to see the catalogued vulnerabilities.
+2. Open the [Actions tab](../../actions/workflows/scanner-comparison.yml)
+   and pick the latest `scanner-comparison` run. The job summary lists
+   per-scanner finding counts.
+3. Open the [Security → Code scanning](../../security/code-scanning) tab
+   and filter by **Tool**. Each scanner uploads under its own category
+   (`zizmor`, `poutine`, `checkov`, `kics`, `Trivy`, `Gitleaks`).
+4. To produce a side-by-side comparison markdown, download the SARIF
+   artifacts from a run and run:
+   ```
+   python tools/comparison-report.py <path-to-artifacts-dir>
+   ```
 
-## Description
-The CI/CD Goat project allows engineers and security practitioners to learn and practice CI/CD security through a set of 11 challenges, enacted against a real, full blown CI/CD environment. The scenarios are of varying difficulty levels, with each scenario focusing on one primary attack vector.
+## Scenarios
 
-The challenges cover the [Top 10 CI/CD Security Risks](https://owasp.org/www-project-top-10-ci-cd-security-risks/), including Insufficient Flow Control Mechanisms, PPE (Poisoned Pipeline Execution), Dependency Chain Abuse, PBAC (Pipeline-Based Access Controls), and more.\
-The different challenges are inspired by Alice in Wonderland, each one is themed as a different character.
+| #  | Scenario | CICD-SEC | Attack class |
+|---:|---|---|---|
+| 01 | [pull_request_target with fork-head checkout](scenarios/01-prtarget-checkout-head/README.md) | 4, 5 | Forky checkout RCE |
+| 02 | [Script injection via issue title](scenarios/02-script-injection-issue-title/README.md) | 4 | Expression injection |
+| 03 | [Action pinned to mutable ref](scenarios/03-action-mutable-ref/README.md) | 3 | Supply chain (tag move) |
+| 04 | [GITHUB_TOKEN `write-all`](scenarios/04-github-token-write-all/README.md) | 5 | Excessive permissions |
+| 05 | [Cache poisoning via PR title](scenarios/05-cache-poisoning-pr-controlled/README.md) | 4, 9 | Cross-job cache abuse |
+| 06 | [Reusable workflow `secrets: inherit`](scenarios/06-reusable-secrets-inherit/README.md) | 5, 6 | Privilege passthrough |
+| 07 | [workflow_run artifact RCE](scenarios/07-workflow-run-artifact-rce/README.md) | 4, 9 | Trigger context confusion |
+| 08 | [Self-hosted runner on public repo](scenarios/08-self-hosted-public-fork/README.md) | 7 | Runner persistence |
+| 09 | [Container image `:latest`](scenarios/09-container-image-latest/README.md) | 3, 9 | Mutable base image |
+| 10 | [AWS OIDC wildcard subject](scenarios/10-oidc-aws-wildcard-sub/README.md) | 2, 7 | Federation misconfig |
+| 11 | [pip install no hashes](scenarios/11-pip-install-no-hashes/README.md) | 3 | Dependency hijack |
+| 12 | [checkout `persist-credentials` leak](scenarios/12-persist-credentials-leak/README.md) | 6, 3 | Token in `.git/config` |
+| 13 | [workflow_dispatch input injection](scenarios/13-input-injection-workflow-dispatch/README.md) | 4 | Operator-trigger injection |
+| 14 | [`$GITHUB_ENV` poisoning](scenarios/14-env-injection-pr-body/README.md) | 4 | Env-file injection |
+| 15 | [Hardcoded secret in `env:`](scenarios/15-hardcoded-secret-env/README.md) | 6 | Secret in source |
+| 16 | [`curl \| sh` toolcache poisoning](scenarios/16-curl-pipe-sh/README.md) | 3 | TOFU install script |
+| 17 | [`upload-artifact` includes `.git/`](scenarios/17-artipacked-git-dir/README.md) | 6, 9 | Artifact-packed token |
+| 18 | [Composite action `${{ inputs.* }}` injection](scenarios/18-composite-action-input-injection/README.md) | 4 | Composite expansion |
 
-The project’s environment is based on Docker containers and can be run locally. These containers are: 
-1. Gitea (minimal git server)
-2. Jenkins
-3. Jenkins agent
-4. LocalStack (cloud service emulator that runs in a single container)
-5. Prod - contains Docker in Docker and Lighttpd service 
-6. CTFd (Capture The Flag framework)
-7. GitLab
-8. GitLab runner
-9. Docker in Docker
+## Scanners under comparison
 
-The images are configured to interconnect in a way that creates fully functional pipelines.
+| Scanner   | Focus                              | Repo |
+|-----------|------------------------------------|------|
+| zizmor    | GHA static analysis (Rust)         | https://github.com/woodruffw/zizmor |
+| poutine   | Pipeline supply-chain (Go)         | https://github.com/boostsecurityio/poutine |
+| Checkov   | IaC + GHA (Python)                 | https://github.com/bridgecrewio/checkov |
+| KICS      | IaC + GHA (Go)                     | https://github.com/Checkmarx/kics |
+| Trivy     | Config / IaC / container (Go)      | https://github.com/aquasecurity/trivy |
+| Gitleaks  | Secrets in source + history        | https://github.com/gitleaks/gitleaks |
 
-[![cicd-goat](images/diagram.png)](#)
+Adding a scanner is a single job in
+[`scanner-comparison.yml`](.github/workflows/scanner-comparison.yml):
+install the binary, emit SARIF, upload under a unique `category:`.
 
-## Download & Run
-**There's no need to clone the repository.**
+## How to add a scenario
 
-### Linux & Mac
-```sh
-curl -o cicd-goat/docker-compose.yaml --create-dirs https://raw.githubusercontent.com/cider-security-research/cicd-goat/main/docker-compose.yaml
-cd cicd-goat && docker compose up -d
-```
+1. Drop a new `.github/workflows/scenario-NN-<name>.yml` with the
+   vulnerable pattern, **every job gated with `if: false`** so the
+   workflow never actually runs.
+2. Add `scenarios/NN-<name>/README.md` covering: the pattern, real-world
+   exploitation, expected per-scanner coverage, and the fix.
+3. Add a row to the table above and the table in
+   [`scenarios/README.md`](scenarios/README.md).
 
-### Windows (Powershell)
-```PowerShell
-mkdir cicd-goat; cd cicd-goat
-curl -o docker-compose.yaml https://raw.githubusercontent.com/cider-security-research/cicd-goat/main/docker-compose.yaml
-get-content docker-compose.yaml | %{$_ -replace "bridge","nat"}
-docker compose up -d
-```
+## License
 
-## Usage
-### Instructions
-* **Spoiler alert!** Avoid browsing the repository files as they contain spoilers.
-* To configure your git client for accessing private repositories we suggest cloning using the http url.
-* In each challenge, find the flag - in the format of _flag#_ (e.g _flag2_), or another format if mentioned specifically.
-* Each challenge stands on its own. Do not use access gained in one challenge to solve another challenge.
-* If needed, use the hints on CTFd.
-* There is no need to exploit CVEs.
-* No need to hijack admin accounts of Gitea or Jenkins (named "admin" or "red-queen").
-
-### Take the challenge
-1. After starting the containers, it might take up to 5 minutes until the containers configuration process is complete.
-2. Login to CTFd at http://localhost:8000 to view the challenges:
-   * Username: `alice`
-   * Password: `alice`
-
-3. Hack:
-   * Jenkins http://localhost:8080
-     * Username: `alice`
-     * Password: `alice`
-   * Gitea http://localhost:3000
-     * Username: `thealice`
-     * Password: `thealice`
-   * GitLab http://localhost:4000
-     * Username: `alice`
-     * Password: `ali12345`
-
-4. Insert the flags on CTFd and find out if you got it right.
-
-### Troubleshooting
-* If Gitea shows a blank page, refresh the page.
-* When forking a repository, don't change the name of the forked repository.
-* If any of the services doesn't start or is not configured correctly try adding more cpu and memory to the docker engine and update it to the lateset version.
-
-## Solutions
-**Warning:** Spoilers! :see_no_evil:
-
-* See [Solutions](solutions).
-* BSidesLV talk: [Climbing the Production Mountain: Practical CI/CD Attacks Using CI/CD Goat](https://www.youtube.com/watch?v=w-R2PT2jfdU) - Featuring solutions of the Caterpillar, Mock Turtle and Dormouse challenges.  
-
-## Contributing
-See [Contributing](CONTRIBUTING.md).
+Apache License 2.0 — see [`LICENSE`](LICENSE). Acknowledgements and
+project lineage in [`NOTICE`](NOTICE).

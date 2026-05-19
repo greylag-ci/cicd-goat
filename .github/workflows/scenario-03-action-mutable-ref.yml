@@ -1,4 +1,4 @@
-# scenarios-greylag/03-action-mutable-ref
+# scenarios/03-action-mutable-ref
 # CICD-SEC-3 (Dependency Chain Abuse) + supply-chain
 # Pattern: third-party actions referenced by mutable refs (@main, @master, or a
 # tag the upstream can move).  The tj-actions/changed-files compromise
@@ -6,7 +6,7 @@
 # from every downstream consumer.
 #
 # Safety: every job is gated with `if: false`.
-# See scenarios-greylag/03-action-mutable-ref/README.md for details.
+# See scenarios/03-action-mutable-ref/README.md for details.
 
 name: scenario-03-action-mutable-ref
 

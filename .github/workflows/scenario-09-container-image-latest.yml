@@ -1,10 +1,10 @@
-# scenarios-greylag/09-container-image-latest
+# scenarios/09-container-image-latest
 # CICD-SEC-3 (Dependency Chain Abuse) + CICD-SEC-9 (Artifact Integrity)
 # Pattern: job/service container image references a mutable :latest tag.  Same
 # attack surface as mutable action refs — supply chain compromise + bit-rot.
 #
 # Safety: every job is gated with `if: false`.
-# See scenarios-greylag/09-container-image-latest/README.md for details.
+# See scenarios/09-container-image-latest/README.md for details.
 
 name: scenario-09-container-image-latest
 

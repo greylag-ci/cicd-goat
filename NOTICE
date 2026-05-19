@@ -1,52 +1,25 @@
-cicd-goat (greylag-ci soft fork)
-================================
+greylag-ci/cicd-goat
+====================
 
-This repository is a soft fork of:
+A deliberately-vulnerable GitHub Actions playground built to compare what
+different CI/CD security scanners find when pointed at the same target.
 
-  Upstream: https://github.com/cider-security-research/cicd-goat
-  Imported at upstream commit: 0ed10925f3983857cf219b2ac1c327b861fcccca
-  License: Apache License 2.0 (see LICENSE)
-  Original copyright: Cider Security (acquired by Palo Alto Networks)
+License
+-------
+Apache License 2.0 — see LICENSE.
 
-Why a squashed import (rather than a GitHub fork or preserved history)
-----------------------------------------------------------------------
-The greylag-ci fork exists to run GitHub Actions that compare findings
-across CI/CD security scanners against a known-vulnerable target.
+Acknowledgements
+----------------
+The project started as a soft fork of cider-security-research/cicd-goat
+(Cider Security, later acquired by Palo Alto Networks). The upstream's
+challenge content, Docker harness, and walkthroughs have since been
+removed — this repository contains only original GitHub Actions-focused
+scenarios written for the scanner-comparison purpose.
 
-GitHub forks have several limitations that would block this purpose:
-  * Workflows must be re-enabled per-fork and run with read-only tokens.
-  * Secrets / Code Scanning uploads behave differently across the fork
-    boundary, which would distort the scanner comparison.
+We still owe a conceptual debt to the original cicd-goat for the format
+of mapping deliberately-vulnerable configurations onto the OWASP Top 10
+CI/CD Security Risks; if you want to learn Jenkins / GitLab / CircleCI
+CI/CD attack patterns, the upstream project remains an excellent
+companion:
 
-The upstream history was squashed into a single commit because the
-upstream's *first* commit contains an intentional example PyPI token
-(part of the "Duchess" challenge walkthrough) that GitHub free-tier
-push protection rejects. The example token has been redacted in
-solutions/duchess.md and replaced with "REDACTED-EXAMPLE-PYPI-TOKEN-
-see-NOTICE". Nothing else has been modified from the upstream HEAD.
-
-The redacted token was a teaching artifact, not a live credential.
-To see the original walkthrough output verbatim, consult the upstream
-repository at the SHA above.
-
-Modifications made by the greylag-ci fork
------------------------------------------
-  * NOTICE (this file) added.
-  * solutions/duchess.md: example PyPI token redacted (see above).
-  * .github/workflows/scanner-comparison.yml added — runs zizmor,
-    poutine, checkov, kics, trivy, and gitleaks against the tree and
-    uploads each result to Code Scanning under a separate category.
-  * .github/workflows/scenario-NN-*.yml — twelve new GitHub-Actions-
-    focused vulnerable scenarios that extend the upstream's
-    Jenkins/GitLab/CircleCI coverage. All gated with `if: false` so
-    they only serve as static-analysis fodder and never execute.
-  * .github/workflows/_reusable-deploy.yml — companion reusable
-    workflow used by scenario 06.
-  * scenarios-greylag/ — index plus per-scenario walkthroughs
-    (CICD-SEC mapping, exploitation, expected scanner coverage, fix).
-  * scenarios-greylag/10-*/trust-policy.json — auxiliary IAM
-    trust-policy file demonstrating wildcard-sub misconfig.
-  * scenarios-greylag/11-*/requirements.txt — auxiliary unpinned/
-    unhashed deps file.
-
-All other files are unchanged from the upstream import.
+  https://github.com/cider-security-research/cicd-goat

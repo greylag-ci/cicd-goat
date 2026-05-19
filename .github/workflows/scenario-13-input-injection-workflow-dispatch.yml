@@ -1,0 +1,37 @@
+# scenarios/13-input-injection-workflow-dispatch
+# CICD-SEC-4 (Poisoned Pipeline Execution)
+# Pattern: workflow_dispatch input value interpolated directly into a run:
+# block.  Anyone who can trigger the workflow (collaborators on a repo
+# with permissive settings, or anyone on a public repo if dispatch is
+# enabled via an API token) can execute arbitrary shell.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios/13-input-injection-workflow-dispatch/README.md for details.
+
+name: scenario-13-input-injection-workflow-dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Deploy target hostname'
+        required: true
+        type: string
+      tag:
+        description: 'Release tag to deploy'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy (DANGER - input interpolated into run)
+        run: |
+          echo "Deploying tag ${{ inputs.tag }} to ${{ inputs.target }}"
+          ssh -o StrictHostKeyChecking=no deploy@${{ inputs.target }} "deploy ${{ inputs.tag }}"

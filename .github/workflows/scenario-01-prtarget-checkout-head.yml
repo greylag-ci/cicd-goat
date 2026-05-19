@@ -1,4 +1,4 @@
-# scenarios-greylag/01-prtarget-checkout-head
+# scenarios/01-prtarget-checkout-head
 # CICD-SEC-4 (Poisoned Pipeline Execution) + CICD-SEC-5 (Insufficient PBAC)
 # Pattern: pull_request_target runs with base-repo privileges (token + secrets)
 # but checks out and executes the PR head SHA, giving fork PRs RCE in the
@@ -6,7 +6,7 @@
 #
 # Safety: every job is gated with `if: false` so this never executes; scanners
 # should still flag the vulnerable shape statically.
-# See scenarios-greylag/01-prtarget-checkout-head/README.md for details.
+# See scenarios/01-prtarget-checkout-head/README.md for details.
 
 name: scenario-01-prtarget-checkout-head
 
