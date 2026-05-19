@@ -1,0 +1,36 @@
+# scenarios-greylag/07-workflow-run-artifact-rce
+# CICD-SEC-4 (Poisoned Pipeline Execution) + CICD-SEC-9 (Improper Artifact Integrity)
+# Pattern: `workflow_run` runs in the base-repo context (with secrets) when a
+# build workflow finishes.  This handler then downloads an artifact uploaded by
+# that build (which may have been a fork PR build) and executes it directly,
+# yielding RCE under base privileges.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios-greylag/07-workflow-run-artifact-rce/README.md for details.
+
+name: scenario-07-workflow-run-artifact-rce
+
+on:
+  workflow_run:
+    workflows: [build]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  consume:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact from prior workflow run
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Execute artifact contents (DANGER)
+        run: |
+          chmod +x ./build-output/run.sh
+          ./build-output/run.sh

@@ -1,0 +1,38 @@
+# scenarios-greylag/01-prtarget-checkout-head
+# CICD-SEC-4 (Poisoned Pipeline Execution) + CICD-SEC-5 (Insufficient PBAC)
+# Pattern: pull_request_target runs with base-repo privileges (token + secrets)
+# but checks out and executes the PR head SHA, giving fork PRs RCE in the
+# privileged context.  Canonical Forky Checkout vulnerability.
+#
+# Safety: every job is gated with `if: false` so this never executes; scanners
+# should still flag the vulnerable shape statically.
+# See scenarios-greylag/01-prtarget-checkout-head/README.md for details.
+
+name: scenario-01-prtarget-checkout-head
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  build:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head (DANGER)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: true
+      - name: Install deps and run tests
+        run: |
+          npm ci
+          npm test
+      - name: Comment on PR with build status
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr comment "${{ github.event.pull_request.number }}" --body "Build OK"

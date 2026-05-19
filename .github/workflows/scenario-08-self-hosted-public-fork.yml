@@ -1,0 +1,27 @@
+# scenarios-greylag/08-self-hosted-public-fork
+# CICD-SEC-7 (Insecure System Configuration)
+# Pattern: a public repo uses a non-ephemeral self-hosted runner for
+# pull_request events.  A forker can drop a malicious change in package.json
+# postinstall (or test script) and persist on the runner host, attacking
+# subsequent jobs on that machine.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios-greylag/08-self-hosted-public-fork/README.md for details.
+
+name: scenario-08-self-hosted-public-fork
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    if: false
+    runs-on: [self-hosted, linux]  # DANGER for a public repo
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          npm ci
+          npm test

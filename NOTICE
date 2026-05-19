@@ -33,7 +33,20 @@ Modifications made by the greylag-ci fork
 -----------------------------------------
   * NOTICE (this file) added.
   * solutions/duchess.md: example PyPI token redacted (see above).
-  * .github/workflows/scanner-comparison.yml added (multi-tool scan).
-  * README updates pointing to the upstream and explaining the fork.
+  * .github/workflows/scanner-comparison.yml added — runs zizmor,
+    poutine, checkov, kics, trivy, and gitleaks against the tree and
+    uploads each result to Code Scanning under a separate category.
+  * .github/workflows/scenario-NN-*.yml — twelve new GitHub-Actions-
+    focused vulnerable scenarios that extend the upstream's
+    Jenkins/GitLab/CircleCI coverage. All gated with `if: false` so
+    they only serve as static-analysis fodder and never execute.
+  * .github/workflows/_reusable-deploy.yml — companion reusable
+    workflow used by scenario 06.
+  * scenarios-greylag/ — index plus per-scenario walkthroughs
+    (CICD-SEC mapping, exploitation, expected scanner coverage, fix).
+  * scenarios-greylag/10-*/trust-policy.json — auxiliary IAM
+    trust-policy file demonstrating wildcard-sub misconfig.
+  * scenarios-greylag/11-*/requirements.txt — auxiliary unpinned/
+    unhashed deps file.
 
 All other files are unchanged from the upstream import.

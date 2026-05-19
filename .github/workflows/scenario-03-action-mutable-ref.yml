@@ -1,0 +1,32 @@
+# scenarios-greylag/03-action-mutable-ref
+# CICD-SEC-3 (Dependency Chain Abuse) + supply-chain
+# Pattern: third-party actions referenced by mutable refs (@main, @master, or a
+# tag the upstream can move).  The tj-actions/changed-files compromise
+# (CVE-2025-30066) demonstrated how a single tag move can exfiltrate secrets
+# from every downstream consumer.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios-greylag/03-action-mutable-ref/README.md for details.
+
+name: scenario-03-action-mutable-ref
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Untrusted third-party action pinned to branch ref
+        uses: third-party-org/some-deploy-action@main
+      - name: Another, pinned to master
+        uses: another-org/composite@master
+      - name: And one pinned to a movable major tag without SHA
+        uses: yet-another-org/widget-action@v1

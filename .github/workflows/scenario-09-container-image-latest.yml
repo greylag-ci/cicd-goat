@@ -1,0 +1,32 @@
+# scenarios-greylag/09-container-image-latest
+# CICD-SEC-3 (Dependency Chain Abuse) + CICD-SEC-9 (Artifact Integrity)
+# Pattern: job/service container image references a mutable :latest tag.  Same
+# attack surface as mutable action refs — supply chain compromise + bit-rot.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios-greylag/09-container-image-latest/README.md for details.
+
+name: scenario-09-container-image-latest
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: false
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:latest  # DANGER: mutable tag
+    services:
+      postgres:
+        image: postgres:latest  # DANGER: mutable tag
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          apt-get update
+          apt-get install -y build-essential
+          make build

@@ -1,0 +1,31 @@
+# Reusable workflow consumed by scenario-06-reusable-secrets-inherit.yml.
+# Demonstrates how a reusable workflow that accepts `secrets: inherit` and
+# operates on PR-controlled inputs leaks credentials.
+#
+# Safety: gated with `if: false`.
+
+name: _reusable-deploy
+
+on:
+  workflow_call:
+    inputs:
+      target:
+        type: string
+        required: true
+
+jobs:
+  deploy:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Deploy with inherited secrets (DANGER)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm ci
+          npm run deploy -- --target "${{ inputs.target }}"

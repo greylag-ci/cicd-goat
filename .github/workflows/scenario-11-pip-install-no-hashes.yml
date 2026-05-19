@@ -1,0 +1,30 @@
+# scenarios-greylag/11-pip-install-no-hashes
+# CICD-SEC-3 (Dependency Chain Abuse)
+# Pattern: pip install of an unpinned requirements file with no
+# --require-hashes.  Any compromise of PyPI or a typosquat lands directly
+# in the CI runner, with whatever privileges the job carries.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios-greylag/11-pip-install-no-hashes/README.md and requirements.txt.
+
+name: scenario-11-pip-install-no-hashes
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deps (DANGER - unpinned, no hashes)
+        run: pip install -r scenarios-greylag/11-pip-install-no-hashes/requirements.txt
+      - run: python -c "import requests; print(requests.__version__)"

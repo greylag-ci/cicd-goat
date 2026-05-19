@@ -1,0 +1,33 @@
+# scenarios-greylag/10-oidc-aws-wildcard-sub
+# CICD-SEC-2 (Inadequate IAM) + CICD-SEC-7 (Insecure System Configuration)
+# Pattern: a GitHub OIDC -> AWS IAM trust policy uses a wildcard subject
+# (e.g. `token.actions.githubusercontent.com:sub: repo:*`).  This lets any
+# GitHub repository or branch assume the production role, defeating the
+# fine-grained scoping OIDC is meant to provide.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios-greylag/10-oidc-aws-wildcard-sub/README.md and trust-policy.json
+# for the matching IAM trust document.
+
+name: scenario-10-oidc-aws-wildcard-sub
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    if: false
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/example-overly-broad
+          aws-region: us-east-1
+      - run: aws s3 cp ./dist s3://example-prod-bucket/ --recursive
