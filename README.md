@@ -11,11 +11,13 @@
 ══════════════════════════════════════════════════════════════════════════════
 ```
 
+<!-- AUTOGEN:badges -->
 [![scanner-comparison](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml/badge.svg)](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml)
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-3a3a3a?style=flat-square)](LICENSE)
 [![CICD-SEC top 10](https://img.shields.io/badge/owasp-CICD--SEC_10%2F10-9c2b2b?style=flat-square)](https://owasp.org/www-project-top-10-ci-cd-security-risks/)
 [![scenarios 27](https://img.shields.io/badge/scenarios-27-1f6feb?style=flat-square)](scenarios/README.md)
 [![scanners 7](https://img.shields.io/badge/scanners-7-1f6feb?style=flat-square)](#the-full-matrix)
+<!-- /AUTOGEN:badges -->
 
 ---
 
@@ -229,36 +231,38 @@ attack-class coverage" from one scan.
 Sourced from the latest [`scanner-comparison`](../../actions/workflows/scanner-comparison.yml) SARIF
 (`commit 86a4c92`) for the community scanners and `python -m pipeline_check --pipeline github --output json` for pipeline-check.
 
-| #  | Scenario                                          | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | Trivy | Gitleaks |
-| :-:| :------------------------------------------------ | :-------------------: | :----: | :-----: | :--: | :-----: | :---: | :------: |
-| 01 | `pull_request_target` + fork-head checkout        |          ✅          |   ✅   |   ✅    |  ❌  |   ❌   |  ❌   |    —     |
-| 02 | Script injection via issue title                  |          ✅          |   ✅   |   ✅    |  ✅  |   ✅   |  ❌   |    —     |
-| 03 | Action pinned to mutable ref                      |          ✅          |   ✅   |   ⚠️    |  ✅  |   ❌   |  ❌   |    —     |
-| 04 | `GITHUB_TOKEN: write-all`                         |          ✅          |   ❌   |   ❌    |  ❌  |   ✅   |  ❌   |    —     |
-| 05 | Cache poisoning via PR title                      |          ✅          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 06 | Reusable workflow `secrets: inherit`              |          ✅          |   ✅   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 07 | `workflow_run` artifact RCE                       |          ✅          |   ✅   |   ✅    |  ❌  |   ❌   |  ❌   |    —     |
-| 08 | Self-hosted runner on public repo                 |          ✅          |   ❌   |   ✅    |  ❌  |   ❌   |  ❌   |    —     |
-| 09 | Container image `:latest`                         |          ✅          |   ✅   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 10 | AWS OIDC wildcard `sub`                           |          ⚠️          |   ❌   |   ❌    |  ⚠️  |   ❌   |  ❌   |    —     |
-| 11 | `pip install` no hashes                           |          ✅          |   —    |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 12 | `persist-credentials` leak                        |          ✅          |   ✅   |   ⚠️    |  ⚠️  |   ❌   |  ❌   |    —     |
-| 13 | `workflow_dispatch` input injection               |          ✅          |   ✅   |   ❌    |  ❌  |   ✅   |  ❌   |    —     |
-| 14 | `$GITHUB_ENV` poisoning                           |          ⚠️          |   ⚠️   |   ✅    |  ❌  |   ✅   |  ❌   |    —     |
-| 15 | Hardcoded secret in `env:`                        |          ❌          |   ❌   |   ❌    |  ✅  |   ❌   |  ❌   |    ❌    |
-| 16 | `curl \| sh` install                              |          ✅          |   ❌   |   ✅    |  ❌  |   ❌   |  ❌   |    —     |
-| 17 | ArtiPACKED — `.git/` in artifact                  |          ⚠️          |   ✅   |   ❌    |  ❌  |   ❌   |  ❌   |    ❌    |
-| 18 | Composite action `${{ inputs.* }}` injection      |          ❌          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 19 | Codecov-style trusted-installer                   |          ❌          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 20 | Dependency confusion (Birsan)                     |          ❌          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 21 | Matrix expansion injection                        |          ❌          |   ✅   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 22 | GCP OIDC over-broad WIF                           |          ❌          |   ❌   |   ❌    |  ⚠️  |   ❌   |  ❌   |    —     |
-| 23 | `github-actions[bot]` branch-protection bypass    |          ❌          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 24 | Third-party webhook exfiltration                  |          ❌          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 25 | Environment branch-pattern bypass                 |          ❌          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 26 | GitHub App token over-scope                       |          ❌          |   ✅   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 27 | Secret leak in workflow logs                      |          ❌          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-|    | **canonical bugs caught**                         |   **13 ✅ · 2 ⚠️**   | **11 ✅ · 1 ⚠️** | **6 ✅ · 2 ⚠️** | **3 ✅ · 3 ⚠️** | **4 ✅** | 0 | 0 |
+<!-- AUTOGEN:matrix -->
+| #  | Scenario | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | Trivy | Gitleaks |
+| :-:| :--- | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| 01 | `pull_request_target` + fork-head checkout | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | — |
+| 02 | Script injection via issue title | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | — |
+| 03 | Action pinned to mutable ref | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | — |
+| 04 | `GITHUB_TOKEN` `write-all` | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | — |
+| 05 | Cache poisoning via PR title | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
+| 06 | Reusable workflow `secrets: inherit` | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | — |
+| 07 | `workflow_run` artifact RCE | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | — |
+| 08 | Self-hosted runner on public repo | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ | — |
+| 09 | Container image `:latest` | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | — |
+| 10 | AWS OIDC wildcard `sub` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
+| 11 | `pip install` no hashes | ❌ | — | ❌ | ❌ | ❌ | ❌ | — |
+| 12 | `persist-credentials` leak | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | — |
+| 13 | `workflow_dispatch` input injection | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ | — |
+| 14 | `$GITHUB_ENV` poisoning | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | — |
+| 15 | Hardcoded secret in `env:` | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| 16 | `curl \| sh` install | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ | — |
+| 17 | ArtiPACKED — `.git/` in artifact | ⚠️ | ✅ | ❌ | ❌ | ❌ | ❌ | — |
+| 18 | Composite action `${{ inputs.* }}` injection | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
+| 19 | Codecov-style trusted-installer | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
+| 20 | Dependency confusion (Birsan) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
+| 21 | Matrix expansion injection | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | — |
+| 22 | GCP OIDC over-broad WIF | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
+| 23 | `github-actions[bot]` branch-protection bypass | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
+| 24 | Third-party webhook exfiltration | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
+| 25 | Environment branch-pattern bypass | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
+| 26 | GitHub App token over-scope | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | — |
+| 27 | Secret leak in workflow logs | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
+|    | **canonical bugs caught** | **13 ✅** · 1 ⚠️ | **12 ✅** | **8 ✅** | **4 ✅** | **4 ✅** | **0 ✅** | **0 ✅** |
+<!-- /AUTOGEN:matrix -->
 
 > [!IMPORTANT]
 > Six scenarios (18, 19, 20, 23, 24, 25, 27) are **caught by no scanner
@@ -271,35 +275,37 @@ Sourced from the latest [`scanner-comparison`](../../actions/workflows/scanner-c
 
 ## Scenarios index
 
-| #  | Title                                                                                                | CICD-SEC  | Severity     |
-| :-:| :--------------------------------------------------------------------------------------------------- | :-------: | :----------- |
-| 01 | [`pull_request_target` + fork-head checkout](scenarios/01-prtarget-checkout-head/README.md)          |   4 · 5   | 🔴 critical |
-| 02 | [Script injection via issue title](scenarios/02-script-injection-issue-title/README.md)              |     4     | 🟠 high     |
-| 03 | [Action pinned to mutable ref](scenarios/03-action-mutable-ref/README.md)                            |     3     | 🟠 high     |
-| 04 | [`GITHUB_TOKEN` `write-all`](scenarios/04-github-token-write-all/README.md)                          |     5     | 🟡 medium   |
-| 05 | [Cache poisoning via PR title](scenarios/05-cache-poisoning-pr-controlled/README.md)                 |   4 · 9   | 🟠 high     |
-| 06 | [Reusable workflow `secrets: inherit`](scenarios/06-reusable-secrets-inherit/README.md)              |   5 · 6   | 🟡 medium   |
-| 07 | [`workflow_run` artifact RCE](scenarios/07-workflow-run-artifact-rce/README.md)                      |   4 · 9   | 🔴 critical |
-| 08 | [Self-hosted runner on public repo](scenarios/08-self-hosted-public-fork/README.md)                  |     7     | 🔴 critical |
-| 09 | [Container image `:latest`](scenarios/09-container-image-latest/README.md)                           |   3 · 9   | 🟡 medium   |
-| 10 | [AWS OIDC wildcard subject](scenarios/10-oidc-aws-wildcard-sub/README.md)                            |   2 · 7   | 🔴 critical |
-| 11 | [`pip install` no hashes](scenarios/11-pip-install-no-hashes/README.md)                              |     3     | 🟡 medium   |
-| 12 | [`persist-credentials` leak](scenarios/12-persist-credentials-leak/README.md)                        |   6 · 3   | 🟠 high     |
-| 13 | [`workflow_dispatch` input injection](scenarios/13-input-injection-workflow-dispatch/README.md)      |     4     | 🟠 high     |
-| 14 | [`$GITHUB_ENV` poisoning](scenarios/14-env-injection-pr-body/README.md)                              |     4     | 🟠 high     |
-| 15 | [Hardcoded secret in `env:`](scenarios/15-hardcoded-secret-env/README.md)                            |     6     | 🟠 high     |
-| 16 | [`curl \| sh` install](scenarios/16-curl-pipe-sh/README.md)                                          |     3     | 🟡 medium   |
-| 17 | [ArtiPACKED — `.git/` in artifact](scenarios/17-artipacked-git-dir/README.md)                        |   6 · 9   | 🔴 critical |
-| 18 | [Composite action `${{ inputs.* }}` injection](scenarios/18-composite-action-input-injection/README.md) |  4    | 🟠 high     |
-| 19 | [Codecov-style trusted-installer](scenarios/19-codecov-style-installer/README.md)                    |   3 · 9   | 🔴 critical |
-| 20 | [Dependency confusion (Birsan)](scenarios/20-dependency-confusion/README.md)                         |     3     | 🔴 critical |
-| 21 | [Matrix expansion injection](scenarios/21-matrix-expansion-injection/README.md)                      |     4     | 🟠 high     |
-| 22 | [GCP OIDC over-broad WIF](scenarios/22-gcp-oidc-broad-wif/README.md)                                 |   2 · 7   | 🔴 critical |
-| 23 | [`github-actions[bot]` branch-protection bypass](scenarios/23-actions-bot-branch-protection-bypass/README.md) | 1 | 🟠 high     |
-| 24 | [Third-party webhook exfiltration](scenarios/24-third-party-webhook-exfil/README.md)                 |     8     | 🟠 high     |
-| 25 | [Environment branch-pattern bypass](scenarios/25-environment-branch-pattern-bypass/README.md)        |   1 · 5   | 🟠 high     |
-| 26 | [GitHub App token over-scope](scenarios/26-app-token-over-scope/README.md)                           |     5     | 🟡 medium   |
-| 27 | [Secret leak in workflow logs](scenarios/27-secret-leak-in-logs/README.md)                           |    10     | 🟠 high     |
+<!-- AUTOGEN:scenarios-index -->
+| #  | Title | CICD-SEC | Severity |
+| :-:| :--- | :-: | :-- |
+| 01 | [`pull_request_target` + fork-head checkout](scenarios/01-prtarget-checkout-head/README.md) | 4 · 5 | 🔴 critical |
+| 02 | [Script injection via issue title](scenarios/02-script-injection-issue-title/README.md) | 4 | 🟠 high |
+| 03 | [Action pinned to mutable ref](scenarios/03-action-mutable-ref/README.md) | 3 | 🟠 high |
+| 04 | [`GITHUB_TOKEN` `write-all`](scenarios/04-github-token-write-all/README.md) | 5 | 🟡 medium |
+| 05 | [Cache poisoning via PR title](scenarios/05-cache-poisoning-pr-controlled/README.md) | 4 · 9 | 🟠 high |
+| 06 | [Reusable workflow `secrets: inherit`](scenarios/06-reusable-secrets-inherit/README.md) | 5 · 6 | 🟡 medium |
+| 07 | [`workflow_run` artifact RCE](scenarios/07-workflow-run-artifact-rce/README.md) | 4 · 9 | 🔴 critical |
+| 08 | [Self-hosted runner on public repo](scenarios/08-self-hosted-public-fork/README.md) | 7 | 🔴 critical |
+| 09 | [Container image `:latest`](scenarios/09-container-image-latest/README.md) | 3 · 9 | 🟡 medium |
+| 10 | [AWS OIDC wildcard `sub`](scenarios/10-oidc-aws-wildcard-sub/README.md) | 2 · 7 | 🔴 critical |
+| 11 | [`pip install` no hashes](scenarios/11-pip-install-no-hashes/README.md) | 3 | 🟡 medium |
+| 12 | [`persist-credentials` leak](scenarios/12-persist-credentials-leak/README.md) | 6 · 3 | 🟠 high |
+| 13 | [`workflow_dispatch` input injection](scenarios/13-input-injection-workflow-dispatch/README.md) | 4 | 🟠 high |
+| 14 | [`$GITHUB_ENV` poisoning](scenarios/14-env-injection-pr-body/README.md) | 4 | 🟠 high |
+| 15 | [Hardcoded secret in `env:`](scenarios/15-hardcoded-secret-env/README.md) | 6 | 🟠 high |
+| 16 | [`curl \| sh` install](scenarios/16-curl-pipe-sh/README.md) | 3 | 🟡 medium |
+| 17 | [ArtiPACKED — `.git/` in artifact](scenarios/17-artipacked-git-dir/README.md) | 6 · 9 | 🔴 critical |
+| 18 | [Composite action `${{ inputs.* }}` injection](scenarios/18-composite-action-input-injection/README.md) | 4 | 🟠 high |
+| 19 | [Codecov-style trusted-installer](scenarios/19-codecov-style-installer/README.md) | 3 · 9 | 🔴 critical |
+| 20 | [Dependency confusion (Birsan)](scenarios/20-dependency-confusion/README.md) | 3 | 🔴 critical |
+| 21 | [Matrix expansion injection](scenarios/21-matrix-expansion-injection/README.md) | 4 | 🟠 high |
+| 22 | [GCP OIDC over-broad WIF](scenarios/22-gcp-oidc-broad-wif/README.md) | 2 · 7 | 🔴 critical |
+| 23 | [`github-actions[bot]` branch-protection bypass](scenarios/23-actions-bot-branch-protection-bypass/README.md) | 1 | 🟠 high |
+| 24 | [Third-party webhook exfiltration](scenarios/24-third-party-webhook-exfil/README.md) | 8 | 🟠 high |
+| 25 | [Environment branch-pattern bypass](scenarios/25-environment-branch-pattern-bypass/README.md) | 1 · 5 | 🟠 high |
+| 26 | [GitHub App token over-scope](scenarios/26-app-token-over-scope/README.md) | 5 | 🟡 medium |
+| 27 | [Secret leak in workflow logs](scenarios/27-secret-leak-in-logs/README.md) | 10 | 🟠 high |
+<!-- /AUTOGEN:scenarios-index -->
 
 > [!NOTE]
 > **Full OWASP CICD-SEC top 10 coverage** — every category 1 through 10
@@ -393,6 +399,40 @@ the SARIF output you got. Verdicts in the matrix track <i>canonical-bug
 coverage</i>, not raw finding count; if your scanner version fires a
 rule whose description names the canonical bug for that scenario, the
 cell flips.
+
+</details>
+
+<details>
+<summary><b>Regenerate the stats</b></summary>
+
+The matrix, the scenarios-index table, and the badges are
+auto-generated between `<!-- AUTOGEN:* -->` markers in this file.
+Source of truth is [`tools/scenarios.yaml`](tools/scenarios.yaml)
+(one entry per scenario, with the rule IDs each scanner is expected
+to fire on the canonical bug).
+
+To rebuild locally:
+
+```bash
+# pull SARIF from the most recent successful scanner-comparison run
+mkdir -p sarif
+run_id=$(gh run list --workflow scanner-comparison.yml \
+    --branch main --status success --limit 1 \
+    --json databaseId --jq '.[0].databaseId')
+gh run download "$run_id" --dir sarif
+
+# rewrite the marked sections
+pip install PyYAML
+python tools/regen-readme.py --sarif-dir sarif
+
+# (optional) verify scenarios.yaml against SARIF — non-zero on drift
+python tools/regen-readme.py --verify --sarif-dir sarif
+```
+
+CI does this automatically: [`.github/workflows/regen-readme.yml`](.github/workflows/regen-readme.yml)
+runs weekly (`cron: '23 7 * * 1'`) and on `workflow_dispatch`, and
+opens a PR titled _"auto: regen README stats"_ whenever the
+regenerated README differs from `main`.
 
 </details>
 

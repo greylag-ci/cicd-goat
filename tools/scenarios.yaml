@@ -1,0 +1,59 @@
+# Single source of truth for the README matrix and scenarios index.
+# Edit this file -> run tools/regen-readme.py -> README sections between
+# the BEGIN/END markers are rewritten.
+#
+# Schema:
+#   scanners: ordered list of scanner entries (column order in the matrix)
+#     id          : key used in scenarios[].expected
+#     sarif_tool  : value of run.tool.driver.name in the scanner's SARIF
+#                   (used by --verify mode and the regen of totals)
+#     label       : column header in the matrix (may include HTML entities)
+#
+#   scenarios: ordered list (row order in the matrix)
+#     id          : integer (1..N)
+#     title       : markdown short title for the matrix
+#     cicd_sec    : list of OWASP CICD-SEC category numbers
+#     severity    : one of critical | high | medium | low
+#     expected    : per-scanner expected canonical rule IDs.  Verdict
+#                   is derived as:
+#                     na      -> "—"  (not applicable to this class)
+#                     []      -> "❌"  (no rule expected; bug not catchable)
+#                     [list]  -> all fire ✅ ; some fire ⚠️ ; none fire ❌
+
+scanners:
+  - {id: pipeline-check, sarif_tool: pipeline_check, label: "pipeline&#x2011;check"}
+  - {id: zizmor,         sarif_tool: zizmor,         label: zizmor}
+  - {id: poutine,        sarif_tool: poutine,        label: poutine}
+  - {id: kics,           sarif_tool: KICS,           label: KICS}
+  - {id: checkov,        sarif_tool: Checkov,        label: Checkov}
+  - {id: trivy,          sarif_tool: Trivy,          label: Trivy}
+  - {id: gitleaks,       sarif_tool: Gitleaks,       label: Gitleaks}
+
+scenarios:
+  - {id: 1,  title: "`pull_request_target` + fork-head checkout",    cicd_sec: [4, 5], severity: critical, slug: 01-prtarget-checkout-head,                  expected: {pipeline-check: [GHA-002, GHA-044], zizmor: [zizmor/dangerous-triggers], poutine: [untrusted_checkout_exec], kics: [], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 2,  title: "Script injection via issue title",              cicd_sec: [4],    severity: high,     slug: 02-script-injection-issue-title,            expected: {pipeline-check: [GHA-003], zizmor: [zizmor/template-injection], poutine: [injection], kics: [20f14e1a-a899-4e79-9f09-b6a84cd4649b], checkov: [CKV_GHA_2], trivy: [], gitleaks: na}}
+  - {id: 3,  title: "Action pinned to mutable ref",                  cicd_sec: [3],    severity: high,     slug: 03-action-mutable-ref,                      expected: {pipeline-check: [GHA-001], zizmor: [zizmor/unpinned-uses], poutine: [github_action_from_unverified_creator_used], kics: [555ab8f9-2001-455e-a077-f2d0f41e2fb9], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 4,  title: "`GITHUB_TOKEN` `write-all`",                    cicd_sec: [5],    severity: medium,   slug: 04-github-token-write-all,                  expected: {pipeline-check: [GHA-004], zizmor: [zizmor/excessive-permissions], poutine: [], kics: [], checkov: [CKV2_GHA_1], trivy: [], gitleaks: na}}
+  - {id: 5,  title: "Cache poisoning via PR title",                  cicd_sec: [4, 9], severity: high,     slug: 05-cache-poisoning-pr-controlled,           expected: {pipeline-check: [GHA-011, GHA-052], zizmor: [zizmor/cache-poisoning], poutine: [], kics: [], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 6,  title: "Reusable workflow `secrets: inherit`",          cicd_sec: [5, 6], severity: medium,   slug: 06-reusable-secrets-inherit,                expected: {pipeline-check: [GHA-034], zizmor: [zizmor/secrets-inherit], poutine: [], kics: [], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 7,  title: "`workflow_run` artifact RCE",                   cicd_sec: [4, 9], severity: critical, slug: 07-workflow-run-artifact-rce,               expected: {pipeline-check: [GHA-009, GHA-032], zizmor: [zizmor/dangerous-triggers], poutine: [known_vulnerability_in_build_component], kics: [], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 8,  title: "Self-hosted runner on public repo",             cicd_sec: [7],    severity: critical, slug: 08-self-hosted-public-fork,                 expected: {pipeline-check: [GHA-012], zizmor: [zizmor/self-hosted-runner], poutine: [pr_runs_on_self_hosted], kics: [], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 9,  title: "Container image `:latest`",                     cicd_sec: [3, 9], severity: medium,   slug: 09-container-image-latest,                  expected: {pipeline-check: [GHA-051], zizmor: [zizmor/unpinned-images], poutine: [], kics: [], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 10, title: "AWS OIDC wildcard `sub`",                       cicd_sec: [2, 7], severity: critical, slug: 10-oidc-aws-wildcard-sub,                   expected: {pipeline-check: [GHA-030], zizmor: [], poutine: [], kics: [], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 11, title: "`pip install` no hashes",                       cicd_sec: [3],    severity: medium,   slug: 11-pip-install-no-hashes,                   expected: {pipeline-check: [GHA-060], zizmor: na, poutine: [], kics: [], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 12, title: "`persist-credentials` leak",                    cicd_sec: [6, 3], severity: high,     slug: 12-persist-credentials-leak,                expected: {pipeline-check: [GHA-037], zizmor: [zizmor/artipacked], poutine: [github_action_from_unverified_creator_used], kics: [555ab8f9-2001-455e-a077-f2d0f41e2fb9], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 13, title: "`workflow_dispatch` input injection",           cicd_sec: [4],    severity: high,     slug: 13-input-injection-workflow-dispatch,       expected: {pipeline-check: [GHA-003], zizmor: [zizmor/template-injection], poutine: [], kics: [], checkov: [CKV_GHA_7], trivy: [], gitleaks: na}}
+  - {id: 14, title: "`$GITHUB_ENV` poisoning",                       cicd_sec: [4],    severity: high,     slug: 14-env-injection-pr-body,                   expected: {pipeline-check: [GHA-003], zizmor: [zizmor/template-injection], poutine: [injection], kics: [], checkov: [CKV_GHA_2], trivy: [], gitleaks: na}}
+  - {id: 15, title: "Hardcoded secret in `env:`",                    cicd_sec: [6],    severity: high,     slug: 15-hardcoded-secret-env,                    expected: {pipeline-check: [GHA-008, GHA-033], zizmor: [], poutine: [], kics: [487f4be7-3fd9-4506-a07a-eae252180c08, baee238e-1921-4801-9c3f-79ae1d7b2cbc], checkov: [], trivy: [], gitleaks: [generic-api-key]}}
+  - {id: 16, title: "`curl \\| sh` install",                         cicd_sec: [3],    severity: medium,   slug: 16-curl-pipe-sh,                            expected: {pipeline-check: [GHA-016], zizmor: [zizmor/unverified-script-download], poutine: [unverified_script_exec], kics: [], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 17, title: "ArtiPACKED — `.git/` in artifact",              cicd_sec: [6, 9], severity: critical, slug: 17-artipacked-git-dir,                      expected: {pipeline-check: [GHA-037, GHA-019], zizmor: [zizmor/artipacked], poutine: [], kics: [], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 18, title: "Composite action `${{ inputs.* }}` injection",  cicd_sec: [4],    severity: high,     slug: 18-composite-action-input-injection,        expected: {pipeline-check: [], zizmor: [], poutine: [], kics: [], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 19, title: "Codecov-style trusted-installer",               cicd_sec: [3, 9], severity: critical, slug: 19-codecov-style-installer,                 expected: {pipeline-check: [GHA-016, GHA-018], zizmor: [], poutine: [], kics: [], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 20, title: "Dependency confusion (Birsan)",                 cicd_sec: [3],    severity: critical, slug: 20-dependency-confusion,                    expected: {pipeline-check: [GHA-021, GHA-022, GHA-029], zizmor: [], poutine: [], kics: [], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 21, title: "Matrix expansion injection",                    cicd_sec: [4],    severity: high,     slug: 21-matrix-expansion-injection,              expected: {pipeline-check: [TAINT-002, GHA-003], zizmor: [zizmor/template-injection], poutine: [], kics: [], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 22, title: "GCP OIDC over-broad WIF",                       cicd_sec: [2, 7], severity: critical, slug: 22-gcp-oidc-broad-wif,                      expected: {pipeline-check: [GHA-030], zizmor: [], poutine: [], kics: [], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 23, title: "`github-actions[bot]` branch-protection bypass", cicd_sec: [1],   severity: high,     slug: 23-actions-bot-branch-protection-bypass,    expected: {pipeline-check: [GHA-019, GHA-049], zizmor: [], poutine: [], kics: [], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 24, title: "Third-party webhook exfiltration",              cicd_sec: [8],    severity: high,     slug: 24-third-party-webhook-exfil,               expected: {pipeline-check: [GHA-057], zizmor: [], poutine: [], kics: [], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 25, title: "Environment branch-pattern bypass",             cicd_sec: [1, 5], severity: high,     slug: 25-environment-branch-pattern-bypass,       expected: {pipeline-check: [], zizmor: [], poutine: [], kics: [], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 26, title: "GitHub App token over-scope",                   cicd_sec: [5],    severity: medium,   slug: 26-app-token-over-scope,                    expected: {pipeline-check: [GHA-050], zizmor: [zizmor/github-app], poutine: [], kics: [], checkov: [], trivy: [], gitleaks: na}}
+  - {id: 27, title: "Secret leak in workflow logs",                  cicd_sec: [10],   severity: high,     slug: 27-secret-leak-in-logs,                     expected: {pipeline-check: [GHA-033, GHA-019], zizmor: [], poutine: [], kics: [], checkov: [], trivy: [], gitleaks: na}}

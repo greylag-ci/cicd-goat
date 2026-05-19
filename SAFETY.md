@@ -28,28 +28,48 @@ The check is automated:
   require the `safety-check / scenarios-are-gated` check before
   merging.
 
-## Invariant 2 — only `scanner-comparison.yml` and `safety-check.yml` execute
+## Invariant 2 — only three workflows execute, with documented permissions
 
-The repo has exactly **two** workflow files whose jobs are not gated:
+The repo has exactly **three** workflow files whose jobs are not gated:
 
 - [`scanner-comparison.yml`](.github/workflows/scanner-comparison.yml)
   — runs the seven scanners against the static tree.
+  Permissions: `contents: read`, `security-events: write` (for SARIF
+  upload). Read-only checkout (`persist-credentials: false`).
 - [`safety-check.yml`](.github/workflows/safety-check.yml)
-  — verifies invariant 1.
+  — verifies invariant 1. Permissions: `contents: read`. Read-only
+  checkout.
+- [`regen-readme.yml`](.github/workflows/regen-readme.yml)
+  — auto-regenerates the README stats from `tools/scenarios.yaml` +
+  the latest scanner-comparison SARIF. Permissions: `contents: write`
+  and `pull-requests: write` — **the broadest token in the repo.**
+  This workflow needs write access because it pushes a new branch
+  and opens a PR. The expanded permissions are justified because:
+  - It triggers only on `workflow_dispatch` and weekly `schedule`,
+    never on a fork PR or any attacker-controllable event.
+  - It never pushes to `main` directly; it always opens a PR for
+    human review.
+  - Branch protection on `main` requires the `safety-check /
+    scenarios-are-gated` check, so even a malicious commit landing
+    via this PR path can't break invariant 1 without first failing
+    the safety check.
 
-Both workflows:
+All three workflows:
 
-- Declare a minimal `permissions:` block (`contents: read`, plus
-  `security-events: write` for `scanner-comparison`).
 - Pin every action — including the official `actions/*` and
   `github/codeql-action/*` — to a **full 40-character commit SHA**,
   not a tag. The pin is the entire defence against the
   [`tj-actions/changed-files` 2025 compromise pattern](scenarios/03-action-mutable-ref/README.md)
   in our own scanner.
-- Set `actions/checkout` to `persist-credentials: false` so the
-  `GITHUB_TOKEN` is not written into `.git/config` (see
-  [scenario 12](scenarios/12-persist-credentials-leak/README.md)).
 - Set `timeout-minutes:` on every job.
+- The two read-only workflows set `actions/checkout` to
+  `persist-credentials: false` (see
+  [scenario 12](scenarios/12-persist-credentials-leak/README.md)).
+  `regen-readme.yml` deliberately keeps the default
+  `persist-credentials: true` because the job's last step pushes
+  back via the auto-issued `GITHUB_TOKEN`; this is the *only* place
+  in the repo where the persist-credentials default is on, and it is
+  scoped to a single, manually-triggered workflow.
 
 ## Invariant 3 — every external binary is integrity-verified
 
