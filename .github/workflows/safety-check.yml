@@ -1,0 +1,45 @@
+name: safety-check
+
+# Enforces the cicd-goat safety invariants on every push and PR.
+#
+# Invariants checked:
+#   1. Every job in every scenarios/.../ workflow has `if: false`.
+#      This is the only thing that keeps the deliberately-vulnerable
+#      patterns from actually executing on a runner.
+#
+# Failure here means a scenario was added or modified without the
+# safety gate.  Merging the PR would allow a real attack pattern to
+# fire on push / pull_request_target / etc.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scenarios-are-gated:
+    name: "scenarios are gated `if: false`"
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5
+        with:
+          python-version: '3.12'
+      - name: Install PyYAML
+        # Pinned exact version; PyYAML is read-only YAML parsing here,
+        # the job has contents: read and no secrets — minimal risk
+        # surface even if the version were compromised upstream.
+        run: pip install PyYAML==6.0.2
+      - name: Enforce if:false on every scenario
+        run: python tools/check-scenarios-gated.py
