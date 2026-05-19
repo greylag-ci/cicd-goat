@@ -26,32 +26,42 @@
 
 Twenty-seven GitHub Actions workflows. Each one demonstrates one
 real-world attack pattern, drawn from named incident disclosures
-(Codecov 2021, tj-actions 2025, ArtiPACKED, Birsan's dependency
-confusion) and from the OWASP Top 10 CI/CD Security Risks — **all ten
-categories** have at least one scenario. Every job is gated with
+(tj-actions 2025, Codecov 2021, ArtiPACKED 2024, Birsan dependency
+confusion 2021) and from the **OWASP Top 10 CI/CD Security Risks** —
+all ten categories have at least one scenario. Every job is gated with
 `if: false` so the workflows show up in run history but never spawn
 a runner.
 
 Six community scanners + **`pipeline-check`** (the engine behind the
 [Pipeline-Check VSCode extension](https://github.com/greylag-ci/pipeline-check-vscode))
-get the same input. The output is what you'd expect from a fair test —
-some scanners catch the headline bugs, some catch every bug, some catch
-none at all.
+get the same input. What the data shows: every scanner has a narrow
+lane. **Some scenarios nobody catches.** The matrix below is built
+from actual SARIF (community scanners) and the verbatim `pipeline_check
+--output json` for this branch.
+
+> [!NOTE]
+> **Scoring methodology.** A scanner gets ✅ on a scenario only if it
+> emits a rule whose description names the *specific canonical bug*
+> for that scenario. Hygiene findings that fire on every workflow file
+> (missing SBOM, unpinned `actions/checkout@v4`, no `timeout-minutes`,
+> etc.) don't count toward ✅ on a scenario whose canonical bug is
+> something else — they're the same finding on every file and tell
+> you nothing comparative. Pipeline-check carries a wide hygiene
+> baseline that the field doesn't ship; that's a separate, real
+> differentiator covered in [section ⑤](#-the-hygiene-baseline-pipeline-checks-real-edge).
 
 ---
 
 ## Field test — five cinematic scenarios
 
-The point of a test range is to fire it. Five scenarios pulled straight
-from named CI/CD incident disclosures, scored on what each scanner
-emitted when pointed at the file.
-
 ### ① The `tj-actions` tag move &nbsp;·&nbsp; scenario 03
 
 > [!NOTE]
-> **CICD-SEC-3 · Dependency Chain Abuse · March 2025.** A single force-moved tag on
-> `tj-actions/changed-files` exfiltrated CI secrets from tens of thousands
-> of downstream repos. Pinning to a tag instead of a SHA was the whole bug.
+> **CICD-SEC-3 · Dependency Chain Abuse · CVE-2025-30066.** On March 14, 2025
+> the `tj-actions/changed-files` GitHub Action was compromised; the
+> injected code dumped Runner Worker memory (including secrets) into the
+> workflow log. Over **23,000 repositories** ran the malicious version
+> before the rollback. Pinning to a tag instead of a SHA was the whole bug.
 
 ```yaml
 # .github/workflows/scenario-03-action-mutable-ref.yml
@@ -60,15 +70,15 @@ emitted when pointed at the file.
 - uses: yet-another-org/widget-action@v1               # ← movable tag
 ```
 
-| scanner            | verdict | rule that fired                                  |
-| :----------------- | :-----: | :----------------------------------------------- |
-| **pipeline-check** |   ✅    | `Action not pinned to commit SHA — 4 refs`       |
-| zizmor             |   ✅    | `unpinned-uses`                                  |
-| poutine            |   ✅    | `unpinned_action`                                |
-| KICS               |   ✅    | _Unpinned Actions Full Length Commit SHA_        |
-| Checkov            |   ❌    | —                                                |
-| Trivy              |   ❌    | —                                                |
-| Gitleaks           |   —     | _(secret scanner)_                               |
+| scanner            | verdict | rule that fired                                                          |
+| :----------------- | :-----: | :----------------------------------------------------------------------- |
+| **pipeline-check** |   ✅    | `GHA-001` — _Action not pinned to commit SHA: 4 refs (actions/checkout@v4, third-party-org/..., another-org/..., yet-another-org/...)_ |
+| zizmor             |   ✅    | `unpinned-uses`                                                          |
+| KICS               |   ✅    | `555ab8f9-…` — _Unpinned Actions Full Length Commit SHA_                 |
+| poutine            |   ⚠️   | `github_action_from_unverified_creator_used` — adjacent (creator trust, not SHA pinning), but routes to investigation |
+| Checkov            |   ❌    | —                                                                        |
+| Trivy              |   ❌    | —                                                                        |
+| Gitleaks           |   —     | _(secret scanner)_                                                       |
 
 ---
 
@@ -76,8 +86,9 @@ emitted when pointed at the file.
 
 > [!NOTE]
 > **CICD-SEC-2 · Inadequate IAM.** A trust policy with a wildcard subject
-> lets *any* GitHub repository assume your production role. Workflow-only
-> scanners never see the IAM document; IAM-only scanners never see the workflow.
+> lets *any* GitHub repository assume your production role. The bug
+> lives in two files (workflow + IAM trust JSON) and no single scanner
+> here covers both ends.
 
 ```yaml
 # .github/workflows/scenario-10-oidc-aws-wildcard-sub.yml
@@ -94,29 +105,32 @@ emitted when pointed at the file.
 }
 ```
 
-| scanner            | sees workflow | sees trust-policy.json  |
-| :----------------- | :-----------: | :--------------------:  |
-| **pipeline-check** |      ✅       | ⚠️&nbsp;_IAM in roadmap_ |
-| zizmor             | ⚠️&nbsp;_partial_ |          ❌          |
-| poutine            |      ❌       |          ❌            |
-| KICS               |      ✅       | ✅&nbsp;_IaC rule fires_ |
-| Checkov            |      ❌       | ⚠️                      |
-| Trivy              |      ❌       | ⚠️                      |
+| scanner            | sees workflow                                         | sees trust-policy.json |
+| :----------------- | :--------------------------------------------------- | :--------------------: |
+| **pipeline-check** | ⚠️&nbsp;_Hygiene fires (no SBOM, no SLSA, no signing); no IAM-aware rule yet_ | ❌                     |
+| zizmor             | ❌                                                    | ❌                     |
+| poutine            | ❌                                                    | ❌                     |
+| KICS               | ⚠️&nbsp;_Catches `aws-actions/...@v4` as unpinned_ref, not the wildcard sub_ | ❌                     |
+| Checkov            | ❌                                                    | ❌                     |
+| Trivy              | ❌                                                    | ❌                     |
 
-> The canary for split-scope scanning. **pipeline-check + KICS** is the
-> only pairing in the field that covers both ends of the OIDC handshake
-> from a single comparison run. Same shape repeats for GCP in
-> [scenario 22](scenarios/22-gcp-oidc-broad-wif/README.md).
+> **This is a scanner-comparison miss.** None of the seven scanners
+> currently catches the wildcard-sub bug from the workflow side; KICS
+> can be made to fire on the IaC side with a different scan config
+> (Terraform input, not just Actions). Honest finding; included as
+> a benchmark for the hard end.
 
 ---
 
 ### ③ ArtiPACKED — `.git/` packed into an artifact &nbsp;·&nbsp; scenario 17
 
 > [!NOTE]
-> **CICD-SEC-6 · Insufficient Credential Hygiene.** Documented by Palo Alto
-> Unit 42 across hundreds of public repos. `actions/checkout` defaults to
-> `persist-credentials: true`, which writes `GITHUB_TOKEN` into `.git/config`;
-> `upload-artifact` with `path: .` then ships it to anyone with read access.
+> **CICD-SEC-6 · Insufficient Credential Hygiene.** Palo Alto Unit 42
+> disclosed in August 2024, finding **14 cases** in production open
+> source at Red Hat, Google, AWS, Canonical, Microsoft, and OWASP.
+> `actions/checkout` defaults to `persist-credentials: true`, writing
+> `GITHUB_TOKEN` into `.git/config`; `upload-artifact` with `path: .`
+> then ships it.
 
 ```yaml
 # .github/workflows/scenario-17-artipacked-git-dir.yml
@@ -128,23 +142,27 @@ emitted when pointed at the file.
     path: .            # ← uploads .git/, including .git/config with the token
 ```
 
-| scanner            | verdict                                                              |
-| :----------------- | :------------------------------------------------------------------- |
-| **pipeline-check** | ✅&nbsp;_Both halves: checkout persists `GITHUB_TOKEN` + artifact path includes `.git`_ |
-| zizmor             | ✅&nbsp;`artipacked` audit (named after the original disclosure)     |
-| poutine            | ⚠️&nbsp;Flags the checkout default but not the artifact-path side    |
-| KICS               | ❌                                                                   |
-| Checkov            | ❌                                                                   |
-| Trivy              | ❌                                                                   |
-| Gitleaks           | ❌&nbsp;_(token isn't in source — only in the artifact)_             |
+| scanner            | verdict                                                                                 |
+| :----------------- | :-------------------------------------------------------------------------------------- |
+| zizmor             | ✅&nbsp;`artipacked` (the rule was named after this very disclosure; catches both halves) |
+| **pipeline-check** | ⚠️&nbsp;`GHA-037` catches the `persist-credentials` half; no dedicated rule yet for `upload-artifact path: .` |
+| poutine            | ❌                                                                                      |
+| KICS               | ❌                                                                                      |
+| Checkov            | ❌                                                                                      |
+| Trivy              | ❌                                                                                      |
+| Gitleaks           | ❌&nbsp;_(token isn't in source — only in the artifact)_                                |
+
+> Honest assessment: **zizmor is the only scanner here that ships a
+> rule precisely for this disclosure.** Pipeline-check catches half;
+> the rest miss entirely.
 
 ---
 
 ### ④ The silent default: `persist-credentials` &nbsp;·&nbsp; scenario 12
 
 > [!NOTE]
-> **CICD-SEC-6 · Insufficient Credential Hygiene.** Same root cause as #③,
-> but without the artifact step. `actions/checkout` *defaults* to writing the
+> **CICD-SEC-6 · Insufficient Credential Hygiene.** Same root cause as #③
+> without the artifact step. `actions/checkout` *defaults* to writing the
 > token. Any later untrusted step in the same job can read it.
 
 ```yaml
@@ -156,119 +174,98 @@ emitted when pointed at the file.
 
 | scanner            | verdict | rule fired                                              |
 | :----------------- | :-----: | :------------------------------------------------------ |
-| **pipeline-check** |   ✅    | `actions/checkout persists GITHUB_TOKEN into .git/config` |
+| **pipeline-check** |   ✅    | `GHA-037` — _actions/checkout persists `GITHUB_TOKEN` into `.git/config`_ |
 | zizmor             |   ✅    | `artipacked`                                            |
-| poutine            |   ✅    | `unverified_script_execution`                           |
-| KICS               |   ✅    | _Token Persistence in Checkout_                         |
+| poutine            |   ⚠️   | `github_action_from_unverified_creator_used` — flags the third-party action, not the persist-credentials root cause |
+| KICS               |   ⚠️   | `555ab8f9-…` — fires on `actions/checkout@v4` as unpinned, not on persist-credentials specifically |
 | Checkov            |   ❌    | —                                                       |
 | Trivy              |   ❌    | —                                                       |
 | Gitleaks           |   —     | _(secret scanner)_                                      |
 
 ---
 
-### ⑤ Codecov-2021-style trusted installer &nbsp;·&nbsp; scenario 19
+### ⑤ The hygiene baseline — pipeline-check's real edge
 
-> [!NOTE]
-> **CICD-SEC-3 + CICD-SEC-9 · April 2021.** Codecov's bash uploader was
-> modified *before* their signing pipeline ran. ~29,000 customers verified
-> the signature, the checksum matched, the binary was backdoored.
-> Trust didn't move — the upstream's CI did.
-
-```yaml
-# .github/workflows/scenario-19-codecov-style-installer.yml
-curl ... -o codecov                                # binary
-curl ... -o codecov.sha256                          # checksum
-curl ... -o codecov.sha256.sig                      # signature
-gpg --verify codecov.sha256.sig codecov.sha256      # ← passes
-sha256sum --check codecov.sha256                     # ← passes
-./codecov                  # ← runs the malicious build that was signed by a legit key
-```
-
-| scanner            | verdict                                                              |
-| :----------------- | :------------------------------------------------------------------- |
-| **pipeline-check** | ✅&nbsp;_External binary install + missing artifact provenance + curl install_ |
-| zizmor             | ⚠️&nbsp;`unverified-script-download` partial — checks for unverified, not over-verified |
-| poutine            | ❌                                                                   |
-| KICS               | ❌                                                                   |
-| Checkov            | ❌                                                                   |
-| Trivy              | ❌                                                                   |
-| Gitleaks           | —                                                                    |
-
-> Signing-and-verify *feels* responsible, but trusting "any signature from
-> this key" means trusting the publisher's own CI. Pin to a known-good
-> release digest, or you're SLSA-Build-L1 with extra ceremony.
-
----
-
-### ⑥ Bonus rules the field doesn't ship yet
-
-Pipeline-check also flags supply-chain hygiene requirements no other
-scanner in this comparison currently surfaces. Real findings from the
-scenario files, verbatim from the engine:
+The strict per-scenario matrix shows pipeline-check leading on
+canonical-bug coverage but not by a wide margin. The bigger story is
+**what fires on every scenario, that no other scanner ships at all.**
+Pipeline-check carries 63 GitHub Actions rules; ~20 of them are
+"absence-of-control" hygiene rules that fire on any workflow lacking
+the corresponding step. Verbatim findings from this branch:
 
 ```
-✕ Artifacts not signed (no cosign/sigstore step)
-✕ SBOM not produced (no CycloneDX/syft/Trivy-SBOM step)
-✕ No SLSA provenance attestation produced
-✕ No vulnerability scanning step
-✕ Deploy job missing environment binding
-✕ Job has no `timeout-minutes`, unbounded build
-✕ services / container image is not pinned by digest
+GHA-006   Artifacts not signed (no cosign/sigstore step)
+GHA-007   SBOM not produced (no CycloneDX/syft/Trivy-SBOM step)
+GHA-024   No SLSA provenance attestation produced
+GHA-020   No vulnerability scanning step
+GHA-014   Deploy job missing environment binding
+GHA-015   Job has no `timeout-minutes`, unbounded build
+GHA-051   services / container image is not pinned by digest
+GHA-001   Action not pinned to commit SHA — fires on actions/checkout@v4
+GHA-037   actions/checkout persists GITHUB_TOKEN into .git/config
 ```
 
-These fire on scenarios 01, 03, 09, 10, 13, 17, 19, and 22 — and are the
-reason pipeline-check's *per-scenario rule fire count* is roughly 3× the
-next-closest scanner once duplicates are normalized away.
+Hygiene findings on the deploy-style scenarios (01, 10, 17, 22) reach
+**7 simultaneous real fires** each — every category SLSA Level 3 cares
+about, plus the bug under test. **No other scanner in this comparison
+emits SBOM, SLSA, signing, or vuln-scan absence findings at all.**
+
+The strict matrix below scores only the canonical bug per scenario.
+The hygiene-baseline edge is what makes pipeline-check the only
+single-tool option if you want all of "supply-chain hygiene + CICD-SEC
+attack-class coverage" from one scan.
 
 ---
 
 ## The full matrix
 
-| key | meaning                                  |
-| :-: | :--------------------------------------- |
-| ✅  | scanner flags the canonical bug          |
-| ⚠️  | scanner partially catches (subset of the antipattern, or via a generic rule) |
-| ❌  | scanner misses                           |
-| —   | not applicable to that scanner's class   |
+| key | meaning                                                  |
+| :-: | :------------------------------------------------------- |
+| ✅  | scanner flags the **canonical bug** with a matching rule |
+| ⚠️  | scanner partially catches — adjacent rule, half the antipattern, or related but distinct concern |
+| ❌  | scanner misses the canonical bug                         |
+| —   | not applicable to that scanner's class                   |
+
+Sourced from the latest [`scanner-comparison`](../../actions/workflows/scanner-comparison.yml) SARIF
+(`commit 86a4c92`) for the community scanners and `python -m pipeline_check --pipeline github --output json` for pipeline-check.
 
 | #  | Scenario                                          | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | Trivy | Gitleaks |
 | :-:| :------------------------------------------------ | :-------------------: | :----: | :-----: | :--: | :-----: | :---: | :------: |
 | 01 | `pull_request_target` + fork-head checkout        |          ✅          |   ✅   |   ✅    |  ❌  |   ❌   |  ❌   |    —     |
 | 02 | Script injection via issue title                  |          ✅          |   ✅   |   ✅    |  ✅  |   ✅   |  ❌   |    —     |
-| 03 | Action pinned to mutable ref                      |          ✅          |   ✅   |   ✅    |  ✅  |   ❌   |  ❌   |    —     |
-| 04 | `GITHUB_TOKEN: write-all`                         |          ✅          |   ✅   |   ❌    |  ❌  |   ✅   |  ❌   |    —     |
-| 05 | Cache poisoning via PR title                      |          ✅          |   ✅   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 06 | Reusable workflow `secrets: inherit`              |          ✅          |   ✅   |   ⚠️    |  ❌  |   ❌   |  ❌   |    —     |
+| 03 | Action pinned to mutable ref                      |          ✅          |   ✅   |   ⚠️    |  ✅  |   ❌   |  ❌   |    —     |
+| 04 | `GITHUB_TOKEN: write-all`                         |          ✅          |   ❌   |   ❌    |  ❌  |   ✅   |  ❌   |    —     |
+| 05 | Cache poisoning via PR title                      |          ✅          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
+| 06 | Reusable workflow `secrets: inherit`              |          ✅          |   ✅   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
 | 07 | `workflow_run` artifact RCE                       |          ✅          |   ✅   |   ✅    |  ❌  |   ❌   |  ❌   |    —     |
-| 08 | Self-hosted runner on public repo                 |          ✅          |   ✅   |   ✅    |  ❌  |   ❌   |  ❌   |    —     |
-| 09 | Container image `:latest`                         |          ✅          |   ⚠️   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 10 | AWS OIDC wildcard `sub`                           |          ✅          |   ⚠️   |   ❌    |  ✅  |   ⚠️   |  ⚠️   |    —     |
-| 11 | `pip install` no hashes                           |          ⚠️          |   —    |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 12 | `persist-credentials` leak                        |          ✅          |   ✅   |   ✅    |  ✅  |   ❌   |  ❌   |    —     |
-| 13 | `workflow_dispatch` input injection               |          ✅          |   ✅   |   ✅    |  ❌  |   ❌   |  ❌   |    —     |
-| 14 | `$GITHUB_ENV` poisoning                           |          ⚠️          |   ⚠️   |   ⚠️    |  ❌  |   ❌   |  ❌   |    —     |
-| 15 | Hardcoded secret in `env:`                        |          ✅          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    ✅    |
-| 16 | `curl \| sh` install                              |          ⚠️          |   ⚠️   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 17 | ArtiPACKED — `.git/` in artifact                  |          ✅          |   ✅   |   ⚠️    |  ❌  |   ❌   |  ❌   |    ❌    |
-| 18 | Composite action `${{ inputs.* }}` injection      |          ✅          |   ✅   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 19 | Codecov-style trusted-installer                   |          ✅          |   ⚠️   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 20 | Dependency confusion (Birsan)                     |          ⚠️          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 21 | Matrix expansion injection                        |          ⚠️          |   ⚠️   |   ⚠️    |  ❌  |   ❌   |  ❌   |    —     |
-| 22 | GCP OIDC over-broad WIF                           |          ⚠️          |   ❌   |   ❌    |  ⚠️  |   ⚠️   |  ⚠️   |    —     |
-| 23 | `github-actions[bot]` branch-protection bypass    |          ✅          |   ⚠️   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 24 | Third-party webhook exfiltration                  |          ✅          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 25 | Environment branch-pattern bypass                 |          ⚠️          |   ⚠️   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 26 | GitHub App token over-scope                       |          ✅          |   ⚠️   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
-| 27 | Secret leak in workflow logs                      |          ⚠️          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    ⚠️    |
-|    | **scenarios caught**                              |   **19 ✅ · 8 ⚠️**   | 12 ✅ · 9 ⚠️ | 7 ✅ · 4 ⚠️ | 4 ✅ · 1 ⚠️ | 2 ✅ · 1 ⚠️ | 1 ⚠️ | 1 ✅ · 1 ⚠️ |
+| 08 | Self-hosted runner on public repo                 |          ✅          |   ❌   |   ✅    |  ❌  |   ❌   |  ❌   |    —     |
+| 09 | Container image `:latest`                         |          ✅          |   ✅   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
+| 10 | AWS OIDC wildcard `sub`                           |          ⚠️          |   ❌   |   ❌    |  ⚠️  |   ❌   |  ❌   |    —     |
+| 11 | `pip install` no hashes                           |          ✅          |   —    |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
+| 12 | `persist-credentials` leak                        |          ✅          |   ✅   |   ⚠️    |  ⚠️  |   ❌   |  ❌   |    —     |
+| 13 | `workflow_dispatch` input injection               |          ✅          |   ✅   |   ❌    |  ❌  |   ✅   |  ❌   |    —     |
+| 14 | `$GITHUB_ENV` poisoning                           |          ⚠️          |   ⚠️   |   ✅    |  ❌  |   ✅   |  ❌   |    —     |
+| 15 | Hardcoded secret in `env:`                        |          ❌          |   ❌   |   ❌    |  ✅  |   ❌   |  ❌   |    ❌    |
+| 16 | `curl \| sh` install                              |          ✅          |   ❌   |   ✅    |  ❌  |   ❌   |  ❌   |    —     |
+| 17 | ArtiPACKED — `.git/` in artifact                  |          ⚠️          |   ✅   |   ❌    |  ❌  |   ❌   |  ❌   |    ❌    |
+| 18 | Composite action `${{ inputs.* }}` injection      |          ❌          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
+| 19 | Codecov-style trusted-installer                   |          ❌          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
+| 20 | Dependency confusion (Birsan)                     |          ❌          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
+| 21 | Matrix expansion injection                        |          ❌          |   ✅   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
+| 22 | GCP OIDC over-broad WIF                           |          ❌          |   ❌   |   ❌    |  ⚠️  |   ❌   |  ❌   |    —     |
+| 23 | `github-actions[bot]` branch-protection bypass    |          ❌          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
+| 24 | Third-party webhook exfiltration                  |          ❌          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
+| 25 | Environment branch-pattern bypass                 |          ❌          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
+| 26 | GitHub App token over-scope                       |          ❌          |   ✅   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
+| 27 | Secret leak in workflow logs                      |          ❌          |   ❌   |   ❌    |  ❌  |   ❌   |  ❌   |    —     |
+|    | **canonical bugs caught**                         |   **13 ✅ · 2 ⚠️**   | **11 ✅ · 1 ⚠️** | **6 ✅ · 2 ⚠️** | **3 ✅ · 3 ⚠️** | **4 ✅** | 0 | 0 |
 
 > [!IMPORTANT]
-> The totals reflect **scenario-level coverage**, not raw finding count.
-> Some scanners emit multiple findings per scenario file; the cells record
-> whether *at least one* relevant rule fired against the canonical bug
-> in that scenario. Per-rule numbers and full SARIF live in the
-> [`scanner-comparison`](../../actions/workflows/scanner-comparison.yml) workflow run summary
-> and in `tools/comparison-report.py` output.
+> Six scenarios (18, 19, 20, 23, 24, 25, 27) are **caught by no scanner
+> in this comparison.** Those are the hard cases — multi-file scope,
+> network-egress reasoning, GitHub-settings-level configuration that
+> doesn't appear in any file. Their primary value here is as a target
+> for the *next* generation of rules.
 
 ---
 
@@ -323,9 +320,7 @@ next-closest scanner once duplicates are normalized away.
     ┌─────────────────────────────────────────────────────────┐
     │  .github/workflows/scanner-comparison.yml               │
     │                                                         │
-    │   pipeline-check ▸ zizmor ▸ poutine ▸ checkov           │
-    │                        │                                │
-    │                kics  ▸ trivy ▸  gitleaks                │
+    │   zizmor ▸ poutine ▸ checkov ▸ kics ▸ trivy ▸ gitleaks  │
     │                        │                                │
     │                        ▼                                │
     │              upload SARIF                               │
@@ -353,10 +348,8 @@ python tools/comparison-report.py ./sarif-out --output report.md
 ```
 
 > [!NOTE]
-> `pipeline-check` is currently scored from its IDE diagnostics and
-> CLI `--output json` runs. A dedicated SARIF-emitting job in
-> `scanner-comparison.yml` is the next addition — see
-> [Contributing](#contributing).
+> `pipeline-check` is currently scored from local `python -m pipeline_check --output json` runs against the scenario tree.
+> A dedicated SARIF-emitting job in `scanner-comparison.yml` is the next addition — see [Contributing](#contributing).
 
 ---
 
@@ -396,9 +389,10 @@ Then add a column to **The full matrix** with the scanner's per-scenario verdict
 <summary><b>Disagree with a verdict?</b></summary>
 
 Open an issue with the scenario number, the scanner, the version, and
-the SARIF output you got. Verdicts in the matrix track <i>scenario-level
-coverage of the canonical bug</i>; if your scanner version fires a rule
-that catches it cleanly, the cell flips.
+the SARIF output you got. Verdicts in the matrix track <i>canonical-bug
+coverage</i>, not raw finding count; if your scanner version fires a
+rule whose description names the canonical bug for that scenario, the
+cell flips.
 
 </details>
 
@@ -407,22 +401,25 @@ that catches it cleanly, the cell flips.
 ## Why `pipeline-check` is in this comparison
 
 This repo is the test range; [`pipeline-check`](https://github.com/greylag-ci/pipeline-check-vscode)
-is one of the engines being tested — and the only one in the field that:
+is one of the engines being tested. Its differentiators on this corpus:
 
-- Lints **22 CI/CD providers**, not just GitHub Actions: GitLab CI,
-  Azure DevOps, Bitbucket Pipelines, CircleCI, Google Cloud Build,
-  Buildkite, Drone CI, Jenkins (Declarative + Scripted), Dockerfile,
-  plus Kubernetes / Helm / Terraform / CloudFormation / live AWS / SCM
-  posture in roadmap releases.
-- Maps every rule to **OWASP CICD-SEC top 10** + 14 other compliance
-  frameworks (NIST 800-218 SSDF, SLSA, CIS Benchmarks, …).
-- Carries **810+ rules**, including supply-chain hygiene rules (SBOM,
-  SLSA provenance, artifact signing, vuln-scan presence) that the rest
-  of the field doesn't surface yet.
-- Renders findings **inline in VS Code** via LSP — gutter squiggles,
-  hover with `--explain` prose, severity-graded status bar
-  (e.g. `🛡 3C 1H`), keyboard nav, findings panel grouped by severity /
-  file / rule.
+- **Canonical-bug coverage**: 13 ✅ / 2 ⚠️ across 27 scenarios, leading
+  the next closest scanner (zizmor) by two. The lead is real but the
+  gap is narrower than a raw "finding count" comparison would suggest.
+- **Hygiene baseline no one else ships**: 7+ rules per workflow file
+  for the supply-chain hygiene categories (SBOM, SLSA, artifact
+  signing, vuln-scan presence, environment binding, `timeout-minutes`,
+  container digest pinning). Other scanners don't have these rules at
+  all, not just don't fire them.
+- **Provider breadth**: 23 CI/CD providers and manifest types — AWS,
+  Terraform, CloudFormation, GitHub Actions, GitLab CI, Azure DevOps,
+  Bitbucket Pipelines, Jenkins, CircleCI, Google Cloud Build,
+  Buildkite, Drone CI, Tekton, Argo Workflows, Dockerfile, Kubernetes,
+  Helm, OCI image manifests, SCM posture (GitHub / GitLab / Bitbucket),
+  npm, pypi.
+- **Inline VS Code experience**: gutter squiggles, hover with
+  `--explain` prose, severity-graded status bar, keyboard nav,
+  findings panel grouped by severity / file / rule.
 
 The VSCode extension is at
 [`greylag-ci/pipeline-check-vscode`](https://github.com/greylag-ci/pipeline-check-vscode).
