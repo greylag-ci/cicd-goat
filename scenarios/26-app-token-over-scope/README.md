@@ -43,7 +43,7 @@ workflow:
 
 | Scanner            | Detection                                                                   |
 | :----------------- | :-------------------------------------------------------------------------- |
-| **pipeline-check** | ❌ No dedicated rule yet for `create-github-app-token` missing a `permissions:` filter |
+| **pipeline-check** | ✅ `GHA-061` (`create-github-app-token` / `tibdex/github-app-token` minted without a `permissions:` filter) |
 | zizmor             | ✅ Flags App-token use (catches the canonical bug; the missing-scope-filter half is the next iteration) |
 | poutine            | ❌                                                                          |
 | KICS               | ❌                                                                          |

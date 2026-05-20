@@ -39,7 +39,7 @@ leaks the secret (combine with Scenario 02), do it once and harvest.
 
 | Scanner            | Detection                                                                            |
 | :----------------- | :----------------------------------------------------------------------------------- |
-| **pipeline-check** | ⚠️ Flags `set -x` + secret in URL; partial detection of derived values             |
+| **pipeline-check** | ✅ `GHA-033` (`set -x` + secret-bound env var anywhere in the body); derived-value echoes still slip past |
 | zizmor             | ❌                                                                                   |
 | poutine            | ❌                                                                                   |
 | KICS               | ❌                                                                                   |

@@ -41,7 +41,7 @@ prior job's output that derived from PR input — the attacker controls:
 
 | Scanner            | Detection                                                              |
 | :----------------- | :--------------------------------------------------------------------- |
-| **pipeline-check** | ❌ Taint tracking doesn't currently follow values across the `outputs:` → matrix boundary |
+| **pipeline-check** | ✅ `TAINT-002` traces the full chain: `env:` binding -> `$GITHUB_OUTPUT` write -> `jobs.<id>.outputs:` -> `fromJSON(needs.X.outputs.Y)` matrix axis -> `${{ matrix.<axis> }}` sink |
 | zizmor             | ✅ `template-injection` fires on the downstream `matrix.target` use   |
 | poutine            | ⚠️ Partial — flags PR-derived job outputs                              |
 | KICS               | ❌                                                                     |

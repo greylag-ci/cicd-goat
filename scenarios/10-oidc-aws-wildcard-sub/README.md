@@ -40,14 +40,15 @@ returned credentials let them act as the production-deploy principal.
 
 ## Expected scanner coverage
 
-| Scanner   | Detection |
-|-----------|-----------|
-| zizmor    | n/a (zizmor doesn't scan IAM JSON) |
-| poutine   | partial |
-| checkov   | `CKV_AWS_*` family for IAM trust policy wildcards |
-| kics      | "IAM role trust policy allows all principals" / wildcard SUB conditions |
-| trivy     | partial (covers some IAM trust patterns) |
-| gitleaks  | n/a |
+| Scanner        | Detection |
+|----------------|-----------|
+| pipeline-check | `GHA-062` walks the workflow's repo for `*trust-polic*.json` and flags `StringLike :sub` values like `repo:*` / `repo:org/*` that match more than one repo |
+| zizmor         | n/a (zizmor doesn't scan IAM JSON) |
+| poutine        | partial |
+| checkov        | `CKV_AWS_*` family for IAM trust policy wildcards |
+| kics           | "IAM role trust policy allows all principals" / wildcard SUB conditions |
+| trivy          | partial (covers some IAM trust patterns) |
+| gitleaks       | n/a |
 
 The `aws-actions/configure-aws-credentials` step itself is fine; the bug
 is in the trust policy. Scanners that look only at workflows will miss
