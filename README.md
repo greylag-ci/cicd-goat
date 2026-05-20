@@ -55,7 +55,7 @@ expected rule IDs is [`tools/scenarios.yaml`](tools/scenarios.yaml).
 > something else — they're the same finding on every file and tell
 > you nothing comparative. Pipeline-check carries a wide hygiene
 > baseline that the field doesn't ship; that's a separate, real
-> differentiator covered in [section ⑤](#-the-hygiene-baseline-pipeline-checks-real-edge).
+> differentiator covered in [section ⑤](#-the-hygiene-baseline--a-scope-difference-not-a-coverage-one).
 
 ---
 
@@ -194,15 +194,17 @@ expected rule IDs is [`tools/scenarios.yaml`](tools/scenarios.yaml).
 
 ---
 
-### ⑤ The hygiene baseline — pipeline-check's real edge
+### ⑤ The hygiene baseline — a scope difference, not a coverage one
 
 The strict per-scenario matrix shows pipeline-check leading on
-canonical-bug coverage but not by a wide margin. The bigger story is
-**what fires on every scenario, that no other scanner ships at all.**
+canonical-bug coverage by one scenario over zizmor — close enough that
+the more interesting comparison isn't the leaderboard. It's that
+pipeline-check ships an **absence-of-control** rule family that the
+other six scanners don't carry at all: rules that fire when a workflow
+*lacks* an expected step (SBOM, SLSA, signing, vuln-scan, etc.).
 Pipeline-check 1.1.0 carries **65 rules** across the `GHA-*`,
-`TAINT-*`, and `AC-*` (attack-chain) families; the absence-of-control
-hygiene rules fire on any workflow lacking the corresponding step.
-Verbatim rule list from the latest run:
+`TAINT-*`, and `AC-*` (attack-chain) families. Verbatim rule list
+from the latest run:
 
 ```
 GHA-006   Artifacts not signed (no cosign/sigstore step)
@@ -223,9 +225,11 @@ real-fire count to **8 rules each.** No other scanner in this
 comparison emits any of those four rules at all.
 
 The strict matrix below scores only the canonical bug per scenario.
-The hygiene-baseline edge is what makes pipeline-check the only
-single-tool option if you want all of "supply-chain hygiene + CICD-SEC
-attack-class coverage" from one scan.
+The hygiene-baseline rules are a separate axis: whether you want a
+scanner that emits them is a scope call, not a coverage one — most
+teams already get them from a dedicated SBOM/provenance tool. We
+include them here because they're a real differentiator on this
+corpus, not because every scanner *should* ship them.
 
 ---
 
@@ -365,13 +369,10 @@ gh run download <run-id> --dir ./sarif-out
 python tools/comparison-report.py ./sarif-out --output report.md
 ```
 
-> [!NOTE]
-> All seven scanners — including `pipeline-check` — run in
-> `scanner-comparison.yml` and upload SARIF under their own Code
-> Scanning category. The matrix is rebuilt from those SARIF artifacts
-> by [`tools/regen-readme.py`](tools/regen-readme.py), driven by
-> [`tools/scenarios.yaml`](tools/scenarios.yaml). See
-> [Regenerate the stats](#contributing) below.
+The matrix you see above is rebuilt from those SARIF artifacts by
+[`tools/regen-readme.py`](tools/regen-readme.py), driven by the
+expected-rule lists in [`tools/scenarios.yaml`](tools/scenarios.yaml).
+See [Regenerate the stats](#contributing) below.
 
 ---
 
@@ -402,9 +403,20 @@ Then add a column to **The full matrix** with the scanner's per-scenario verdict
    workflow shows up in run history but no runner is ever assigned.
 2. `scenarios/NN-<name>/README.md` — pattern, exploitation walkthrough,
    expected per-scanner coverage, and the fix.
-3. New row in **The full matrix** and in
-   [`scenarios/README.md`](scenarios/README.md). Link it from the
-   scenarios index above.
+3. Add a new entry to [`tools/scenarios.yaml`](tools/scenarios.yaml) —
+   this is the source of truth. Include the `id`, `slug`, `title`,
+   `cicd_sec` categories, `severity`, and an `expected` list per
+   scanner (a list of rule IDs each scanner *should* fire, or `[]` if
+   none are expected, or `na` if not applicable to that scanner's
+   class). See the schema comment at the top of the file.
+4. Run `python tools/regen-readme.py --sarif-dir ./sarif` locally to
+   re-render the matrix, scenarios index, and badges between the
+   `<!-- AUTOGEN:* -->` markers. Then
+   `python tools/regen-readme.py --verify --sarif-dir ./sarif` to
+   confirm scenarios.yaml's `expected` rules actually fire in SARIF.
+5. The [`scenarios/README.md`](scenarios/README.md) per-category index
+   is hand-maintained — add a row there if your new scenario covers a
+   CICD-SEC category not yet represented.
 
 </details>
 
