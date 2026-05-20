@@ -276,11 +276,11 @@ run on `main`. Rebuild: `python tools/regen-readme.py --sarif-dir ./sarif`
 <!-- /AUTOGEN:matrix -->
 
 > [!IMPORTANT]
-> Six scenarios (18, 19, 20, 23, 24, 25, 27) are **caught by no scanner
-> in this comparison.** Those are the hard cases — multi-file scope,
-> network-egress reasoning, GitHub-settings-level configuration that
-> doesn't appear in any file. Their primary value here is as a target
-> for the *next* generation of rules.
+> Ten scenarios (10, 11, 18, 19, 20, 22, 23, 24, 25, 27) are **caught
+> by no scanner in this comparison.** Those are the hard cases —
+> multi-file scope, network-egress reasoning, GitHub-settings-level
+> configuration that doesn't appear in any file. Their primary value
+> here is as a target for the *next* generation of rules.
 
 ---
 
@@ -337,8 +337,8 @@ run on `main`. Rebuild: `python tools/regen-readme.py --sarif-dir ./sarif`
     ┌─────────────────────────────────────────────────────────┐
     │  .github/workflows/scanner-comparison.yml               │
     │                                                         │
-    │   pipeline-check ▸ zizmor ▸ poutine ▸ checkov           │
-    │      ▸ kics ▸ trivy ▸ gitleaks                          │
+    │   pipeline-check ▸ zizmor ▸ poutine ▸ kics              │
+    │      ▸ checkov ▸ trivy ▸ gitleaks                       │
     │                        │                                │
     │                        ▼                                │
     │              upload SARIF                               │
@@ -386,7 +386,8 @@ Three steps:
 
 1. Install the binary (release tarball, `pip install`, `cargo install`…).
 2. Run it with SARIF output.
-3. Upload via `github/codeql-action/upload-sarif@v4` under a unique
+3. Upload via `github/codeql-action/upload-sarif` (SHA-pinned, see
+   existing jobs in `scanner-comparison.yml`) under a unique
    `category:` so the Code Scanning tab can split it from the others.
 
 Then add a column to **The full matrix** with the scanner's per-scenario verdict.
@@ -459,8 +460,8 @@ regenerated README differs from `main`.
 This repo is the test range; [`pipeline-check`](https://github.com/greylag-ci/pipeline-check-vscode)
 is one of the engines being tested. Its differentiators on this corpus:
 
-- **Canonical-bug coverage**: 13 ✅ / 2 ⚠️ across 27 scenarios, leading
-  the next closest scanner (zizmor) by two. The lead is real but the
+- **Canonical-bug coverage**: 13 ✅ / 1 ⚠️ across 27 scenarios, leading
+  the next closest scanner (zizmor) by one. The lead is real but the
   gap is narrower than a raw "finding count" comparison would suggest.
 - **Hygiene baseline no one else ships**: 7+ rules per workflow file
   for the supply-chain hygiene categories (SBOM, SLSA, artifact

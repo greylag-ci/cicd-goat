@@ -43,8 +43,8 @@ workflow:
 
 | Scanner            | Detection                                                                   |
 | :----------------- | :-------------------------------------------------------------------------- |
-| **pipeline-check** | ✅ Flags `create-github-app-token` without `permissions:` filter            |
-| zizmor             | ⚠️ Limited — flags App-token use but not the missing scope filter          |
+| **pipeline-check** | ❌ No dedicated rule yet for `create-github-app-token` missing a `permissions:` filter |
+| zizmor             | ✅ Flags App-token use (catches the canonical bug; the missing-scope-filter half is the next iteration) |
 | poutine            | ❌                                                                          |
 | KICS               | ❌                                                                          |
 | Checkov            | ❌                                                                          |
