@@ -15,7 +15,7 @@ import sys
 import pathlib
 import yaml
 
-WORKFLOWS = pathlib.Path(".github/workflows")
+DEFAULT_WORKFLOWS = pathlib.Path(".github/workflows")
 SCENARIO_GLOB = "scenario-*.yml"
 REUSABLE = "_reusable-deploy.yml"
 
@@ -49,17 +49,25 @@ def check_file(path: pathlib.Path) -> list[str]:
 
 
 def main() -> int:
-    if not WORKFLOWS.is_dir():
-        print(f"error: {WORKFLOWS} does not exist", file=sys.stderr)
+    # Optional positional arg lets the safety-check workflow point the
+    # script at a sandboxed copy of the PR head's workflows dir while
+    # the script itself remains a trusted, base-checked-out file.
+    if len(sys.argv) > 1 and sys.argv[1]:
+        workflows = pathlib.Path(sys.argv[1])
+    else:
+        workflows = DEFAULT_WORKFLOWS
+
+    if not workflows.is_dir():
+        print(f"error: {workflows} does not exist", file=sys.stderr)
         return 2
 
-    files = sorted(WORKFLOWS.glob(SCENARIO_GLOB))
-    reusable = WORKFLOWS / REUSABLE
+    files = sorted(workflows.glob(SCENARIO_GLOB))
+    reusable = workflows / REUSABLE
     if reusable.exists():
         files.append(reusable)
 
     if not files:
-        print(f"error: no scenario files under {WORKFLOWS}", file=sys.stderr)
+        print(f"error: no scenario files under {workflows}", file=sys.stderr)
         return 2
 
     all_errors: list[str] = []

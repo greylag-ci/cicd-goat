@@ -7,6 +7,16 @@ name: safety-check
 #      This is the only thing that keeps the deliberately-vulnerable
 #      patterns from actually executing on a runner.
 #
+# Trigger model:
+#   - push (main) / workflow_dispatch: inspects the base tree.
+#   - pull_request_target: the workflow runs from BASE (not PR head),
+#     so a PR cannot disable or modify this check by editing
+#     .github/workflows/safety-check.yml. We do a base checkout to
+#     get the trusted script, then a second checkout of the PR head
+#     into ./pr-head/ (read-only, no creds) and point the script at
+#     pr-head/.github/workflows. The script only parses YAML — it
+#     never executes anything from the PR.
+#
 # Failure here means a scenario was added or modified without the
 # safety gate.  Merging the PR would allow a real attack pattern to
 # fire on push / pull_request_target / etc.
@@ -14,7 +24,7 @@ name: safety-check
 on:
   push:
     branches: [main]
-  pull_request:
+  pull_request_target:
   workflow_dispatch:
 
 permissions:
@@ -26,20 +36,39 @@ concurrency:
 
 jobs:
   scenarios-are-gated:
-    name: "scenarios are gated `if: false`"
+    name: scenarios-are-gated
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+      - name: Checkout base (trusted script + workflows)
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
         with:
+          persist-credentials: false
+      - name: Checkout PR head into ./pr-head (untrusted; YAML only)
+        if: github.event_name == 'pull_request_target'
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: pr-head
           persist-credentials: false
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5
         with:
           python-version: '3.12'
-      - name: Install PyYAML
-        # Pinned exact version; PyYAML is read-only YAML parsing here,
-        # the job has contents: read and no secrets — minimal risk
-        # surface even if the version were compromised upstream.
-        run: pip install PyYAML==6.0.2
-      - name: Enforce if:false on every scenario
+      - name: Install PyYAML (hash-verified)
+        # Hash-pinned to the cp312 manylinux2014 x86_64 wheel — the only
+        # wheel `actions/setup-python` selects on `ubuntu-latest` for
+        # Python 3.12.  `--require-hashes` refuses any other artifact,
+        # so a registry that swaps the tarball mid-flight can't ship
+        # arbitrary code under the same version pin.  Same pattern as
+        # scanner-comparison.yml.
+        run: |
+          set -euo pipefail
+          pip install --require-hashes --no-deps -r /dev/stdin <<'REQ'
+          PyYAML==6.0.2 --hash=sha256:80bab7bfc629882493af4aa31a4cfa43a4c57c83813253626916b8c7ada83476
+          REQ
+      - name: Enforce if:false on every scenario (PR head)
+        if: github.event_name == 'pull_request_target'
+        run: python tools/check-scenarios-gated.py pr-head/.github/workflows
+      - name: Enforce if:false on every scenario (base)
+        if: github.event_name != 'pull_request_target'
         run: python tools/check-scenarios-gated.py
