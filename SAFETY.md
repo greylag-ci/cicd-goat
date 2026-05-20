@@ -22,11 +22,21 @@ The check is automated:
 
 - [`tools/check-scenarios-gated.py`](tools/check-scenarios-gated.py)
   parses every scenario YAML and fails closed if any job is missing
-  `if: false`.
+  `if: false`. It accepts an optional positional path so a trusted,
+  base-checked-out copy of the script can be pointed at a sandboxed
+  copy of the PR head's workflows dir.
 - [`.github/workflows/safety-check.yml`](.github/workflows/safety-check.yml)
-  runs that script on every push and PR. Branch-protection should
-  require the `safety-check / scenarios-are-gated` check before
-  merging.
+  runs that script on every push, workflow_dispatch, and **fork or
+  branch PR via `pull_request_target`**. The `pull_request_target`
+  trigger uses the workflow file from `main`, not the PR head, so a
+  PR cannot disable or modify the check by editing the safety-check
+  workflow itself. The PR head is checked out into `./pr-head/` with
+  `persist-credentials: false` and the script (from base) only parses
+  YAML there — nothing from the PR is ever executed.
+- Branch protection on `main` **must** require the
+  `scenarios-are-gated` check before merging. Without that required
+  check, the safety gate is advisory: a PR could land with `if: false`
+  removed even though the check failed.
 
 ## Invariant 2 — only three workflows execute, with documented permissions
 
@@ -126,13 +136,26 @@ What this repo is designed to be safe against:
 - **A reader who clones the repo and runs `git push` / `gh pr create`
   from their own copy.** Every scenario workflow triggers, all jobs
   skip due to `if: false`, nothing executes.
-- **A fork PR to this repo.** Workflows from the PR are loaded by
-  GitHub but jobs are skipped (workflow body's `if: false` is evaluated
-  in the base context). `scanner-comparison.yml` runs on the PR but
-  with a read-only `GITHUB_TOKEN` and no secrets, so a malicious PR
-  can at worst run a scanner against its own changes.
-- **A scheduled run.** Same as above — only `scanner-comparison.yml`
-  and `safety-check.yml` execute; both have minimum permissions.
+- **A fork PR to this repo.** This case has two halves, because
+  GitHub resolves the workflow file differently per trigger:
+  - For `pull_request_target` (scenario 01 and `safety-check.yml`)
+    the workflow body is taken from `main`. The PR cannot remove
+    `if: false` or disable the safety gate by editing the file. ✓
+  - For `pull_request` (scenarios 03-06, 08, 11-12, 14, 16, 19-21,
+    24, plus `scanner-comparison.yml`) the workflow body is taken
+    from the **PR head**. A malicious PR could in principle remove
+    `if: false` from a scenario, and that scenario would then
+    execute on the PR run. Blast radius is bounded by GitHub's
+    fork-PR rules — the `GITHUB_TOKEN` is read-only and **no
+    secrets are available to fork PRs** — so the worst case is
+    arbitrary read-only code on a throwaway runner with no
+    credentials. The merge itself is blocked by `safety-check`
+    (which runs from base via `pull_request_target` and therefore
+    *cannot* be disabled by the PR) plus the required-check branch
+    protection on `main`.
+- **A scheduled run.** Only `scanner-comparison.yml`,
+  `safety-check.yml`, and `regen-readme.yml` execute on schedule;
+  all three have minimum permissions and operate on the base tree.
 - **An upstream compromise of a third-party action used by
   `scanner-comparison.yml`.** All third-party actions are pinned to
   commit SHAs; a malicious tag-move on
@@ -145,12 +168,28 @@ What this repo is **not** designed to be safe against:
 
 - A maintainer who removes `if: false` from a scenario and merges it.
   `safety-check.yml` will fail closed on the PR — but it's only as
-  strong as branch protection. If branch protection is bypassed, the
-  invariant breaks. Treat `safety-check / scenarios-are-gated` as a
-  required check.
+  strong as branch protection. The `scenarios-are-gated` check **must**
+  be a required status check on `main`, and `enforce_admins` should be
+  on. Without those, the invariant is advisory.
 - A `terraform apply` or `aws iam create-role` of a fixture file.
   Those tools are explicitly out of scope: running them is a
   deliberate maintainer action, not an accidental side effect.
+
+## Required GitHub settings
+
+The code-side invariants above assume two repo-level settings are
+configured. The static gates lose most of their value without them:
+
+1. **Branch protection on `main`** with `scenarios-are-gated` listed
+   as a required status check. The `safety-check` workflow only
+   blocks a merge if this check is required; otherwise it's a green
+   advisory that can be ignored.
+2. **Settings → Actions → General → "Fork pull request workflows from
+   outside collaborators"** set to **"Require approval for all
+   outside collaborators"**. The default for public repos is "first-
+   time contributors", which lets a returning fork contributor's PR
+   auto-run the workflows in their PR head — bounded but unnecessary
+   attack surface for a deliberately-vulnerable repo.
 
 ## Reporting a safety issue
 
