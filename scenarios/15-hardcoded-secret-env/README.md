@@ -33,7 +33,7 @@ in the GitHub web UI. No exploitation needed; you're handing it over.
 | checkov   | partial — focuses on AWS/Azure key shapes |
 | kics      | "Hardcoded Secret in Workflow" |
 | trivy     | partial — its secret rules apply |
-| gitleaks  | **Yes — primary scanner for this pattern** |
+| gitleaks  | Primary scanner for this *class* — but its `generic-api-key` heuristic doesn't fire on the `deadbeef...` 40-char hex used here; a real-shape PAT or AWS-key value would trigger it |
 
 This is the scenario where a secret-scanner (Gitleaks) and an
 expression-scanner (zizmor) overlap. Compare their findings: does

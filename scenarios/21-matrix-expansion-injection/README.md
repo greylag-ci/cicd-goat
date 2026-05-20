@@ -41,8 +41,8 @@ prior job's output that derived from PR input — the attacker controls:
 
 | Scanner            | Detection                                                              |
 | :----------------- | :--------------------------------------------------------------------- |
-| **pipeline-check** | ⚠️ Detects `${{ matrix.* }}` in run + matrix from untrusted output    |
-| zizmor             | ⚠️ `template-injection` fires on the downstream `matrix.target` use   |
+| **pipeline-check** | ❌ Taint tracking doesn't currently follow values across the `outputs:` → matrix boundary |
+| zizmor             | ✅ `template-injection` fires on the downstream `matrix.target` use   |
 | poutine            | ⚠️ Partial — flags PR-derived job outputs                              |
 | KICS               | ❌                                                                     |
 | Checkov            | ❌                                                                     |

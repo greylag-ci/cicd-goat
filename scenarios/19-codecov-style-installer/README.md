@@ -46,7 +46,7 @@ trusts "any signature from this key" executes the payload.
 
 | Scanner            | Detection                                                                     |
 | :----------------- | :---------------------------------------------------------------------------- |
-| **pipeline-check** | ✅ Flags external-binary install + missing artifact provenance + curl install |
+| **pipeline-check** | ❌ `GHA-016` / `GHA-018` don't currently fire on this signed-and-checksummed install path; over-verified supply-chain compromise needs a dedicated rule |
 | zizmor             | ⚠️ `unverified-script-download` partial — checks for unverified, not over-verified |
 | poutine            | ❌                                                                            |
 | KICS               | ❌                                                                            |
