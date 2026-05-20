@@ -74,6 +74,10 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
       - name: Regenerate README sections
+        # Skip when the fetch step found no successful scanner-comparison
+        # run on main — running with an empty sarif/ would rewrite every
+        # verdict to MISS and the push step would commit that corruption.
+        if: hashFiles('sarif/**/*.sarif') != ''
         run: python tools/regen-readme.py --sarif-dir sarif
       - name: Push branch + surface PR URL
         # We deliberately don't call `gh pr create` — the repo setting
