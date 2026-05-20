@@ -241,7 +241,7 @@ jobs:
 
   summary:
     name: comparison-summary
-    needs: [zizmor, poutine, checkov, kics, trivy, gitleaks]
+    needs: [pipeline-check, zizmor, poutine, checkov, kics, trivy, gitleaks]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5
