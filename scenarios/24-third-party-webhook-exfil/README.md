@@ -40,8 +40,6 @@ The failure modes:
 | poutine            | ❌                                                                     |
 | KICS               | ❌                                                                     |
 | Checkov            | ❌                                                                     |
-| Trivy              | ❌                                                                     |
-| Gitleaks           | —                                                                      |
 
 > Until pipeline-check shipped the CICD-SEC-8 rule chain, this whole
 > category was uncovered. The community tools all focus on the

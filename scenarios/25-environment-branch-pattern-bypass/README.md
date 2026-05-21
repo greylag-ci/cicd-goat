@@ -51,8 +51,6 @@ code in the branch isn't auto-displayed in the approval dialog.
 | poutine            | ❌                                                                                 |
 | KICS               | ❌                                                                                 |
 | Checkov            | ❌                                                                                 |
-| Trivy              | ❌                                                                                 |
-| Gitleaks           | —                                                                                  |
 
 > Like Scenarios 10 and 22, this is partially out-of-band: the
 > deployment-branches rule lives in GitHub repo settings, not in any

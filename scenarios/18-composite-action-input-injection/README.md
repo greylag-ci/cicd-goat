@@ -53,8 +53,6 @@ attacker.
 | poutine   | partial — composite scanning is newer territory |
 | checkov   | partial |
 | kics      | "Composite Action Input Injection" rule (recent additions) |
-| trivy     | limited |
-| gitleaks  | n/a |
 
 This is a useful comparison datapoint: scanners that *only* look at
 `.github/workflows/*.yml` and ignore `action.yml` files miss this

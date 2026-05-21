@@ -34,8 +34,6 @@ it as data is safe; treating it as code is RCE.
 | poutine   | `workflow_run_third_party_artifact` |
 | checkov   | partial |
 | kics      | partial |
-| trivy     | limited |
-| gitleaks  | n/a |
 
 ## Fix
 

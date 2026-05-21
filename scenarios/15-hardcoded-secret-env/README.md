@@ -32,13 +32,13 @@ in the GitHub web UI. No exploitation needed; you're handing it over.
 | poutine   | `secrets_in_workflow` |
 | checkov   | partial — focuses on AWS/Azure key shapes |
 | kics      | "Hardcoded Secret in Workflow" |
-| trivy     | partial — its secret rules apply |
-| gitleaks  | Primary scanner for this *class* — but its `generic-api-key` heuristic doesn't fire on the `deadbeef...` 40-char hex used here; a real-shape PAT or AWS-key value would trigger it |
 
-This is the scenario where a secret-scanner (Gitleaks) and an
-expression-scanner (zizmor) overlap. Compare their findings: does
-either flag *both* `LEGACY_API_TOKEN` and `DB_PASSWORD`? Does either
-flag the password-shaped string at all, or only the hex one?
+Note that "hardcoded secret in YAML" is fundamentally a *secret
+scanner's* problem class — Gitleaks / TruffleHog / detect-secrets are
+the right primary tools and they belong in a source-secrets bench,
+not in this CI/CD-workflow corpus. The scanners listed above catch
+this scenario as a side effect (KICS has an explicit workflow-secrets
+rule; zizmor and pipeline-check pattern-match known token shapes).
 
 ## Fix
 

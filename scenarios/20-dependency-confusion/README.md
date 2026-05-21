@@ -41,8 +41,6 @@ configured, and most aren't.
 | poutine            | ❌                                                                            |
 | KICS               | ❌                                                                            |
 | Checkov            | ❌                                                                            |
-| Trivy              | ❌ (Trivy's dep mode would catch it, but the config scan we run here doesn't) |
-| Gitleaks           | —                                                                             |
 
 > Dependency confusion is largely **outside the workflow scanner's
 > remit** — Dependabot / OSV-Scanner / Snyk are the right tools at

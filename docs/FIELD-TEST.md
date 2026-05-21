@@ -40,8 +40,6 @@ any one tool. The full per-scenario table is in [MATRIX.md](MATRIX.md).
 | KICS               |   ✅    | `555ab8f9-…` — _Unpinned Actions Full Length Commit SHA_                 |
 | poutine            |   ✅    | `github_action_from_unverified_creator_used` — routes through creator trust, not SHA pinning, but still flags the action for review |
 | Checkov            |   ❌    | —                                                                        |
-| Trivy              |   ❌    | —                                                                        |
-| Gitleaks           |   —     | _(secret scanner)_                                                       |
 
 ---
 
@@ -75,7 +73,6 @@ any one tool. The full per-scenario table is in [MATRIX.md](MATRIX.md).
 | poutine            | ❌                                                    | ❌                     |
 | KICS               | ❌&nbsp;_Catches `aws-actions/...@v4` as unpinned action; misses the wildcard sub_ | ❌                     |
 | Checkov            | ❌                                                    | ❌                     |
-| Trivy              | ❌                                                    | ❌                     |
 
 > **This is a comparison-wide miss.** Both halves of the canonical bug
 > — the workflow's `role-to-assume` ARN reference and the IAM trust
@@ -115,8 +112,6 @@ any one tool. The full per-scenario table is in [MATRIX.md](MATRIX.md).
 | poutine            | ❌                                                                                      |
 | KICS               | ❌                                                                                      |
 | Checkov            | ❌                                                                                      |
-| Trivy              | ❌                                                                                      |
-| Gitleaks           | ❌&nbsp;_(token isn't in source — only in the artifact)_                                |
 
 > Honest assessment: **zizmor is the only scanner here that ships a
 > rule precisely for this disclosure.** Pipeline-check catches half;
@@ -145,8 +140,6 @@ any one tool. The full per-scenario table is in [MATRIX.md](MATRIX.md).
 | poutine            |   ⚠️   | `github_action_from_unverified_creator_used` — flags the third-party action, not the persist-credentials root cause |
 | KICS               |   ⚠️   | `555ab8f9-…` — fires on `actions/checkout@v4` as unpinned, not on persist-credentials specifically |
 | Checkov            |   ❌    | —                                                       |
-| Trivy              |   ❌    | —                                                       |
-| Gitleaks           |   —     | _(secret scanner)_                                      |
 
 ---
 

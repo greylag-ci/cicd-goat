@@ -37,8 +37,6 @@ unaffected — the SHA is immutable.
 | poutine   | `unpinned_action` |
 | checkov   | `CKV_GHA_3` family |
 | kics      | "Unpinned Actions Full Length Commit SHA" |
-| trivy     | "Pin actions to full-length commit SHA" |
-| gitleaks  | n/a |
 
 ## Fix
 

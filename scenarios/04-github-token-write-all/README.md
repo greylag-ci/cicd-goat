@@ -36,8 +36,6 @@ an attacker run *with* the token. With write-all the attacker can:
 | poutine   | `excessive_permissions` |
 | checkov   | `CKV_GHA_4` (top-level write permissions) |
 | kics      | "Token Permissions Not Read-Only" |
-| trivy     | "Job permissions are not minimal" |
-| gitleaks  | n/a |
 
 ## Fix
 

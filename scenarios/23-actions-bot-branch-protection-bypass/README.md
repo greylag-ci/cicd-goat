@@ -51,8 +51,6 @@ git push origin HEAD:main          # ← bypasses all the protection
 | poutine            | ❌ (the bypass is a GitHub setting, not in the YAML)                        |
 | KICS               | ❌                                                                          |
 | Checkov            | ❌                                                                          |
-| Trivy              | ❌                                                                          |
-| Gitleaks           | —                                                                           |
 
 > The bypass *configuration* lives in GitHub repo settings, not in any
 > file in the repo — but the workflow that *uses* the bypass is visible

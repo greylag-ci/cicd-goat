@@ -48,8 +48,6 @@ workflow:
 | poutine            | ❌                                                                          |
 | KICS               | ❌                                                                          |
 | Checkov            | ❌                                                                          |
-| Trivy              | ❌                                                                          |
-| Gitleaks           | —                                                                           |
 
 ## Fix
 

@@ -16,36 +16,36 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | —   | not applicable to that scanner's class                   |
 
 <!-- AUTOGEN:matrix -->
-| #  | Scenario | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | Trivy | Gitleaks |
-| :-:| :--- | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| 01 | `pull_request_target` + fork-head checkout | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | — |
-| 02 | Script injection via issue title | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | — |
-| 03 | Action pinned to mutable ref | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | — |
-| 04 | `GITHUB_TOKEN` `write-all` | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | — |
-| 05 | Cache poisoning via PR title | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
-| 06 | Reusable workflow `secrets: inherit` | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | — |
-| 07 | `workflow_run` artifact RCE | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | — |
-| 08 | Self-hosted runner on public repo | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ | — |
-| 09 | Container image `:latest` | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | — |
-| 10 | AWS OIDC wildcard `sub` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
-| 11 | `pip install` no hashes | ❌ | — | ❌ | ❌ | ❌ | ❌ | — |
-| 12 | `persist-credentials` leak | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | — |
-| 13 | `workflow_dispatch` input injection | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ | — |
-| 14 | `$GITHUB_ENV` poisoning | ✅ | ✅ | ✅ | ❌ | ✅ | ❌ | — |
-| 15 | Hardcoded secret in `env:` | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
-| 16 | `curl \| sh` install | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ | — |
-| 17 | ArtiPACKED — `.git/` in artifact | ⚠️ | ✅ | ❌ | ❌ | ❌ | ❌ | — |
-| 18 | Composite action `${{ inputs.* }}` injection | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
-| 19 | Codecov-style trusted-installer | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
-| 20 | Dependency confusion (Birsan) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
-| 21 | Matrix expansion injection | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | — |
-| 22 | GCP OIDC over-broad WIF | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
-| 23 | `github-actions[bot]` branch-protection bypass | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
-| 24 | Third-party webhook exfiltration | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
-| 25 | Environment branch-pattern bypass | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
-| 26 | GitHub App token over-scope | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | — |
-| 27 | Secret leak in workflow logs | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | — |
-|    | **canonical bugs caught** | **13 ✅** · 1 ⚠️ | **12 ✅** | **8 ✅** | **4 ✅** | **4 ✅** | **0 ✅** | **0 ✅** |
+| #  | Scenario | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov |
+| :-:| :--- | :-: | :-: | :-: | :-: | :-: |
+| 01 | `pull_request_target` + fork-head checkout | ✅ | ✅ | ✅ | ❌ | ❌ |
+| 02 | Script injection via issue title | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 03 | Action pinned to mutable ref | ✅ | ✅ | ✅ | ✅ | ❌ |
+| 04 | `GITHUB_TOKEN` `write-all` | ✅ | ❌ | ❌ | ❌ | ✅ |
+| 05 | Cache poisoning via PR title | ✅ | ❌ | ❌ | ❌ | ❌ |
+| 06 | Reusable workflow `secrets: inherit` | ✅ | ✅ | ❌ | ❌ | ❌ |
+| 07 | `workflow_run` artifact RCE | ✅ | ✅ | ✅ | ❌ | ❌ |
+| 08 | Self-hosted runner on public repo | ✅ | ❌ | ✅ | ❌ | ❌ |
+| 09 | Container image `:latest` | ✅ | ✅ | ❌ | ❌ | ❌ |
+| 10 | AWS OIDC wildcard `sub` | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 11 | `pip install` no hashes | ❌ | — | ❌ | ❌ | ❌ |
+| 12 | `persist-credentials` leak | ✅ | ✅ | ✅ | ✅ | ❌ |
+| 13 | `workflow_dispatch` input injection | ✅ | ✅ | ❌ | ❌ | ✅ |
+| 14 | `$GITHUB_ENV` poisoning | ✅ | ✅ | ✅ | ❌ | ✅ |
+| 15 | Hardcoded secret in `env:` | ❌ | ❌ | ❌ | ✅ | ❌ |
+| 16 | `curl \| sh` install | ✅ | ❌ | ✅ | ❌ |
+| 17 | ArtiPACKED — `.git/` in artifact | ⚠️ | ✅ | ❌ | ❌ | ❌ |
+| 18 | Composite action `${{ inputs.* }}` injection | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 19 | Codecov-style trusted-installer | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 20 | Dependency confusion (Birsan) | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 21 | Matrix expansion injection | ❌ | ✅ | ❌ | ❌ | ❌ |
+| 22 | GCP OIDC over-broad WIF | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 23 | `github-actions[bot]` branch-protection bypass | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 24 | Third-party webhook exfiltration | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 25 | Environment branch-pattern bypass | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 26 | GitHub App token over-scope | ❌ | ✅ | ❌ | ❌ | ❌ |
+| 27 | Secret leak in workflow logs | ❌ | ❌ | ❌ | ❌ | ❌ |
+|    | **canonical bugs caught** | **13 ✅** · 1 ⚠️ | **12 ✅** | **8 ✅** | **4 ✅** | **4 ✅** |
 <!-- /AUTOGEN:matrix -->
 
 > [!IMPORTANT]

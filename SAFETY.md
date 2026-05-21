@@ -83,24 +83,12 @@ All three workflows:
 
 ## Invariant 3 — every external binary is integrity-verified
 
-The only binary fetched by `scanner-comparison.yml` outside of pinned
-actions is `gitleaks`, downloaded from its GitHub release. The
-download is verified against an inline SHA-256 before the binary is
-made executable:
-
-```yaml
-env:
-  GL_VERSION: 8.21.2
-  GL_SHA256: 5bc41815076e6ed6ef8fbecc9d9b75bcae31f39029ceb55da08086315316e3ba
-run: |
-  set -euo pipefail
-  curl -fsSL -o gitleaks.tgz ".../gitleaks_${GL_VERSION}_linux_x64.tar.gz"
-  echo "${GL_SHA256}  gitleaks.tgz" | sha256sum -c -
-  tar -xzf gitleaks.tgz gitleaks
-  chmod +x gitleaks
-```
-
-The integrity check is the difference between the
+`scanner-comparison.yml` does not download any binaries outside of
+pinned actions. `pipeline-check` is installed via `pip install
+--require-hashes` against an inline SHA-256 of the wheel from PyPI;
+every other scanner runs through a SHA-pinned official action. If a
+future scanner addition needs a raw binary download, it must be
+verified against an inline SHA-256 — the difference between the
 [Scenario 19 / Codecov-2021](scenarios/19-codecov-style-installer/README.md)
 failure mode and a safe install.
 
@@ -159,10 +147,9 @@ What this repo is designed to be safe against:
 - **An upstream compromise of a third-party action used by
   `scanner-comparison.yml`.** All third-party actions are pinned to
   commit SHAs; a malicious tag-move on
-  `bridgecrewio/checkov-action`, `boostsecurityio/poutine-action`,
-  `checkmarx/kics-github-action`, or `aquasecurity/trivy-action` does
-  not affect this repo until a maintainer deliberately updates the
-  pin.
+  `bridgecrewio/checkov-action`, `boostsecurityio/poutine-action`, or
+  `checkmarx/kics-github-action` does not affect this repo until a
+  maintainer deliberately updates the pin.
 
 What this repo is **not** designed to be safe against:
 

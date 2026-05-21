@@ -44,8 +44,6 @@ leaks the secret (combine with Scenario 02), do it once and harvest.
 | poutine            | ❌                                                                                   |
 | KICS               | ❌                                                                                   |
 | Checkov            | ❌                                                                                   |
-| Trivy              | ❌                                                                                   |
-| Gitleaks           | ⚠️ Only if the leaked output gets committed back into the repo                      |
 
 > CICD-SEC-10 is the hardest category to scan statically — most of the
 > failure happens at runtime, in the log output. Pipeline-check

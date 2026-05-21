@@ -36,8 +36,6 @@ the runner with the workflow's privileges.
 | poutine   | partial |
 | checkov   | "Ensure pip install uses --require-hashes" |
 | kics      | "Pip install without hash verification" |
-| trivy     | dependency scan side — flags unpinned + known-vuln deps |
-| gitleaks  | n/a |
 | (bonus)   | OSV-Scanner, Snyk, Dependabot — outside this comparison |
 
 ## Fix

@@ -43,8 +43,6 @@ runs, AWS credentials leave the building.
 | poutine   | partial |
 | checkov   | "Self-Hosted runners should not be used in public repos" |
 | kics      | partial |
-| trivy     | limited |
-| gitleaks  | n/a |
 
 ## Fix
 

@@ -42,8 +42,6 @@ exfiltrate via process memory; it just reads `.git/config`.
 | poutine   | partial |
 | checkov   | partial |
 | kics      | partial |
-| trivy     | limited |
-| gitleaks  | n/a (token isn't in source) |
 
 ## Fix
 
