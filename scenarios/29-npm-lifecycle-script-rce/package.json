@@ -1,0 +1,14 @@
+{
+  "name": "scenario-29-npm-lifecycle-target",
+  "version": "0.0.0",
+  "private": true,
+  "comment": "DELIBERATELY VULNERABLE FIXTURE — see scenarios/29-npm-lifecycle-script-rce/README.md. The point of the scenario is that ANY preinstall / install / postinstall script in ANY package in the dependency tree runs with the CI runner's full environment when `npm install` (without --ignore-scripts) is invoked. The preinstall hook below would be the attacker's payload — here it's a fail-closed safety message so accidentally running `npm install` in this directory aborts loudly instead of pulling real deps.",
+  "scripts": {
+    "preinstall": "node -e \"console.error('\\n*** SAFETY GUARD — scenario 29 (npm lifecycle RCE) ***\\nA real attacker payload here would exfiltrate $NODE_AUTH_TOKEN, $AWS_ACCESS_KEY_ID, $GITHUB_TOKEN, etc.\\nThis fixture aborts the install instead.\\n'); process.exit(2)\"",
+    "postinstall": "node -e \"console.error('postinstall would also fire in a real attack'); process.exit(2)\""
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "axios": "^1.6.0"
+  }
+}

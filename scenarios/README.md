@@ -1,6 +1,6 @@
 # Scenarios
 
-Twenty-seven deliberately-vulnerable GitHub Actions workflows, each
+Twenty-nine deliberately-vulnerable GitHub Actions workflows, each
 demonstrating one canonical attack pattern from the modern threat
 landscape. Every scenario lives as a runnable-but-gated workflow at
 [`.github/workflows/scenario-NN-*.yml`](../.github/workflows/) so every
@@ -39,6 +39,8 @@ but no runner is ever assigned.
 | 25 | [Environment branch-pattern bypass](25-environment-branch-pattern-bypass/README.md) | 1, 5 | Glob-pattern bypass |
 | 26 | [GitHub App token over-scope](26-app-token-over-scope/README.md) | 5 | Token minted without `permissions:` |
 | 27 | [Secret leak in workflow logs](27-secret-leak-in-logs/README.md) | 10 | `set -x` + URL-embedded + derived values |
+| 28 | [Reusable workflow `${{ inputs.* }}` injection](28-reusable-workflow-input-injection/README.md) | 4 | Cross-`workflow_call` taint |
+| 29 | [npm lifecycle-script RCE](29-npm-lifecycle-script-rce/README.md) | 3 | `npm install` runs `preinstall` / `postinstall` |
 
 ## OWASP CICD-SEC top 10 — full coverage
 
@@ -46,8 +48,8 @@ but no runner is ever assigned.
 |:---|:---|:---|
 | CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25 |
 | CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22 |
-| CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20 |
-| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21 |
+| CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29 |
+| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28 |
 | CICD-SEC-5: Insufficient Pipeline-Based Access Controls       | ✅ | 1, 4, 6, 25, 26 |
 | CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17 |
 | CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22 |

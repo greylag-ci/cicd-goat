@@ -1,0 +1,32 @@
+# scenarios/28-reusable-workflow-input-injection
+# CICD-SEC-4 (Poisoned Pipeline Execution)
+# Pattern: a caller workflow forwards attacker-controlled PR-body data
+# into a reusable workflow's `with:` input.  The reusable workflow then
+# interpolates that input directly into a `run:` block — taint crosses
+# the `workflow_call` boundary, and scanners that don't follow inputs
+# across files miss the injection entirely.
+#
+# Distinct from scenario 06 (`secrets: inherit` — privilege passthrough,
+# no input injection) and scenario 18 (composite action injection — same
+# class of bug but different file type and different scanner rules).
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios/28-reusable-workflow-input-injection/README.md.
+
+name: scenario-28-reusable-workflow-input-injection
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  call-build:
+    if: false
+    uses: ./.github/workflows/_reusable-build-and-test.yml
+    with:
+      # DANGER: the PR body is fully attacker-controlled.  It crosses
+      # into _reusable-build-and-test.yml as `inputs.build-args`, which
+      # gets spliced into a shell `run:` line on the callee side.
+      build-args: ${{ github.event.pull_request.body }}

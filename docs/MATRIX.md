@@ -33,7 +33,7 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 13 | `workflow_dispatch` input injection | ✅ | ✅ | ❌ | ❌ | ✅ |
 | 14 | `$GITHUB_ENV` poisoning | ✅ | ✅ | ✅ | ❌ | ✅ |
 | 15 | Hardcoded secret in `env:` | ❌ | ❌ | ❌ | ✅ | ❌ |
-| 16 | `curl \| sh` install | ✅ | ❌ | ✅ | ❌ |
+| 16 | `curl \| sh` install | ✅ | ❌ | ✅ | ❌ | ❌ |
 | 17 | ArtiPACKED — `.git/` in artifact | ⚠️ | ✅ | ❌ | ❌ | ❌ |
 | 18 | Composite action `${{ inputs.* }}` injection | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 19 | Codecov-style trusted-installer | ❌ | ❌ | ❌ | ❌ | ❌ |
@@ -45,7 +45,9 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 25 | Environment branch-pattern bypass | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 26 | GitHub App token over-scope | ❌ | ✅ | ❌ | ❌ | ❌ |
 | 27 | Secret leak in workflow logs | ❌ | ❌ | ❌ | ❌ | ❌ |
-|    | **canonical bugs caught** | **13 ✅** · 1 ⚠️ | **12 ✅** | **8 ✅** | **4 ✅** | **4 ✅** |
+| 28 | Reusable workflow `${{ inputs.* }}` injection | ✅ | ✅ | ❌ | ❌ | ❌ |
+| 29 | npm lifecycle-script RCE | ✅ | ❌ | ❌ | ❌ | ❌ |
+|    | **canonical bugs caught** | **15 ✅** · 1 ⚠️ | **13 ✅** | **8 ✅** | **4 ✅** | **4 ✅** |
 <!-- /AUTOGEN:matrix -->
 
 > [!IMPORTANT]
@@ -89,6 +91,8 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 25 | [Environment branch-pattern bypass](../scenarios/25-environment-branch-pattern-bypass/README.md) | 1 · 5 | 🟠 high |
 | 26 | [GitHub App token over-scope](../scenarios/26-app-token-over-scope/README.md) | 5 | 🟡 medium |
 | 27 | [Secret leak in workflow logs](../scenarios/27-secret-leak-in-logs/README.md) | 10 | 🟠 high |
+| 28 | [Reusable workflow `${{ inputs.* }}` injection](../scenarios/28-reusable-workflow-input-injection/README.md) | 4 | 🟠 high |
+| 29 | [npm lifecycle-script RCE](../scenarios/29-npm-lifecycle-script-rce/README.md) | 3 | 🔴 critical |
 <!-- /AUTOGEN:scenarios-index -->
 
 > [!NOTE]
