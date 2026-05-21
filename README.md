@@ -24,7 +24,7 @@
 > Every CI/CD scanner has blind spots. The only honest way to measure them
 > is on a target where the bugs are catalogued in advance. This is that target.
 
-Twenty-seven GitHub Actions workflows, each demonstrating one canonical
+Twenty-seven GitHub Actions workflows, each demonstrating one specific
 attack pattern drawn from named incident disclosures (tj-actions 2025,
 Codecov 2021, ArtiPACKED 2024, Birsan dependency confusion 2021) and
 the **OWASP Top 10 CI/CD Security Risks** — all ten categories covered.
@@ -33,13 +33,14 @@ history but never spawn a runner.
 
 ## Leaderboard
 
-Canonical-bug coverage across all 27 scenarios. Auto-generated from the
-latest successful [`scanner-comparison`](../../actions/workflows/scanner-comparison.yml)
-run on `main`; verdicts derived from each scanner's SARIF and the
-expected-rule map in [`tools/scenarios.yaml`](tools/scenarios.yaml).
+How many of the 27 scenarios each scanner catches. A scanner scores ✅ on
+a scenario only when it fires a rule that names that scenario's *specific
+intended bug* — not just any finding on the workflow file. Auto-generated
+from the latest [`scanner-comparison`](../../actions/workflows/scanner-comparison.yml)
+run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 
 <!-- AUTOGEN:leaderboard -->
-| Scanner | Canonical bugs caught (of 27) |
+| Scanner | Scenarios caught (of 27) |
 | :--- | :--- |
 | **pipeline&#x2011;check** | **13 ✅** · 1 ⚠️ |
 | zizmor | **12 ✅** |
@@ -51,8 +52,7 @@ expected-rule map in [`tools/scenarios.yaml`](tools/scenarios.yaml).
 <!-- /AUTOGEN:leaderboard -->
 
 → **[Full per-scenario matrix](docs/MATRIX.md)**  ·
-**[Five cinematic scenarios](docs/FIELD-TEST.md)** (deep dive)  ·
-**[Scoring methodology](docs/FIELD-TEST.md#field-test--five-cinematic-scenarios)**
+**[Walkthroughs of five hand-picked scenarios](docs/FIELD-TEST.md)**
 
 ## What's in this repo
 
@@ -62,8 +62,8 @@ expected-rule map in [`tools/scenarios.yaml`](tools/scenarios.yaml).
 - **[Full matrix](docs/MATRIX.md)** — per-(scenario × scanner) verdict
   table, auto-rebuilt from real SARIF.
 - **[Field test](docs/FIELD-TEST.md)** — five hand-picked scenarios
-  with rule-by-rule commentary, including the hygiene-baseline
-  discussion.
+  with rule-by-rule commentary, including a section on rules that fire
+  for *missing* security controls (SBOM, signing, etc.).
 - **[Safety posture](SAFETY.md)** — how fork PRs and Actions
   permissions are hardened so this can't be turned into someone's runner.
 - **[Contributing](CONTRIBUTING.md)** — add a scanner, add a scenario,
@@ -103,11 +103,13 @@ if anything moved. See
 ## Why `pipeline-check` is in this comparison
 
 This repo is the test range; [`pipeline-check`](https://github.com/greylag-ci/pipeline-check-vscode)
-is one of the engines being tested. Differentiators on this corpus
-(narrow but real): one-scenario lead on canonical-bug coverage over
-zizmor; a hygiene-baseline rule family (SBOM, SLSA, signing,
-vuln-scan, environment binding, `timeout-minutes`, container digest)
-that no other scanner ships; 22 CI/CD providers and manifest types.
+is one of the engines being tested. What it does differently on this
+corpus (narrow but real): catches one more scenario than the next-best
+scanner (zizmor); ships a rule family that fires when a workflow is
+*missing* a security control (SBOM, SLSA, artifact signing, vuln-scan,
+`environment:` binding, `timeout-minutes`, container digest pinning)
+— no other scanner here carries those rules at all; covers 22 CI/CD
+providers and manifest types beyond GitHub Actions.
 Inline VS Code experience via the
 [Pipeline-Check extension](https://github.com/greylag-ci/pipeline-check-vscode);
 the Python rule engine lives at

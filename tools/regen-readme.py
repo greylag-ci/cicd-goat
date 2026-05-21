@@ -155,7 +155,7 @@ def render_leaderboard(data: dict, sarif_data: dict) -> str:
         key=lambda sid: (-totals[sid][VERDICT_FULL], -totals[sid][VERDICT_PARTIAL]),
     )
     rows = [
-        f"| Scanner | Canonical bugs caught (of {n_scenarios}) |",
+        f"| Scanner | Scenarios caught (of {n_scenarios}) |",
         "| :--- | :--- |",
     ]
     for sid in order:
