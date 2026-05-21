@@ -1,5 +1,5 @@
-"""Safety invariant: every job in every scenario-*.yml (and the
-companion _reusable-deploy.yml) must have a top-level `if: false`.
+"""Safety invariant: every job in every scenario-*.yml (and every
+companion _reusable-*.yml) must have a top-level `if: false`.
 
 Why: scenarios are deliberately vulnerable. The only thing that keeps
 the patterns from actually executing is the job-level `if: false`.
@@ -17,7 +17,7 @@ import yaml
 
 DEFAULT_WORKFLOWS = pathlib.Path(".github/workflows")
 SCENARIO_GLOB = "scenario-*.yml"
-REUSABLE = "_reusable-deploy.yml"
+REUSABLE_GLOB = "_reusable-*.yml"
 
 
 def check_file(path: pathlib.Path) -> list[str]:
@@ -61,10 +61,7 @@ def main() -> int:
         print(f"error: {workflows} does not exist", file=sys.stderr)
         return 2
 
-    files = sorted(workflows.glob(SCENARIO_GLOB))
-    reusable = workflows / REUSABLE
-    if reusable.exists():
-        files.append(reusable)
+    files = sorted(workflows.glob(SCENARIO_GLOB)) + sorted(workflows.glob(REUSABLE_GLOB))
 
     if not files:
         print(f"error: no scenario files under {workflows}", file=sys.stderr)

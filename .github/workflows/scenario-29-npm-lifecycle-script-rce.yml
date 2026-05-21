@@ -1,0 +1,49 @@
+# scenarios/29-npm-lifecycle-script-rce
+# CICD-SEC-3 (Dependency Chain Abuse) — npm lifecycle script execution.
+# Pattern: `npm install` (and `npm ci` without `--ignore-scripts`) runs
+# preinstall / install / postinstall scripts from EVERY package in the
+# dependency tree by default — the consumer's own package + every direct
+# dep + every transitive dep.  A compromised maintainer of any package
+# in the tree gets shell on CI with the CI's full env (NODE_AUTH_TOKEN,
+# AWS_*, registry credentials, GITHUB_TOKEN if exposed).
+#
+# Distinct from scenario 20 (dependency confusion — name-squatting via
+# the resolver) and scenario 19 (Codecov-style curl-then-execute).
+# This is the *silent default* attack surface that fires on every
+# legitimately-named, legitimately-resolved package whose maintainer
+# has been compromised.  Real precedents: event-stream (2018),
+# ua-parser-js (2021), node-ipc (2022), and the rolling Shai-Hulud-class
+# compromises throughout 2024–2025.
+#
+# Safety: every job is gated with `if: false`.  The scenario's
+# package.json has a fail-closed `preinstall` so accidentally running
+# `npm install` in that directory aborts before fetching anything.
+# See scenarios/29-npm-lifecycle-script-rce/README.md.
+
+name: scenario-29-npm-lifecycle-script-rce
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install (DANGER — lifecycle scripts execute)
+        working-directory: scenarios/29-npm-lifecycle-script-rce
+        # `npm install` runs preinstall + install + postinstall scripts
+        # for every package in the resolved tree.  `npm ci --ignore-scripts`
+        # would block all three.  The scenario's own package.json declares
+        # both preinstall and postinstall to demonstrate the attack surface
+        # (without an actual payload).
+        run: npm install
+      - run: node scenarios/29-npm-lifecycle-script-rce/index.js

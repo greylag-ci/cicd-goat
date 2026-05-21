@@ -7,7 +7,7 @@
    cicd-goat   ·   greylag-ci                                          v1.0
    ──────────────────────────────────────────────────────────────────────
    A test range for CI/CD security scanners.
-   27 vulnerable GitHub Actions workflows.  5 scanners.  1 leaderboard.
+   29 vulnerable GitHub Actions workflows.  5 scanners.  1 leaderboard.
 ══════════════════════════════════════════════════════════════════════════════
 ```
 
@@ -15,7 +15,7 @@
 [![scanner-comparison](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml/badge.svg)](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml)
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-3a3a3a?style=flat-square)](LICENSE)
 [![CICD-SEC top 10](https://img.shields.io/badge/owasp-CICD--SEC_10%2F10-9c2b2b?style=flat-square)](https://owasp.org/www-project-top-10-ci-cd-security-risks/)
-[![scenarios 27](https://img.shields.io/badge/scenarios-27-1f6feb?style=flat-square)](scenarios/README.md)
+[![scenarios 29](https://img.shields.io/badge/scenarios-29-1f6feb?style=flat-square)](scenarios/README.md)
 [![scanners 5](https://img.shields.io/badge/scanners-5-1f6feb?style=flat-square)](docs/MATRIX.md)
 <!-- /AUTOGEN:badges -->
 
@@ -24,26 +24,27 @@
 > Every CI/CD scanner has blind spots. The only honest way to measure them
 > is on a target where the bugs are catalogued in advance. This is that target.
 
-Twenty-seven GitHub Actions workflows, each demonstrating one specific
+Twenty-nine GitHub Actions workflows, each demonstrating one specific
 attack pattern drawn from named incident disclosures (tj-actions 2025,
-Codecov 2021, ArtiPACKED 2024, Birsan dependency confusion 2021) and
+ArtiPACKED 2024, Codecov 2021, Birsan dependency confusion 2021,
+event-stream/ua-parser-js/node-ipc/Shai-Hulud npm lifecycle abuse) and
 the **OWASP Top 10 CI/CD Security Risks** — all ten categories covered.
 Every job is gated with `if: false` so the workflows show up in run
 history but never spawn a runner.
 
 ## Leaderboard
 
-How many of the 27 scenarios each scanner catches. A scanner scores ✅ on
+How many of the 29 scenarios each scanner catches. A scanner scores ✅ on
 a scenario only when it fires a rule that names that scenario's *specific
 intended bug* — not just any finding on the workflow file. Auto-generated
 from the latest [`scanner-comparison`](../../actions/workflows/scanner-comparison.yml)
 run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 
 <!-- AUTOGEN:leaderboard -->
-| Scanner | Scenarios caught (of 27) |
+| Scanner | Scenarios caught (of 29) |
 | :--- | :--- |
-| **pipeline&#x2011;check** | **13 ✅** · 1 ⚠️ |
-| zizmor | **12 ✅** |
+| **pipeline&#x2011;check** | **15 ✅** · 1 ⚠️ |
+| zizmor | **13 ✅** |
 | poutine | **8 ✅** |
 | KICS | **4 ✅** |
 | Checkov | **4 ✅** |
@@ -53,7 +54,7 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 **[Walkthroughs of five hand-picked scenarios](docs/FIELD-TEST.md)**
 
 > [!NOTE]
-> **Corpus scope.** All 27 scenarios are GitHub Actions workflows. Scanners
+> **Corpus scope.** All 29 scenarios are GitHub Actions workflows. Scanners
 > whose primary design target is something else (container scanning,
 > source-tree secret detection) aren't included here — they'd score 0/27
 > on a corpus they were never built for. Trivy belongs in a container/IaC

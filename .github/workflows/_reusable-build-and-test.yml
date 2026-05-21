@@ -1,0 +1,35 @@
+# Reusable workflow consumed by scenario-28-reusable-workflow-input-injection.yml.
+# Demonstrates how a reusable workflow that interpolates ${{ inputs.* }}
+# directly into a `run:` block turns into a shell-injection primitive
+# for any caller that passes attacker-controlled data via `with:`.
+#
+# Safety: gated with `if: false`.
+
+name: _reusable-build-and-test
+
+on:
+  workflow_call:
+    inputs:
+      build-args:
+        description: 'Extra arguments forwarded to the build script'
+        type: string
+        required: false
+        default: ''
+
+jobs:
+  build:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # DANGER: ${{ inputs.build-args }} is spliced straight into a
+      # `run:` shell line.  Any caller that forwards attacker-controlled
+      # data into `with: build-args:` gets shell execution here, across
+      # the workflow_call boundary that scanners may not follow.
+      - name: Build (untrusted-input interpolation)
+        run: |
+          echo "Building with args: ${{ inputs.build-args }}"
+          ./build.sh ${{ inputs.build-args }}
