@@ -285,6 +285,9 @@ def main() -> int:
     ap.add_argument("--workflow", default=WORKFLOW_DEFAULT)
     ap.add_argument("--verify", action="store_true",
                     help="Don't write the README; check that scenarios.yaml claims still match SARIF.")
+    ap.add_argument("--allow-empty-sarif", action="store_true",
+                    help="Don't abort the regen when SARIF parsing yields no tools "
+                         "(default: refuse, since the output would mark every verdict ❌).")
     args = ap.parse_args()
 
     data = load_data()
@@ -309,6 +312,19 @@ def main() -> int:
 
     if args.verify:
         return verify(data, sarif_data)
+
+    # Guard: rewriting the AUTOGEN sections against zero SARIF would flip
+    # every verdict to ❌ and silently corrupt README.md + docs/MATRIX.md.
+    # Caught in CI by `if: hashFiles('sarif/**/*.sarif') != ''`; this is
+    # the local-run guard.
+    if not sarif_data and not args.allow_empty_sarif:
+        print(
+            "error: parsed SARIF contains zero tools — refusing to rewrite "
+            "AUTOGEN sections (would mark every verdict ❌). "
+            "Check --sarif-dir path, or pass --allow-empty-sarif to override.",
+            file=sys.stderr,
+        )
+        return 2
 
     sections_by_file: dict[Path, dict[str, str]] = {
         README: {
