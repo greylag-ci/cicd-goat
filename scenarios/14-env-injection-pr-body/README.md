@@ -46,8 +46,6 @@ working dir (which contains attacker code from the fork), payload runs.
 | poutine   | `github_env_injection` |
 | checkov   | partial |
 | kics      | "GitHub Env Injection" rule |
-| trivy     | limited |
-| gitleaks  | n/a |
 
 ## Fix
 

@@ -39,8 +39,6 @@ secret the workflow can see.
 | poutine   | `pull_request_target_checkout` |
 | checkov   | `CKV2_GHA_*` (pull_request_target + checkout head) |
 | kics      | `Pull Request Target Misuse` |
-| trivy     | Limited — Trivy's GHA rules are coarse here |
-| gitleaks  | n/a (misconfig, not a secret) |
 
 ## Fix
 

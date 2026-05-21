@@ -39,8 +39,6 @@ out the PR head, runs `npm ci`, and the postinstall script reads
 | poutine   | partial — flags reusable + secrets pass-through |
 | checkov   | limited |
 | kics      | limited |
-| trivy     | limited |
-| gitleaks  | n/a |
 
 ## Fix
 

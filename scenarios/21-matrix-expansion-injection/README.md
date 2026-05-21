@@ -46,8 +46,6 @@ prior job's output that derived from PR input — the attacker controls:
 | poutine            | ⚠️ Partial — flags PR-derived job outputs                              |
 | KICS               | ❌                                                                     |
 | Checkov            | ❌                                                                     |
-| Trivy              | ❌                                                                     |
-| Gitleaks           | —                                                                      |
 
 > This is one of the harder scenarios to catch cleanly because the
 > taint flow crosses a job boundary via `outputs:`. Scanners that do

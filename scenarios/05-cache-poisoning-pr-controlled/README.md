@@ -38,8 +38,6 @@ Given the vulnerable key `deps-${{ runner.os }}-${{ github.event.pull_request.ti
 | poutine   | `cache_poisoning` |
 | checkov   | partial (cache + untrusted input rule may flag) |
 | kics      | limited |
-| trivy     | limited |
-| gitleaks  | n/a |
 
 ## Fix
 

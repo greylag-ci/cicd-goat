@@ -42,8 +42,6 @@ means full repo takeover.
 | poutine   | `artifact_with_git_dir` |
 | checkov   | partial |
 | kics      | partial |
-| trivy     | limited |
-| gitleaks  | n/a (token is in artifact, not source) |
 
 ## Fix
 

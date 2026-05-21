@@ -47,13 +47,11 @@ returned credentials let them act as the production-deploy principal.
 | poutine        | partial |
 | checkov        | `CKV_AWS_*` family for IAM trust policy wildcards |
 | kics           | "IAM role trust policy allows all principals" / wildcard SUB conditions |
-| trivy          | partial (covers some IAM trust patterns) |
-| gitleaks       | n/a |
 
 The `aws-actions/configure-aws-credentials` step itself is fine; the bug
 is in the trust policy. Scanners that look only at workflows will miss
-this — IaC scanners (checkov, kics, trivy) on `trust-policy.json` are
-where this should land.
+this — IaC scanners (checkov, kics) on `trust-policy.json` are where
+this should land.
 
 ## Fix
 

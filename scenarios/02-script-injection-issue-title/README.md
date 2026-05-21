@@ -44,8 +44,6 @@ in the URL.
 | poutine   | `injection` |
 | checkov   | `CKV_GHA_2` family / template injection |
 | kics      | "Script Injection" / "Run Block Injection" |
-| trivy     | Not consistently |
-| gitleaks  | n/a |
 
 ## Fix
 

@@ -31,8 +31,6 @@ runs it on next pull.
 | poutine   | partial |
 | checkov   | "Ensure image is pinned to a digest" |
 | kics      | "Image Tagged Latest" |
-| trivy     | "Image should not be tagged with 'latest'" |
-| gitleaks  | n/a |
 
 ## Fix
 

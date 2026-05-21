@@ -39,8 +39,6 @@ bash sees it, executing the embedded command on the runner with
 | poutine   | `injection` |
 | checkov   | partial |
 | kics      | "Run Block Injection" |
-| trivy     | limited |
-| gitleaks  | n/a |
 
 ## Fix
 

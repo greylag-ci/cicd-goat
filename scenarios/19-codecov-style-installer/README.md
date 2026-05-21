@@ -51,8 +51,6 @@ trusts "any signature from this key" executes the payload.
 | poutine            | ❌                                                                            |
 | KICS               | ❌                                                                            |
 | Checkov            | ❌                                                                            |
-| Trivy              | ❌                                                                            |
-| Gitleaks           | —                                                                             |
 
 ## Fix
 

@@ -51,8 +51,6 @@ Two real attack vectors:
 | poutine            | ❌                                                                   |
 | KICS               | ⚠️ IaC rule fires on the `.tf` if scanned, not on the workflow      |
 | Checkov            | ⚠️ Similar — IaC side only                                          |
-| Trivy              | ⚠️ Similar                                                          |
-| Gitleaks           | —                                                                    |
 
 > Like Scenario 10, this is a **split-scope** finding: workflow scanners
 > see the auth step but not the WIF attribute condition; IaC scanners

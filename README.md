@@ -7,7 +7,7 @@
    cicd-goat   ·   greylag-ci                                          v1.0
    ──────────────────────────────────────────────────────────────────────
    A test range for CI/CD security scanners.
-   27 vulnerable GitHub Actions workflows.  7 scanners.  1 leaderboard.
+   27 vulnerable GitHub Actions workflows.  5 scanners.  1 leaderboard.
 ══════════════════════════════════════════════════════════════════════════════
 ```
 
@@ -16,7 +16,7 @@
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-3a3a3a?style=flat-square)](LICENSE)
 [![CICD-SEC top 10](https://img.shields.io/badge/owasp-CICD--SEC_10%2F10-9c2b2b?style=flat-square)](https://owasp.org/www-project-top-10-ci-cd-security-risks/)
 [![scenarios 27](https://img.shields.io/badge/scenarios-27-1f6feb?style=flat-square)](scenarios/README.md)
-[![scanners 7](https://img.shields.io/badge/scanners-7-1f6feb?style=flat-square)](docs/MATRIX.md)
+[![scanners 5](https://img.shields.io/badge/scanners-5-1f6feb?style=flat-square)](docs/MATRIX.md)
 <!-- /AUTOGEN:badges -->
 
 ---
@@ -47,12 +47,17 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 | poutine | **8 ✅** |
 | KICS | **4 ✅** |
 | Checkov | **4 ✅** |
-| Trivy | **0 ✅** |
-| Gitleaks | **0 ✅** |
 <!-- /AUTOGEN:leaderboard -->
 
 → **[Full per-scenario matrix](docs/MATRIX.md)**  ·
 **[Walkthroughs of five hand-picked scenarios](docs/FIELD-TEST.md)**
+
+> [!NOTE]
+> **Corpus scope.** All 27 scenarios are GitHub Actions workflows. Scanners
+> whose primary design target is something else (container scanning,
+> source-tree secret detection) aren't included here — they'd score 0/27
+> on a corpus they were never built for. Trivy belongs in a container/IaC
+> bench; Gitleaks in a source-secrets bench.
 
 ## What's in this repo
 
@@ -78,8 +83,8 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
     ┌─────────────────────────────────────────────────────────┐
     │  .github/workflows/scanner-comparison.yml               │
     │                                                         │
-    │   pipeline-check ▸ zizmor ▸ poutine ▸ kics              │
-    │      ▸ checkov ▸ trivy ▸ gitleaks                       │
+    │   pipeline-check ▸ zizmor ▸ poutine                     │
+    │      ▸ kics ▸ checkov                                   │
     │                        │                                │
     │                        ▼                                │
     │              upload SARIF                               │

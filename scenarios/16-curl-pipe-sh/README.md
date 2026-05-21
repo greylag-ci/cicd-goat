@@ -42,8 +42,6 @@ Several paths:
 | poutine   | `curl_pipe_shell` |
 | checkov   | partial |
 | kics      | "Untrusted Shell Script Execution" |
-| trivy     | partial — config rules cover some patterns |
-| gitleaks  | n/a |
 
 ## Fix
 
