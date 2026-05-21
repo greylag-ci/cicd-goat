@@ -46,7 +46,7 @@ Two real attack vectors:
 
 | Scanner            | Detection                                                            |
 | :----------------- | :------------------------------------------------------------------- |
-| **pipeline-check** | ⚠️ IAM/WIF rule in roadmap                                          |
+| **pipeline-check** | ✅ `GHA-062` walks the workflow's repo for `*.tf` files and flags `attribute.repository.startsWith('<org>/')` whole-org WIF bindings |
 | zizmor             | ❌ workflow-only                                                     |
 | poutine            | ❌                                                                   |
 | KICS               | ⚠️ IaC rule fires on the `.tf` if scanned, not on the workflow      |

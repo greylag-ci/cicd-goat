@@ -36,7 +36,7 @@ configured, and most aren't.
 
 | Scanner            | Detection                                                                     |
 | :----------------- | :---------------------------------------------------------------------------- |
-| **pipeline-check** | ⚠️ Flags missing private-registry config + missing `--ignore-scripts`        |
+| **pipeline-check** | ✅ via `--pipeline npm --npm-path scenarios/20-dependency-confusion` (`NPM-001` floating range, `NPM-004` lifecycle script). `--pipeline github` alone emits a `[hint]` nudging users to add the npm leg. |
 | zizmor             | ❌ (not dep-aware)                                                            |
 | poutine            | ❌                                                                            |
 | KICS               | ❌                                                                            |

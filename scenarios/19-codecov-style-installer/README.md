@@ -46,7 +46,7 @@ trusts "any signature from this key" executes the payload.
 
 | Scanner            | Detection                                                                     |
 | :----------------- | :---------------------------------------------------------------------------- |
-| **pipeline-check** | ❌ `GHA-016` / `GHA-018` don't currently fire on this signed-and-checksummed install path; over-verified supply-chain compromise needs a dedicated rule |
+| **pipeline-check** | ✅ `GHA-016` trusted-installer shape (fetch from non-vendor host + execute in same job, no `slsa-verifier` / `gh attestation verify` / `cosign verify-attestation` in scope) |
 | zizmor             | ⚠️ `unverified-script-download` partial — checks for unverified, not over-verified |
 | poutine            | ❌                                                                            |
 | KICS               | ❌                                                                            |
