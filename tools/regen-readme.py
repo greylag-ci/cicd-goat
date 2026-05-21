@@ -1,12 +1,13 @@
-"""Regenerate README stats from tools/scenarios.yaml + scanner SARIF output.
+"""Regenerate README + MATRIX stats from tools/scenarios.yaml + scanner SARIF.
 
 Two modes:
 
   regen (default):
     Reads tools/scenarios.yaml, downloads/loads SARIF for each scanner,
     computes per-(scenario, scanner) verdicts based on whether each
-    `expected` rule actually fired, and rewrites the README sections
-    between the AUTOGEN markers (matrix, scenarios-index, totals).
+    `expected` rule actually fired, and rewrites the AUTOGEN sections in:
+      - README.md         : badges, leaderboard (compact totals)
+      - docs/MATRIX.md    : full matrix, scenarios index
 
   verify (--verify):
     Same parse but doesn't write the README.  Exits non-zero if any
@@ -38,6 +39,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 README = ROOT / "README.md"
+MATRIX_DOC = ROOT / "docs" / "MATRIX.md"
 DATA = ROOT / "tools" / "scenarios.yaml"
 
 VERDICT_FULL = "✅"        # ✅
@@ -128,21 +130,51 @@ def verdict(scenario: dict, scanner: dict, sarif_data: dict) -> str:
     return VERDICT_MISS
 
 
+def compute_totals(data: dict, sarif_data: dict) -> dict[str, dict[str, int]]:
+    """Per-scanner verdict counts across all scenarios."""
+    totals: dict[str, dict[str, int]] = {}
+    for s in data["scanners"]:
+        t = {VERDICT_FULL: 0, VERDICT_PARTIAL: 0, VERDICT_MISS: 0, VERDICT_NA: 0}
+        for scn in data["scenarios"]:
+            t[verdict(scn, s, sarif_data)] += 1
+        totals[s["id"]] = t
+    return totals
+
+
+def render_leaderboard(data: dict, sarif_data: dict) -> str:
+    """Compact, glance-able totals table for the README landing page.
+
+    Sorted by full-catch count desc, then partials desc.  Stable on ties
+    via the scanner order in scenarios.yaml.
+    """
+    totals = compute_totals(data, sarif_data)
+    label = {s["id"]: s["label"] for s in data["scanners"]}
+    n_scenarios = len(data["scenarios"])
+    order = sorted(
+        [s["id"] for s in data["scanners"]],
+        key=lambda sid: (-totals[sid][VERDICT_FULL], -totals[sid][VERDICT_PARTIAL]),
+    )
+    rows = [
+        f"| Scanner | Canonical bugs caught (of {n_scenarios}) |",
+        "| :--- | :--- |",
+    ]
+    for sid in order:
+        t = totals[sid]
+        cell = f"**{t[VERDICT_FULL]} {VERDICT_FULL}**"
+        if t[VERDICT_PARTIAL]:
+            cell += f" · {t[VERDICT_PARTIAL]} {VERDICT_PARTIAL}"
+        rows.append(f"| {label[sid]} | {cell} |")
+    return "\n".join(rows)
+
+
 def render_matrix(data: dict, sarif_data: dict) -> str:
     scanners = data["scanners"]
     rows: list[str] = []
     rows.append("| #  | Scenario | " + " | ".join(s["label"] for s in scanners) + " |")
     rows.append("| :-:| :--- | " + " | ".join(":-:" for _ in scanners) + " |")
-    totals = {
-        s["id"]: {VERDICT_FULL: 0, VERDICT_PARTIAL: 0, VERDICT_MISS: 0, VERDICT_NA: 0}
-        for s in scanners
-    }
+    totals = compute_totals(data, sarif_data)
     for scn in data["scenarios"]:
-        cells = []
-        for s in scanners:
-            v = verdict(scn, s, sarif_data)
-            cells.append(v)
-            totals[s["id"]][v] += 1
+        cells = [verdict(scn, s, sarif_data) for s in scanners]
         rows.append(f"| {scn['id']:02d} | {scn['title']} | " + " | ".join(cells) + " |")
     # Totals row
     parts = []
@@ -163,7 +195,8 @@ def render_scenarios_index(data: dict) -> str:
     for scn in data["scenarios"]:
         cs = " · ".join(str(x) for x in scn["cicd_sec"])
         sev = SEVERITY_LABELS.get(scn["severity"], scn["severity"])
-        link = f"scenarios/{scn['slug']}/README.md"
+        # docs/MATRIX.md lives one level below repo root, so links go up.
+        link = f"../scenarios/{scn['slug']}/README.md"
         rows.append(f"| {scn['id']:02d} | [{scn['title']}]({link}) | {cs} | {sev} |")
     return "\n".join(rows)
 
@@ -178,20 +211,30 @@ def render_badge_line(data: dict) -> str:
         "[![CICD-SEC top 10](https://img.shields.io/badge/owasp-CICD--SEC_10%2F10-9c2b2b?style=flat-square)]"
         "(https://owasp.org/www-project-top-10-ci-cd-security-risks/)",
         f"[![scenarios {n_scn}](https://img.shields.io/badge/scenarios-{n_scn}-1f6feb?style=flat-square)](scenarios/README.md)",
-        f"[![scanners {n_scan}](https://img.shields.io/badge/scanners-{n_scan}-1f6feb?style=flat-square)](#the-full-matrix)",
+        f"[![scanners {n_scan}](https://img.shields.io/badge/scanners-{n_scan}-1f6feb?style=flat-square)](docs/MATRIX.md)",
     ]
     return "\n".join(badges)
 
 
-def patch_readme(content: str, marker: str, replacement: str) -> str:
-    pattern = re.compile(
-        rf"(<!-- AUTOGEN:{re.escape(marker)} -->\n).*?(\n<!-- /AUTOGEN:{re.escape(marker)} -->)",
-        re.DOTALL,
-    )
-    new, n = pattern.subn(rf"\g<1>{replacement}\g<2>", content)
-    if n == 0:
-        raise SystemExit(f"error: marker AUTOGEN:{marker} not found in {README}")
-    return new
+def patch_markers(path: Path, content: str, sections: dict[str, str]) -> str:
+    """Rewrite every <!-- AUTOGEN:<marker> --> block in `content`.
+
+    `sections` maps marker name -> replacement text.  Missing a marker in
+    the file is fatal — keeps us from silently dropping a section after a
+    rename.
+    """
+    for marker, replacement in sections.items():
+        pattern = re.compile(
+            rf"(<!-- AUTOGEN:{re.escape(marker)} -->\n).*?(\n<!-- /AUTOGEN:{re.escape(marker)} -->)",
+            re.DOTALL,
+        )
+        content, n = pattern.subn(
+            lambda _m, r=replacement: _m.group(1) + r + _m.group(2),
+            content,
+        )
+        if n == 0:
+            raise SystemExit(f"error: marker AUTOGEN:{marker} not found in {path}")
+    return content
 
 
 def verify(data: dict, sarif_data: dict) -> int:
@@ -242,6 +285,9 @@ def main() -> int:
     ap.add_argument("--workflow", default=WORKFLOW_DEFAULT)
     ap.add_argument("--verify", action="store_true",
                     help="Don't write the README; check that scenarios.yaml claims still match SARIF.")
+    ap.add_argument("--allow-empty-sarif", action="store_true",
+                    help="Don't abort the regen when SARIF parsing yields no tools "
+                         "(default: refuse, since the output would mark every verdict ❌).")
     args = ap.parse_args()
 
     data = load_data()
@@ -267,12 +313,37 @@ def main() -> int:
     if args.verify:
         return verify(data, sarif_data)
 
-    content = README.read_text(encoding="utf-8")
-    content = patch_readme(content, "matrix", render_matrix(data, sarif_data))
-    content = patch_readme(content, "scenarios-index", render_scenarios_index(data))
-    content = patch_readme(content, "badges", render_badge_line(data))
-    README.write_text(content, encoding="utf-8")
-    print(f"regenerated README.md ({README.stat().st_size} bytes)")
+    # Guard: rewriting the AUTOGEN sections against zero SARIF would flip
+    # every verdict to ❌ and silently corrupt README.md + docs/MATRIX.md.
+    # Caught in CI by `if: hashFiles('sarif/**/*.sarif') != ''`; this is
+    # the local-run guard.
+    if not sarif_data and not args.allow_empty_sarif:
+        print(
+            "error: parsed SARIF contains zero tools — refusing to rewrite "
+            "AUTOGEN sections (would mark every verdict ❌). "
+            "Check --sarif-dir path, or pass --allow-empty-sarif to override.",
+            file=sys.stderr,
+        )
+        return 2
+
+    sections_by_file: dict[Path, dict[str, str]] = {
+        README: {
+            "badges":      render_badge_line(data),
+            "leaderboard": render_leaderboard(data, sarif_data),
+        },
+        MATRIX_DOC: {
+            "matrix":           render_matrix(data, sarif_data),
+            "scenarios-index":  render_scenarios_index(data),
+        },
+    }
+    for path, sections in sections_by_file.items():
+        if not path.exists():
+            print(f"warn: {path} missing — skipping (run from a checked-out repo)", file=sys.stderr)
+            continue
+        new = patch_markers(path, path.read_text(encoding="utf-8"), sections)
+        path.write_text(new, encoding="utf-8")
+        rel = path.relative_to(ROOT).as_posix()
+        print(f"regenerated {rel} ({path.stat().st_size} bytes)")
     return 0
 
 
