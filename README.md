@@ -43,8 +43,8 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 <!-- AUTOGEN:leaderboard -->
 | Scanner | Scenarios caught (of 29) |
 | :--- | :--- |
-| **pipeline&#x2011;check** | **15 ✅** · 1 ⚠️ |
-| zizmor | **13 ✅** |
+| pipeline&#x2011;check | **24 ✅** |
+| zizmor | **12 ✅** |
 | poutine | **8 ✅** |
 | KICS | **4 ✅** |
 | Checkov | **4 ✅** |
