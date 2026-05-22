@@ -151,7 +151,7 @@ the more interesting comparison isn't the leaderboard. It's that
 pipeline-check ships an **absence-of-control** rule family that the
 other six scanners don't carry at all: rules that fire when a workflow
 *lacks* an expected step (SBOM, SLSA, signing, vuln-scan, etc.).
-Pipeline-check 1.1.0 carries **65 rules** across the `GHA-*`,
+Pipeline-check 1.4.0 carries **78 rules** across the `GHA-*`,
 `TAINT-*`, and `AC-*` (attack-chain) families. Verbatim rule list
 from the latest run:
 
