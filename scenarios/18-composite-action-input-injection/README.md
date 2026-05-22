@@ -47,12 +47,13 @@ attacker.
 
 ## Expected scanner coverage
 
-| Scanner   | Detection |
-|-----------|-----------|
-| zizmor    | `template-injection` — applies inside composite actions as well as workflows |
-| poutine   | partial — composite scanning is newer territory |
-| checkov   | partial |
-| kics      | "Composite Action Input Injection" rule (recent additions) |
+| Scanner        | Detection |
+|----------------|-----------|
+| pipeline-check | `GHA-003` fires on the synthesized composite-action body. v1.4.0 added local composite-action scanning: when the GHA pipeline sees `uses: ./<path>`, it parses the sibling `action.yml`, synthesizes a `__composite__` job from its `runs.steps`, and runs the rule pack against it. The composite's `echo "TRIAGE: ${{ inputs.message }}"` then trips template-injection the same way it would in a workflow file |
+| zizmor         | `template-injection` — applies inside composite actions as well as workflows |
+| poutine        | partial — composite scanning is newer territory |
+| checkov        | partial |
+| kics           | "Composite Action Input Injection" rule (recent additions) |
 
 This is a useful comparison datapoint: scanners that *only* look at
 `.github/workflows/*.yml` and ignore `action.yml` files miss this

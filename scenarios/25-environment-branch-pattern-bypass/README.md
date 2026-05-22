@@ -44,13 +44,13 @@ code in the branch isn't auto-displayed in the approval dialog.
 
 ## Expected scanner coverage
 
-| Scanner            | Detection                                                                          |
-| :----------------- | :--------------------------------------------------------------------------------- |
-| **pipeline-check** | ⚠️ Flags glob trigger + missing exact-branch pin in environment ref-pattern rule |
-| zizmor             | ⚠️ `dangerous-triggers` partial — catches the wildcard branch trigger             |
-| poutine            | ❌                                                                                 |
-| KICS               | ❌                                                                                 |
-| Checkov            | ❌                                                                                 |
+| Scanner            | Detection                                                                                                  |
+| :----------------- | :--------------------------------------------------------------------------------------------------------- |
+| **pipeline-check** | ✅ `GHA-086` (v1.4.0) fires on the wildcard-branch trigger paired with an `environment:`-bound deploy job |
+| zizmor             | ⚠️ `dangerous-triggers` partial — catches the wildcard branch trigger but not the env-binding pair          |
+| poutine            | ❌                                                                                                          |
+| KICS               | ❌                                                                                                          |
+| Checkov            | ❌                                                                                                          |
 
 > Like Scenarios 10 and 22, this is partially out-of-band: the
 > deployment-branches rule lives in GitHub repo settings, not in any
