@@ -35,19 +35,19 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 15 | Hardcoded secret in `env:` | ✅ | ❌ | ❌ | ✅ | ❌ |
 | 16 | `curl \| sh` install | ✅ | ❌ | ✅ | ❌ | ❌ |
 | 17 | ArtiPACKED — `.git/` in artifact | ✅ | ✅ | ❌ | ❌ | ❌ |
-| 18 | Composite action `${{ inputs.* }}` injection | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 18 | Composite action `${{ inputs.* }}` injection | ✅ | ❌ | ❌ | ❌ | ❌ |
 | 19 | Codecov-style trusted-installer | ✅ | ❌ | ❌ | ❌ | ❌ |
 | 20 | Dependency confusion (Birsan) | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 21 | Matrix expansion injection | ✅ | ✅ | ❌ | ❌ | ❌ |
 | 22 | GCP OIDC over-broad WIF | ✅ | ❌ | ❌ | ❌ | ❌ |
 | 23 | `github-actions[bot]` branch-protection bypass | ✅ | ❌ | ❌ | ❌ | ❌ |
 | 24 | Third-party webhook exfiltration | ✅ | ❌ | ❌ | ❌ | ❌ |
-| 25 | Environment branch-pattern bypass | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 25 | Environment branch-pattern bypass | ✅ | ❌ | ❌ | ❌ | ❌ |
 | 26 | GitHub App token over-scope | ✅ | ✅ | ❌ | ❌ | ❌ |
 | 27 | Secret leak in workflow logs | ✅ | ❌ | ❌ | ❌ | ❌ |
-| 28 | Reusable workflow `${{ inputs.* }}` injection | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 28 | Reusable workflow `${{ inputs.* }}` injection | ✅ | ❌ | ❌ | ❌ | ❌ |
 | 29 | npm lifecycle-script RCE | ❌ | ❌ | ❌ | ❌ | ❌ |
-|    | **canonical bugs caught** | **24 ✅** | **12 ✅** | **8 ✅** | **4 ✅** | **4 ✅** |
+|    | **canonical bugs caught** | **27 ✅** | **12 ✅** | **8 ✅** | **4 ✅** | **4 ✅** |
 <!-- /AUTOGEN:matrix -->
 
 > [!IMPORTANT]

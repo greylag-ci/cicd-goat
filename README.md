@@ -43,7 +43,7 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 <!-- AUTOGEN:leaderboard -->
 | Scanner | Scenarios caught (of 29) |
 | :--- | :--- |
-| pipeline&#x2011;check | **24 ✅** |
+| pipeline&#x2011;check | **27 ✅** |
 | zizmor | **12 ✅** |
 | poutine | **8 ✅** |
 | KICS | **4 ✅** |
@@ -56,13 +56,13 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 > [!NOTE]
 > **Corpus scope.** All 29 scenarios are GitHub Actions workflows. Scanners
 > whose primary design target is something else (container scanning,
-> source-tree secret detection) aren't included here — they'd score 0/27
+> source-tree secret detection) aren't included here — they'd score 0/29
 > on a corpus they were never built for. Trivy belongs in a container/IaC
 > bench; Gitleaks in a source-secrets bench.
 
 ## What's in this repo
 
-- **[Scenarios](scenarios/README.md)** — 27 vulnerable workflows, each
+- **[Scenarios](scenarios/README.md)** — 29 vulnerable workflows, each
   with its own writeup (exploitation walkthrough, per-scanner coverage,
   the fix). Indexed by attack class and CICD-SEC category.
 - **[Full matrix](docs/MATRIX.md)** — per-(scenario × scanner) verdict
@@ -110,12 +110,13 @@ if anything moved. See
 
 This repo is the test range; [`pipeline-check`](https://github.com/greylag-ci/pipeline-check-vscode)
 is one of the engines being tested. What it does differently on this
-corpus (narrow but real): catches one more scenario than the next-best
-scanner (zizmor); ships a rule family that fires when a workflow is
-*missing* a security control (SBOM, SLSA, artifact signing, vuln-scan,
-`environment:` binding, `timeout-minutes`, container digest pinning)
-— no other scanner here carries those rules at all; covers 22 CI/CD
-providers and manifest types beyond GitHub Actions.
+corpus (narrow but real): catches fifteen more scenarios than the
+next-best scanner (zizmor); ships a rule family that fires when a
+workflow is *missing* a security control (SBOM, SLSA, artifact
+signing, vuln-scan, `environment:` binding, `timeout-minutes`,
+container digest pinning) — no other scanner here carries those
+rules at all; covers 23 CI/CD providers and manifest types beyond
+GitHub Actions.
 Inline VS Code experience via the
 [Pipeline-Check extension](https://github.com/greylag-ci/pipeline-check-vscode);
 the Python rule engine lives at

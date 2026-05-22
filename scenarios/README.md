@@ -54,7 +54,7 @@ but no runner is ever assigned.
 | CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17 |
 | CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22 |
 | CICD-SEC-8: Ungoverned Usage of Third-Party Services          | ✅ | 24 |
-| CICD-SEC-9: Improper Artifact Integrity Validation            | ✅ | 5, 7, 9, 16, 17, 19 |
+| CICD-SEC-9: Improper Artifact Integrity Validation            | ✅ | 5, 7, 9, 17, 19 |
 | CICD-SEC-10: Insufficient Logging and Visibility              | ✅ | 27 |
 
 Every risk in the top 10 has at least one scenario. See the
