@@ -36,12 +36,13 @@ means full repo takeover.
 
 ## Expected scanner coverage
 
-| Scanner   | Detection |
-|-----------|-----------|
-| zizmor    | `artipacked` (named after the original Unit 42 disclosure) |
-| poutine   | `artifact_with_git_dir` |
-| checkov   | partial |
-| kics      | partial |
+| Scanner        | Detection |
+|----------------|-----------|
+| pipeline-check | `GHA-037` (persist-credentials default fires for the token-in-`.git/config` half) + `GHA-019` (`.git/config` leaked through the uploaded artifact) + `GHA-066` (the `path: .` workspace-wildcard upload half, shipped in v1.4.0) |
+| zizmor         | `artipacked` (named after the original Unit 42 disclosure; catches both halves in one fire) |
+| poutine        | `artifact_with_git_dir` |
+| checkov        | partial |
+| kics           | partial |
 
 ## Fix
 

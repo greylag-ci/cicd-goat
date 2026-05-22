@@ -66,22 +66,23 @@ any one tool. The full per-scenario table is in [MATRIX.md](MATRIX.md).
 }
 ```
 
-| scanner            | sees workflow                                         | sees trust-policy.json |
-| :----------------- | :--------------------------------------------------- | :--------------------: |
-| **pipeline-check** | ❌&nbsp;_Hygiene fires (no SBOM/SLSA/signing/vuln-scan); no IAM-aware rule yet_ | ❌                     |
-| zizmor             | ❌                                                    | ❌                     |
-| poutine            | ❌                                                    | ❌                     |
+| scanner            | sees workflow                                                                  | sees trust-policy.json |
+| :----------------- | :----------------------------------------------------------------------------- | :--------------------: |
+| **pipeline-check** | ✅&nbsp;`GHA-062` walks the workflow's repo for `*trust-polic*.json`, parses the trust policy directly, and flags `StringLike :sub` values that match more than one repo | (caught via the workflow lane) |
+| zizmor             | ❌                                                                              | ❌                     |
+| poutine            | ❌                                                                              | ❌                     |
 | KICS               | ❌&nbsp;_Catches `aws-actions/...@v4` as unpinned action; misses the wildcard sub_ | ❌                     |
-| Checkov            | ❌                                                    | ❌                     |
+| Checkov            | ❌                                                                              | ❌                     |
 
-> **This is a comparison-wide miss.** Both halves of the canonical bug
-> — the workflow's `role-to-assume` ARN reference and the IAM trust
-> policy's wildcard `sub` — go uncaught by every scanner in this run.
-> Pipeline-check fires the supply-chain hygiene rules on the workflow
-> (no SBOM / SLSA / signing) and KICS fires its unpinned-actions rule,
-> but neither lands on the actual OIDC misconfig. Honest benchmark for
-> the hard end; the kind of scenario the *next* generation of cross-
-> scope rules needs to learn.
+> **Pipeline-check is the only scanner here that crosses scopes for
+> this scenario.** GHA-062 was added in the v1.3 cycle precisely for
+> cicd-goat scenarios 10 and 22: instead of asking the workflow file
+> alone (where the bug isn't visible), the rule walks the repo for
+> sibling `trust-policy*.json` and Terraform / Pulumi WIF declarations
+> and flags broad `:sub` claims directly. The other four scanners stay
+> on the workflow side, so the actual misconfig — `"repo:*"` in the
+> trust policy JSON — slips past them. The OIDC-step half (KICS's
+> unpinned-actions noise) is a false anchor, not the canonical bug.
 
 ---
 
@@ -105,17 +106,21 @@ any one tool. The full per-scenario table is in [MATRIX.md](MATRIX.md).
     path: .            # ← uploads .git/, including .git/config with the token
 ```
 
-| scanner            | verdict                                                                                 |
-| :----------------- | :-------------------------------------------------------------------------------------- |
-| zizmor             | ✅&nbsp;`artipacked` (the rule was named after this very disclosure; catches both halves) |
-| **pipeline-check** | ⚠️&nbsp;`GHA-037` catches the `persist-credentials` half; no dedicated rule yet for `upload-artifact path: .` |
-| poutine            | ❌                                                                                      |
-| KICS               | ❌                                                                                      |
-| Checkov            | ❌                                                                                      |
+| scanner            | verdict                                                                                                                |
+| :----------------- | :--------------------------------------------------------------------------------------------------------------------- |
+| **pipeline-check** | ✅&nbsp;`GHA-037` catches the `persist-credentials` half; `GHA-019` catches the `.git/config` leak through the artifact; `GHA-066` (v1.4.0) catches the `upload-artifact path: .` workspace-wildcard half |
+| zizmor             | ✅&nbsp;`artipacked` (the rule was named after this disclosure; catches both halves in one fire)                           |
+| poutine            | ❌                                                                                                                     |
+| KICS               | ❌                                                                                                                     |
+| Checkov            | ❌                                                                                                                     |
 
-> Honest assessment: **zizmor is the only scanner here that ships a
-> rule precisely for this disclosure.** Pipeline-check catches half;
-> the rest miss entirely.
+> Two scanners ship rules precisely for this disclosure. **Zizmor**
+> catches both halves with one named rule (`artipacked`).
+> **Pipeline-check** catches both halves with three rules across two
+> concerns: the persist-credentials default (`GHA-037`), the
+> credential-bearing artifact (`GHA-019`), and the workspace-wildcard
+> upload (`GHA-066`, shipped in v1.4.0 from the zizmor parity sweep).
+> The other three scanners miss entirely.
 
 ---
 
@@ -143,17 +148,18 @@ any one tool. The full per-scenario table is in [MATRIX.md](MATRIX.md).
 
 ---
 
-## ⑤ The hygiene baseline — a scope difference, not a coverage one
+## ⑤ The hygiene baseline — a scope difference layered on top of a coverage one
 
-The strict per-scenario matrix shows pipeline-check leading on
-canonical-bug coverage by one scenario over zizmor — close enough that
-the more interesting comparison isn't the leaderboard. It's that
-pipeline-check ships an **absence-of-control** rule family that the
-other six scanners don't carry at all: rules that fire when a workflow
-*lacks* an expected step (SBOM, SLSA, signing, vuln-scan, etc.).
-Pipeline-check 1.4.0 carries **78 rules** across the `GHA-*`,
-`TAINT-*`, and `AC-*` (attack-chain) families. Verbatim rule list
-from the latest run:
+The strict per-scenario matrix shows pipeline-check leading by fifteen
+scenarios over zizmor (27 ✅ vs 12 ✅), so the leaderboard *is* part of
+the story now — but it's still not the whole story. Pipeline-check also
+ships an **absence-of-control** rule family that the other four
+scanners in this comparison don't carry at all: rules that fire when a
+workflow *lacks* an expected step (SBOM, SLSA, signing, vuln-scan,
+etc.). Pipeline-check 1.4.0 carries **78 rules** across the `GHA-*`,
+`TAINT-*`, and `AC-*` (attack-chain) families. The hygiene subset
+fires on every workflow file regardless of canonical bug; the verbatim
+list from the latest run:
 
 ```
 GHA-006   Artifacts not signed (no cosign/sigstore step)

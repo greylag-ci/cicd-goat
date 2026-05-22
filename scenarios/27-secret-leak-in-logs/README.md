@@ -39,7 +39,7 @@ leaks the secret (combine with Scenario 02), do it once and harvest.
 
 | Scanner            | Detection                                                                            |
 | :----------------- | :----------------------------------------------------------------------------------- |
-| **pipeline-check** | ✅ `GHA-033` (`set -x` + secret-bound env var anywhere in the body); derived-value echoes still slip past |
+| **pipeline-check** | ✅ `GHA-033` catches the `set -x` + secret-bound env-var shape this scenario uses. Sibling rule `GHA-087` (v1.4.0) covers the related derived-value echo shape (`sha256sum`, `${TOKEN:0:8}`, base64) that GitHub's exact-match secret masker doesn't redact — this scenario doesn't carry that shape so GHA-087 stays silent here, but a workflow that does carry it would fire both rules |
 | zizmor             | ❌                                                                                   |
 | poutine            | ❌                                                                                   |
 | KICS               | ❌                                                                                   |
