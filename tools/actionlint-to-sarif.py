@@ -1,17 +1,19 @@
 """Convert actionlint JSON output to SARIF v2.1.0.
 
 actionlint has no native SARIF emitter. Its `-format '{{json .}}'` flag
-prints every finding as a JSON array of {Message, Filepath, Line,
-Column, Kind, Snippet}; this script wraps that array as a single SARIF
-run consumable by `github/codeql-action/upload-sarif` and by
+prints every finding as a JSON array; each entry's keys are lowercase
+per actionlint's json struct tags (verified against rhysd/actionlint
+error.go): `message`, `filepath`, `line`, `column`, `kind`, `snippet`,
+`end_column`. This script wraps that array as a single SARIF run
+consumable by `github/codeql-action/upload-sarif` and by
 `tools/regen-readme.py`.
 
-The actionlint `Kind` is preserved verbatim as the SARIF `ruleId` so
+The actionlint `kind` is preserved verbatim as the SARIF `ruleId` so
 `scenarios.yaml`'s `expected:` lists can reference the upstream rule
 names (`expression`, `shellcheck`, `credentials`, ...).
 
 Usage:
-    actionlint -format '{{json .}}' .github/workflows/ \
+    actionlint -format '{{json .}}' \
         | python tools/actionlint-to-sarif.py > actionlint.sarif
 """
 from __future__ import annotations
@@ -26,7 +28,7 @@ SARIF_SCHEMA = (
 
 
 def to_sarif(findings: list[dict]) -> dict:
-    rule_ids = sorted({f.get("Kind") or "actionlint" for f in findings})
+    rule_ids = sorted({f.get("kind") or "actionlint" for f in findings})
     return {
         "$schema": SARIF_SCHEMA,
         "version": "2.1.0",
@@ -47,19 +49,22 @@ def to_sarif(findings: list[dict]) -> dict:
                 },
                 "results": [
                     {
-                        "ruleId": f.get("Kind") or "actionlint",
+                        "ruleId": f.get("kind") or "actionlint",
                         "level": "warning",
-                        "message": {"text": f.get("Message") or ""},
+                        "message": {"text": f.get("message") or ""},
                         "locations": [
                             {
                                 "physicalLocation": {
+                                    # Filepath is omitted by actionlint when input came from
+                                    # stdin; fall back to a non-empty sentinel so the GitHub
+                                    # Code Scanning ingester accepts the artifactLocation.
                                     "artifactLocation": {
-                                        "uri": f.get("Filepath") or "",
+                                        "uri": f.get("filepath") or "unknown",
                                         "uriBaseId": "%SRCROOT%",
                                     },
                                     "region": {
-                                        "startLine": f.get("Line") or 1,
-                                        "startColumn": f.get("Column") or 1,
+                                        "startLine": f.get("line") or 1,
+                                        "startColumn": f.get("column") or 1,
                                     },
                                 }
                             }
