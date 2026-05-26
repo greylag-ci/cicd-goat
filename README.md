@@ -49,9 +49,9 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 <!-- AUTOGEN:leaderboard -->
 | Scanner | Scenarios caught (of 38) |
 | :--- | :--- |
-| pipeline&#x2011;check | **33 ✅** |
+| pipeline&#x2011;check | **31 ✅** |
 | zizmor | **16 ✅** |
-| poutine | **13 ✅** |
+| poutine | **12 ✅** |
 | octoscan | **12 ✅** |
 | Checkov | **9 ✅** |
 | KICS | **7 ✅** |

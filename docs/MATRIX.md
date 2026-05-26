@@ -37,7 +37,7 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 17 | ArtiPACKED — `.git/` in artifact | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | 18 | Composite action `${{ inputs.* }}` injection | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | 19 | Codecov-style trusted-installer | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| 20 | Dependency confusion (Birsan) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 20 | Dependency confusion (Birsan) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 21 | Matrix expansion injection | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | 22 | GCP OIDC over-broad WIF | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 23 | `github-actions[bot]` branch-protection bypass | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
@@ -46,7 +46,7 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 26 | GitHub App token over-scope | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 27 | Secret leak in workflow logs | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 28 | Reusable workflow `${{ inputs.* }}` injection | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| 29 | npm lifecycle-script RCE | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 29 | npm lifecycle-script RCE | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 30 | Script injection via issue body | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | 31 | Script injection via `github.head_ref` | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
 | 32 | Script injection via commit message | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
@@ -54,9 +54,9 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 34 | `ACTIONS_ALLOW_UNSECURE_COMMANDS` re-enabled | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ | ✅ |
 | 35 | `cosign verify` without identity binding | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 36 | Environment secret read without consumer binding | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| 37 | Confused-deputy auto-merge via bot-identity gate | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| 37 | Confused-deputy auto-merge via bot-identity gate | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 38 | Recursive submodule checkout from PR | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-|    | **canonical bugs caught** | **33 ✅** | **16 ✅** | **13 ✅** | **7 ✅** | **9 ✅** | **6 ✅** | **12 ✅** |
+|    | **canonical bugs caught** | **31 ✅** | **16 ✅** | **12 ✅** | **7 ✅** | **9 ✅** | **6 ✅** | **12 ✅** |
 <!-- /AUTOGEN:matrix -->
 
 > [!IMPORTANT]
