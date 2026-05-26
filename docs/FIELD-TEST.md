@@ -13,7 +13,7 @@ any one tool. The full per-scenario table is in [MATRIX.md](MATRIX.md).
 > something else — they're the same finding on every file and tell
 > you nothing comparative. Pipeline-check carries a wide hygiene
 > baseline that the field doesn't ship; that's a separate, real
-> differentiator covered in [§ ⑤](#-the-hygiene-baseline--a-scope-difference-not-a-coverage-one).
+> differentiator covered in [§ ⑤](#-the-hygiene-baseline--a-scope-difference-layered-on-top-of-a-coverage-one).
 
 ---
 
@@ -112,7 +112,7 @@ any one tool. The full per-scenario table is in [MATRIX.md](MATRIX.md).
 
 | scanner            | verdict                                                                                                                |
 | :----------------- | :--------------------------------------------------------------------------------------------------------------------- |
-| **pipeline-check** | ✅&nbsp;`GHA-037` catches the `persist-credentials` half; `GHA-019` catches the `.git/config` leak through the artifact; `GHA-066` (v1.4.0) catches the `upload-artifact path: .` workspace-wildcard half |
+| **pipeline-check** | ✅&nbsp;`GHA-037` catches the `persist-credentials` half; `GHA-019` catches the `.git/config` leak through the artifact |
 | zizmor             | ✅&nbsp;`artipacked` (the rule was named after this disclosure; catches both halves in one fire)                           |
 | poutine            | ❌                                                                                                                     |
 | KICS               | ❌                                                                                                                     |
@@ -122,13 +122,12 @@ any one tool. The full per-scenario table is in [MATRIX.md](MATRIX.md).
 
 > Three scanners ship rules precisely for this disclosure. **Zizmor**
 > catches both halves with one named rule (`artipacked`).
-> **Pipeline-check** catches both halves with three rules across two
-> concerns: the persist-credentials default (`GHA-037`), the
-> credential-bearing artifact (`GHA-019`), and the workspace-wildcard
-> upload (`GHA-066`, shipped in v1.4.0 from the zizmor parity sweep).
-> **Octoscan**'s `dangerous-artefact` flags the upload step shipping
-> sensitive files but doesn't separately attribute the
-> persist-credentials default. The other four scanners miss entirely.
+> **Pipeline-check** catches both halves with two rules across two
+> concerns: the persist-credentials default (`GHA-037`) and the
+> credential-bearing artifact (`GHA-019`). **Octoscan**'s
+> `dangerous-artefact` flags the upload step shipping sensitive files
+> but doesn't separately attribute the persist-credentials default.
+> The other four scanners miss entirely.
 
 ---
 
@@ -150,8 +149,8 @@ any one tool. The full per-scenario table is in [MATRIX.md](MATRIX.md).
 | :----------------- | :-----: | :------------------------------------------------------ |
 | **pipeline-check** |   ✅    | `GHA-037` — _actions/checkout persists `GITHUB_TOKEN` into `.git/config`_ |
 | zizmor             |   ✅    | `artipacked`                                            |
-| poutine            |   ⚠️   | `github_action_from_unverified_creator_used` — flags the third-party action, not the persist-credentials root cause |
-| KICS               |   ⚠️   | `555ab8f9-…` — fires on `actions/checkout@v4` as unpinned, not on persist-credentials specifically |
+| poutine            |   ✅    | `github_action_from_unverified_creator_used` — scenarios.yaml credits this rule as catching the canonical bug, though it nominally flags the third-party action, not the persist-credentials default |
+| KICS               |   ✅    | `555ab8f9-…` — scenarios.yaml credits the unpinned-actions rule here too, since `actions/checkout@v4` IS the rule's target and the persist-credentials half rides on the same `uses:` line |
 | Checkov            |   ❌    | —                                                       |
 | actionlint         |   ❌    | —                                                       |
 | octoscan           |   ❌    | — _`dangerous-checkout` only fires on the privileged-trigger shape (workflow_run / pull_request_target), not on the default persist-credentials behavior of a regular checkout_ |
@@ -184,10 +183,13 @@ GHA-037   actions/checkout persists GITHUB_TOKEN into .git/config
 ```
 
 The four supply-chain hygiene rules (`GHA-006`/`007`/`020`/`024`) fire
-together on **scenarios 10, 17, and 22** — the deploy-style workflows
-whose targets look like production releases — bringing their total
-real-fire count to **8 rules each.** No other scanner in this
-comparison emits any of those four rules at all.
+alongside the canonical-bug rule on every scenario whose workflow
+looks like a deploy-style build — the strict matrix scores none of
+them because they don't *name the canonical bug for that scenario*,
+but they shift pipeline-check's *total* finding count well above its
+peers. No other scanner in this comparison emits any of those four
+rules at all; see [RULE-FIRINGS.md](RULE-FIRINGS.md) for the per-
+scenario breakdown of which rules each scanner actually fired.
 
 The strict matrix below scores only the canonical bug per scenario.
 The hygiene-baseline rules are a separate axis: whether you want a
