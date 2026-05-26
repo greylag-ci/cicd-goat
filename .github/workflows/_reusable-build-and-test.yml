@@ -16,6 +16,13 @@ on:
         required: false
         default: ''
 
+# Reusable workflows inherit the caller's permissions when no
+# top-level block is set. Pin to least-privilege so an unsuspecting
+# caller doesn't unintentionally grant this scenario more than it
+# advertises.
+permissions:
+  contents: read
+
 jobs:
   build:
     if: false

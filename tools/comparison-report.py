@@ -44,11 +44,11 @@ def iter_results(sarif: dict):
 def result_locations(result: dict) -> list[str]:
     paths = []
     for loc in result.get("locations", []) or []:
-        uri = (
-            (loc.get("physicalLocation", {}) or {})
-            .get("artifactLocation", {})
-            .get("uri")
-        )
+        # Chain `or {}` on every hop — any of these can be JSON `null`
+        # (not just missing) on malformed SARIF, and .get on None raises.
+        phys = loc.get("physicalLocation") or {}
+        art = phys.get("artifactLocation") or {}
+        uri = art.get("uri")
         if uri:
             paths.append(uri)
     return paths

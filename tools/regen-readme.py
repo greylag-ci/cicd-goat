@@ -56,7 +56,15 @@ SEVERITY_LABELS = {
     "low":      "\U0001f535 low",        # 🔵
 }
 
-SCENARIO_RE = re.compile(r"scenario-(\d+)-")
+# Matches either the canonical workflow filename (`scenario-NN-...yml`)
+# or a sibling file inside the scenario's writeup dir
+# (`scenarios/NN-.../action/action.yml`, `scenarios/NN-.../trust-policy.json`,
+# etc.). The latter form lets a scanner that walks composite-action /
+# trust-policy / package.json siblings attribute its finding to the
+# scenario whose dir contains them. Without the second alternative,
+# scenarios 18 / 20 / 28's cross-file sinks silently disappear from
+# the matrix.
+SCENARIO_RE = re.compile(r"(?:scenario-|scenarios/)(\d+)-")
 REPO_DEFAULT = "greylag-ci/cicd-goat"
 WORKFLOW_DEFAULT = "scanner-comparison.yml"
 
@@ -83,9 +91,12 @@ def parse_sarif_dir(sarif_dir: Path) -> dict[str, dict[int, set[str]]]:
             for r in run.get("results", []) or []:
                 rid = r.get("ruleId") or ""
                 for loc in r.get("locations", []) or []:
-                    uri = ((loc.get("physicalLocation", {}) or {})
-                           .get("artifactLocation", {})
-                           .get("uri") or "")
+                    # Each hop can be JSON `null` (not just missing) for malformed
+                    # SARIF — chain `or {}` everywhere so AttributeError doesn't
+                    # abort the whole regen on one bad scanner output.
+                    phys = loc.get("physicalLocation") or {}
+                    art = phys.get("artifactLocation") or {}
+                    uri = art.get("uri") or ""
                     m = SCENARIO_RE.search(uri)
                     if m:
                         d.setdefault(int(m.group(1)), set()).add(rid)
@@ -116,7 +127,9 @@ def download_latest_run_sarif(repo: str, workflow: str, dest: Path) -> None:
 
 
 def verdict(scenario: dict, scanner: dict, sarif_data: dict) -> str:
-    expected = scenario["expected"].get(scanner["id"])
+    # Use .get() on both hops in case a malformed scenario row omits
+    # `expected:` entirely — KeyError here would abort the whole regen.
+    expected = scenario.get("expected", {}).get(scanner["id"])
     if expected == "na":
         return VERDICT_NA
     if not isinstance(expected, list):
@@ -461,7 +474,14 @@ def main() -> int:
     # every verdict to ❌ and silently corrupt README.md + docs/MATRIX.md.
     # Caught in CI by `if: hashFiles('sarif/**/*.sarif') != ''`; this is
     # the local-run guard.
-    if not sarif_data and not args.allow_empty_sarif:
+    #
+    # Two empty shapes catch the matrix:
+    #   (a) no tools at all — sarif_data == {} (e.g. SARIF dir empty)
+    #   (b) tools present but every per-scenario map empty — e.g. every
+    #       finding URI failed SCENARIO_RE. Without this second check the
+    #       guard passes and every verdict silently flips to ❌.
+    parsed_findings = sum(len(v) for v in sarif_data.values())
+    if (not sarif_data or parsed_findings == 0) and not args.allow_empty_sarif:
         print(
             "error: parsed SARIF contains zero tools — refusing to rewrite "
             "AUTOGEN sections (would mark every verdict ❌). "

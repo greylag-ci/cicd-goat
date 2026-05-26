@@ -7,6 +7,9 @@ One new job in
 Three steps:
 
 1. Install the binary (release tarball, `pip install`, `cargo install`…).
+   Pin the version — the file's safety model is "everything pinned to
+   an immutable artifact." Tools without a checksums file (octoscan,
+   for example) get a manually-computed SHA-256.
 2. Run it with SARIF output.
 3. Upload via `github/codeql-action/upload-sarif` (SHA-pinned, see
    existing jobs in `scanner-comparison.yml`) under a unique
@@ -15,6 +18,43 @@ Three steps:
 Then add a column to **The full matrix** by registering the scanner in
 [`tools/scenarios.yaml`](tools/scenarios.yaml) (`scanners:` list — `id`,
 `sarif_tool`, `label`) and the next `regen-readme.py` run picks it up.
+
+### Gotchas seen so far
+
+The existing scanner jobs in
+[`scanner-comparison.yml`](.github/workflows/scanner-comparison.yml)
+each carry a comment explaining the integration quirks worth knowing
+before adding the next scanner:
+
+- **No native SARIF.** Some scanners (e.g. actionlint) only emit JSON
+  or text. Wrap with a small converter — see
+  [`tools/actionlint-to-sarif.py`](tools/actionlint-to-sarif.py) — and
+  confirm the converter handles the scanner's actual key casing (the
+  actionlint converter originally read PascalCase keys; actionlint
+  marshals lowercase per its Go json tags).
+- **Target-path semantics differ.** octoscan's `scan <dir>` does
+  `WalkDir(<dir>)` looking for `<subdir>/.github/workflows/`, so you
+  pass repo root (`.`), not the workflows dir. Other scanners take
+  the workflows dir directly. Read each tool's `--help` rather than
+  copying the previous job's invocation verbatim.
+- **Third-party action wrappers are brittle.** The
+  `checkmarx/kics-github-action` wrapper depended on Chainguard's
+  `wolfi-base:latest` registry image, which broke our pipeline when
+  upstream went down. The KICS job now invokes
+  `checkmarx/kics:v2.1.20` directly via `docker run` — no wrapper.
+  Prefer direct invocation when the wrapper only adds GHA-specific
+  annotation formatting you don't consume.
+- **SARIF schema strictness.** GitHub Code Scanning rejects SARIF
+  with duplicate `taxonomies[*].taxa` entries (we hit this with KICS;
+  the workaround is a `jq '… | unique'` pass before upload). Test
+  the upload step end-to-end — a valid-looking SARIF file is not the
+  same as one Code Scanning will accept.
+- **Exit-code conventions.** Most scanners exit non-zero when they
+  find issues. Default GHA shell is `bash -e`, so `script: scanner`
+  alone aborts the step. Use `… > out.sarif || true` (zizmor / KICS
+  pattern) or `… || [ $? -eq 1 ]` (pipeline-check pattern) — but be
+  aware the `|| [ $? -eq 1 ]` form has subtle interactions with
+  `set -e` on multi-line scripts that bit us on the actionlint job.
 
 ## Add a scenario
 

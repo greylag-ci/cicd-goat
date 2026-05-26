@@ -35,13 +35,13 @@ overall (a scenario in two categories counts once in each row).
 | :-: | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | 1 | Insufficient flow control | 2 | 2/2 | 0/2 | 0/2 | 0/2 | 0/2 | 0/2 | 0/2 |
 | 2 | Inadequate IAM | 2 | 2/2 | 0/2 | 0/2 | 0/2 | 0/2 | 0/2 | 0/2 |
-| 3 | Dependency chain abuse | 8 | 8/8 | 4/8 | 3/8 | 2/8 | 0/8 | 0/8 | 0/8 |
-| 4 | Poisoned pipeline execution | 13 | 13/13 | 13/13 | 8/13 | 5/13 | 7/13 | 10/13 | 12/13 |
-| 5 | Insufficient PBAC | 5 | 5/5 | 4/5 | 1/5 | 0/5 | 1/5 | 0/5 | 1/5 |
-| 6 | Insufficient credential hygiene | 4 | 4/4 | 3/4 | 1/4 | 2/4 | 1/4 | 0/4 | 1/4 |
-| 7 | Insecure system configuration | 3 | 3/3 | 1/3 | 1/3 | 0/3 | 0/3 | 0/3 | 1/3 |
-| 8 | Ungoverned 3rd-party services | 1 | 1/1 | 0/1 | 0/1 | 0/1 | 1/1 | 0/1 | 0/1 |
-| 9 | Improper artifact integrity validation | 5 | 5/5 | 4/5 | 1/5 | 0/5 | 0/5 | 0/5 | 2/5 |
+| 3 | Dependency chain abuse | 8 | 6/8 | 3/8 | 3/8 | 2/8 | 0/8 | 0/8 | 0/8 |
+| 4 | Poisoned pipeline execution | 13 | 13/13 | 10/13 | 8/13 | 3/13 | 7/13 | 6/13 | 9/13 |
+| 5 | Insufficient PBAC | 5 | 5/5 | 3/5 | 1/5 | 0/5 | 1/5 | 0/5 | 1/5 |
+| 6 | Insufficient credential hygiene | 4 | 4/4 | 3/4 | 1/4 | 2/4 | 0/4 | 0/4 | 1/4 |
+| 7 | Insecure system configuration | 3 | 3/3 | 0/3 | 1/3 | 0/3 | 0/3 | 0/3 | 1/3 |
+| 8 | Ungoverned 3rd-party services | 1 | 1/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 |
+| 9 | Improper artifact integrity validation | 5 | 5/5 | 3/5 | 1/5 | 0/5 | 0/5 | 0/5 | 1/5 |
 | 10 | Insufficient logging & visibility | 1 | 1/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 |
 <!-- /AUTOGEN:cicd-sec-coverage -->
 
@@ -62,9 +62,9 @@ assign to each scenario in
 <!-- AUTOGEN:severity-coverage -->
 | Severity | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan |
 | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| 🔴 critical | 9 | 9/9 | 4/9 | 3/9 | 0/9 | 0/9 | 0/9 | 4/9 |
-| 🟠 high | 18 | 18/18 | 13/18 | 8/18 | 8/18 | 9/18 | 10/18 | 10/18 |
-| 🟡 medium | 6 | 6/6 | 5/6 | 1/6 | 0/6 | 1/6 | 0/6 | 0/6 |
+| 🔴 critical | 9 | 7/9 | 3/9 | 3/9 | 0/9 | 0/9 | 0/9 | 3/9 |
+| 🟠 high | 18 | 18/18 | 10/18 | 8/18 | 6/18 | 7/18 | 6/18 | 8/18 |
+| 🟡 medium | 6 | 6/6 | 3/6 | 1/6 | 0/6 | 1/6 | 0/6 | 0/6 |
 <!-- /AUTOGEN:severity-coverage -->
 
 > If a scanner's critical-row fraction is meaningfully lower than its
@@ -84,21 +84,22 @@ scenarios from the field tested here.
 <!-- AUTOGEN:unique-catches -->
 | #  | Scenario | Solo catcher |
 | :-: | :-- | :-- |
+| 05 | [Cache poisoning via PR title](../scenarios/05-cache-poisoning-pr-controlled/README.md) | **pipeline&#x2011;check** |
 | 10 | [AWS OIDC wildcard `sub`](../scenarios/10-oidc-aws-wildcard-sub/README.md) | **pipeline&#x2011;check** |
 | 11 | [`pip install` no hashes](../scenarios/11-pip-install-no-hashes/README.md) | **pipeline&#x2011;check** |
 | 19 | [Codecov-style trusted-installer](../scenarios/19-codecov-style-installer/README.md) | **pipeline&#x2011;check** |
-| 20 | [Dependency confusion (Birsan)](../scenarios/20-dependency-confusion/README.md) | **pipeline&#x2011;check** |
 | 22 | [GCP OIDC over-broad WIF](../scenarios/22-gcp-oidc-broad-wif/README.md) | **pipeline&#x2011;check** |
 | 23 | [`github-actions[bot]` branch-protection bypass](../scenarios/23-actions-bot-branch-protection-bypass/README.md) | **pipeline&#x2011;check** |
+| 24 | [Third-party webhook exfiltration](../scenarios/24-third-party-webhook-exfil/README.md) | **pipeline&#x2011;check** |
 | 25 | [Environment branch-pattern bypass](../scenarios/25-environment-branch-pattern-bypass/README.md) | **pipeline&#x2011;check** |
 | 27 | [Secret leak in workflow logs](../scenarios/27-secret-leak-in-logs/README.md) | **pipeline&#x2011;check** |
-| 29 | [npm lifecycle-script RCE](../scenarios/29-npm-lifecycle-script-rce/README.md) | **pipeline&#x2011;check** |
+| 28 | [Reusable workflow `${{ inputs.* }}` injection](../scenarios/28-reusable-workflow-input-injection/README.md) | **pipeline&#x2011;check** |
 
 **Solo catches per scanner** — scenarios where this is the only ✅ on the row:
 
 | Scanner | Solo catches |
 | :-- | :-: |
-| pipeline&#x2011;check | **9** |
+| pipeline&#x2011;check | **10** |
 | zizmor | **0** |
 | poutine | **0** |
 | KICS | **0** |
@@ -131,4 +132,4 @@ scenarios from the field tested here.
   (SBOM / SLSA / signing / vuln-scan / `timeout-minutes` /
   digest-pinning) fires on every workflow regardless of canonical
   bug, so it doesn't show up here. See
-  [FIELD-TEST.md § ⑤](FIELD-TEST.md#-the-hygiene-baseline--a-scope-difference-not-a-coverage-one).
+  [FIELD-TEST.md § ⑤](FIELD-TEST.md#-the-hygiene-baseline--a-scope-difference-layered-on-top-of-a-coverage-one).
