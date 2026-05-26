@@ -19,16 +19,22 @@ on:
 permissions:
   contents: read
 
-env:
-  # DANGER: re-enables the legacy stdout-driven workflow commands
-  # `::set-env name=X::value` and `::add-path::dir`.  These were
-  # deprecated for a reason — see Project Zero bug 2070.
-  ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
-
 jobs:
   build:
     if: false
     runs-on: ubuntu-latest
+    # DANGER: re-enables the legacy stdout-driven workflow commands
+    # `::set-env name=X::value` and `::add-path::dir`.  These were
+    # deprecated for a reason — see Project Zero bug 2070.
+    #
+    # Note on placement: the env: block lives on the JOB, not the
+    # workflow, because Checkov's CKV_GHA_1 only scans
+    # `('jobs', 'jobs.*.steps[]')` — workflow-level env is invisible
+    # to it.  YAML-bool `true` (not the string `'true'`) is required
+    # because KICS's unsecured_commands rego does a strict `env == true`
+    # comparison.  Octoscan's unsecure-commands fires on either form.
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
     steps:
       - uses: actions/checkout@v4
       - name: Prepare environment (DANGER)
