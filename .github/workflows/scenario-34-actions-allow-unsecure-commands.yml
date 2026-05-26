@@ -1,0 +1,48 @@
+# scenarios/34-actions-allow-unsecure-commands
+# CICD-SEC-4 (Poisoned Pipeline Execution)
+# Pattern: re-enabling the deprecated `::set-env` / `::add-path` workflow
+# commands via `ACTIONS_ALLOW_UNSECURE_COMMANDS=true`.  The commands
+# were disabled by default after Project Zero bug 2070 demonstrated
+# that any step echoing attacker-controlled text could mutate the
+# runner's PATH or inject environment variables, gaining persistent
+# control over every later step in the same job.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios/34-actions-allow-unsecure-commands/README.md for details.
+
+name: scenario-34-actions-allow-unsecure-commands
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  # DANGER: re-enables the legacy stdout-driven workflow commands
+  # `::set-env name=X::value` and `::add-path::dir`.  These were
+  # deprecated for a reason — see Project Zero bug 2070.
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+
+jobs:
+  build:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare environment (DANGER)
+        run: |
+          # `::set-env` writes to the runner's env, so ANY later step
+          # reads it.  If `value` came from a fetched manifest, an
+          # untrusted commit message, or an issue body, the attacker
+          # now owns every subsequent shell in this job.
+          echo "::set-env name=BUILD_HOST::artifacts.example.com"
+          # `::add-path::dir` prepends to PATH.  Any binary the attacker
+          # placed in /usr/local/build-tools/bin shadows the real one —
+          # so `make` invokes attacker code instead of GNU make.
+          echo "::add-path::/usr/local/build-tools/bin"
+      - name: Deploy using poisoned env (PATH hijacked)
+        run: |
+          echo "Deploying to $BUILD_HOST"
+          make deploy

@@ -37,7 +37,7 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 17 | ArtiPACKED — `.git/` in artifact | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | 18 | Composite action `${{ inputs.* }}` injection | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | 19 | Codecov-style trusted-installer | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| 20 | Dependency confusion (Birsan) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 20 | Dependency confusion (Birsan) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 21 | Matrix expansion injection | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | 22 | GCP OIDC over-broad WIF | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 23 | `github-actions[bot]` branch-protection bypass | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
@@ -46,12 +46,17 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 26 | GitHub App token over-scope | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 27 | Secret leak in workflow logs | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 28 | Reusable workflow `${{ inputs.* }}` injection | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| 29 | npm lifecycle-script RCE | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 29 | npm lifecycle-script RCE | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 30 | Script injection via issue body | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | 31 | Script injection via `github.head_ref` | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
 | 32 | Script injection via commit message | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
 | 33 | Script injection via comment body | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-|    | **canonical bugs caught** | **31 ✅** | **16 ✅** | **12 ✅** | **6 ✅** | **8 ✅** | **6 ✅** | **11 ✅** |
+| 34 | `ACTIONS_ALLOW_UNSECURE_COMMANDS` re-enabled | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ | ✅ |
+| 35 | `cosign verify` without identity binding | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 36 | Environment secret read without consumer binding | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 37 | Confused-deputy auto-merge via bot-identity gate | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| 38 | Recursive submodule checkout from PR | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+|    | **canonical bugs caught** | **33 ✅** | **16 ✅** | **13 ✅** | **7 ✅** | **9 ✅** | **6 ✅** | **12 ✅** |
 <!-- /AUTOGEN:matrix -->
 
 > [!IMPORTANT]
@@ -104,6 +109,11 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 31 | [Script injection via `github.head_ref`](../scenarios/31-script-injection-head-ref/README.md) | 4 | 🟠 high |
 | 32 | [Script injection via commit message](../scenarios/32-script-injection-commit-message/README.md) | 4 | 🟠 high |
 | 33 | [Script injection via comment body](../scenarios/33-script-injection-comment-body/README.md) | 4 | 🟠 high |
+| 34 | [`ACTIONS_ALLOW_UNSECURE_COMMANDS` re-enabled](../scenarios/34-actions-allow-unsecure-commands/README.md) | 4 | 🟠 high |
+| 35 | [`cosign verify` without identity binding](../scenarios/35-cosign-verify-no-identity-binding/README.md) | 3 · 9 | 🟠 high |
+| 36 | [Environment secret read without consumer binding](../scenarios/36-environment-secret-no-binding/README.md) | 5 · 2 | 🟠 high |
+| 37 | [Confused-deputy auto-merge via bot-identity gate](../scenarios/37-confused-deputy-auto-merge/README.md) | 1 | 🟠 high |
+| 38 | [Recursive submodule checkout from PR](../scenarios/38-submodule-trust-from-pr/README.md) | 3 · 4 | 🟠 high |
 <!-- /AUTOGEN:scenarios-index -->
 
 > [!NOTE]

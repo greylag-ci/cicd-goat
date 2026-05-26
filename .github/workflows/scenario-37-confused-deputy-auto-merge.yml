@@ -1,0 +1,45 @@
+# scenarios/37-confused-deputy-auto-merge
+# CICD-SEC-1 (Insufficient Flow Control Mechanisms)
+# Pattern: an auto-approve / auto-merge workflow gated only by a
+# `github.actor == '<bot>[bot]'` check.  Synacktiv demonstrated
+# (https://www.synacktiv.com/publications/github-actions-exploitation-dependabot)
+# that an attacker can stage their own dependabot PR on a fork and
+# then bridge it onto the main repo so the triggering actor IS the
+# bot — passing the `if:` check and getting their changes auto-merged
+# with no human review.  The same pattern applies to any bot-identity
+# allowlist (renovate, github-actions, etc.).
+#
+# Safety: every job is gated with `if: false` rather than the
+# original `if: github.actor == 'dependabot[bot]'` — see README for
+# the unsafe form.
+# See scenarios/37-confused-deputy-auto-merge/README.md for details.
+
+name: scenario-37-confused-deputy-auto-merge
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  auto-approve-and-merge:
+    # DANGER: original is `if: github.actor == 'dependabot[bot]'` —
+    # bot-identity allowlist as the only gate, bypassable per the
+    # Synacktiv writeup linked above.  Replaced here with `if: false`
+    # for safety.
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto-approve dependabot PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr review --approve "${{ github.event.pull_request.html_url }}"
+      - name: Enable auto-merge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge --squash --auto "${{ github.event.pull_request.html_url }}"

@@ -1,13 +1,18 @@
 # Scenarios
 
-Thirty-three deliberately-vulnerable GitHub Actions workflows, each
+Thirty-eight deliberately-vulnerable GitHub Actions workflows, each
 demonstrating one canonical attack pattern from the modern threat
 landscape. Scenarios 30–33 are **variants** of scenario 02 that probe
 each scanner's untrusted-input list across four different
 `github.event.*` contexts (issue body, head_ref, commit message,
 comment body) — they share scenario 02's `expected:` rules so a
 scanner that scopes its rule narrower than its competitors surfaces as
-drift on the matrix. Every scenario lives as a runnable-but-gated workflow at
+drift on the matrix. Scenarios 34–38 broaden the corpus: a Project-
+Zero-bug-2070 `ACTIONS_ALLOW_UNSECURE_COMMANDS` revival, a signed-
+but-not-bound `cosign verify`, a cross-job environment-secret leak,
+a confused-deputy auto-merge (Synacktiv's Dependabot exploit), and a
+recursive submodule checkout from a PR. Every scenario lives as a
+runnable-but-gated workflow at
 [`.github/workflows/scenario-NN-*.yml`](../.github/workflows/) so every
 GHA-aware static scanner can analyze it, plus a writeup here.
 
@@ -50,20 +55,25 @@ but no runner is ever assigned.
 | 31 | [Script injection via `github.head_ref`](31-script-injection-head-ref/README.md) | 4 | Variant of 02 — PR branch name |
 | 32 | [Script injection via commit message](32-script-injection-commit-message/README.md) | 4 | Variant of 02 — `head_commit.message` |
 | 33 | [Script injection via comment body](33-script-injection-comment-body/README.md) | 4 | Variant of 02 — `comment.body` on `issue_comment` |
+| 34 | [`ACTIONS_ALLOW_UNSECURE_COMMANDS` re-enabled](34-actions-allow-unsecure-commands/README.md) | 4 | Project Zero 2070 — `::set-env` / `::add-path` revival |
+| 35 | [`cosign verify` without identity binding](35-cosign-verify-no-identity-binding/README.md) | 3, 9 | Signed-but-not-bound — keyless verify without identity pin |
+| 36 | [Environment secret read without consumer binding](36-environment-secret-no-binding/README.md) | 5, 2 | Cross-job leak via `needs.<>.outputs.*` |
+| 37 | [Confused-deputy auto-merge via bot-identity gate](37-confused-deputy-auto-merge/README.md) | 1 | Synacktiv Dependabot exploit shape |
+| 38 | [Recursive submodule checkout from PR](38-submodule-trust-from-pr/README.md) | 3, 4 | `submodules: recursive` trusts attacker `.gitmodules` |
 
 ## OWASP CICD-SEC top 10 — full coverage
 
 | Risk | Coverage | Scenarios |
 |:---|:---|:---|
-| CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25 |
-| CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22 |
-| CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29 |
-| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33 |
-| CICD-SEC-5: Insufficient Pipeline-Based Access Controls       | ✅ | 1, 4, 6, 25, 26 |
+| CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25, 37 |
+| CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22, 36 |
+| CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29, 35, 38 |
+| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33, 34, 38 |
+| CICD-SEC-5: Insufficient Pipeline-Based Access Controls       | ✅ | 1, 4, 6, 25, 26, 36 |
 | CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17 |
 | CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22 |
 | CICD-SEC-8: Ungoverned Usage of Third-Party Services          | ✅ | 24 |
-| CICD-SEC-9: Improper Artifact Integrity Validation            | ✅ | 5, 7, 9, 17, 19 |
+| CICD-SEC-9: Improper Artifact Integrity Validation            | ✅ | 5, 7, 9, 17, 19, 35 |
 | CICD-SEC-10: Insufficient Logging and Visibility              | ✅ | 27 |
 
 Every risk in the top 10 has at least one scenario. See the
