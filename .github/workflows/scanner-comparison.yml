@@ -162,13 +162,43 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
         with:
           persist-credentials: false
-      - name: Run KICS
-        uses: checkmarx/kics-github-action@05aa5eb70eede1355220f4ca5238d96b397e30a6  # v2.1.20
-        with:
-          path: '.'
-          output_path: kics-results
-          output_formats: 'sarif'
-          ignore_on_exit: results
+      - name: Run KICS via Docker (bypass action wrapper — upstream Chainguard outage)
+        # The `checkmarx/kics-github-action` wrapper builds its own image at
+        # runtime from a Dockerfile that references `cgr.dev/chainguard/wolfi-base`,
+        # and Chainguard's registry has been returning HTTP 500 ("too many
+        # connections") since around 2026-05-26 — both `:latest` and digest-pinned
+        # references fail. The action's only value-add over the underlying scanner
+        # is GHA-specific annotation formatting, which this comparison doesn't
+        # use (we only consume the SARIF upload).
+        #
+        # Solution: invoke checkmarx/kics directly from Docker Hub (no Chainguard
+        # dependency). The image is pinned by sha256 digest so the build is
+        # reproducible. The kics CLI args mirror what the action wrapper sets
+        # for the same `with:` inputs we previously used.
+        #
+        # KICS v2.1.20 emits `taxonomies[*].taxa` arrays with duplicate entries
+        # (multiple identical CWE definitions), which violates the SARIF v2.1.0
+        # schema (taxa must be unique). The official action wrapper runs a
+        # node.js post-processor that dedupes these before upload. We do the
+        # same in one jq filter — `unique` performs deep-equality dedup so
+        # genuinely-distinct entries are preserved.
+        run: |
+          set -euo pipefail
+          mkdir -p kics-results
+          docker run --rm \
+            -v "$PWD:/path:ro" \
+            -v "$PWD/kics-results:/results" \
+            checkmarx/kics:v2.1.20@sha256:3e5a268eb8adda2e5a483c9359ddfc4cd520ab856a7076dc0b1d8784a37e2602 \
+            scan \
+              --no-progress \
+              --path /path \
+              --output-path /results \
+              --output-name results \
+              --report-formats sarif \
+              --ignore-on-exit results
+          jq '.runs[].taxonomies |= (. // [] | map(.taxa |= unique))' \
+            kics-results/results.sarif > kics-results/results.fixed.sarif
+          mv kics-results/results.fixed.sarif kics-results/results.sarif
       - uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba  # v4
         if: always()
         with:
