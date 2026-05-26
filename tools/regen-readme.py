@@ -40,6 +40,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 README = ROOT / "README.md"
 MATRIX_DOC = ROOT / "docs" / "MATRIX.md"
+COVERAGE_AXES_DOC = ROOT / "docs" / "COVERAGE-AXES.md"
+RULE_FIRINGS_DOC = ROOT / "docs" / "RULE-FIRINGS.md"
 DATA = ROOT / "tools" / "scenarios.yaml"
 
 VERDICT_FULL = "✅"        # ✅
@@ -201,6 +203,148 @@ def render_scenarios_index(data: dict) -> str:
     return "\n".join(rows)
 
 
+# CICD-SEC category titles (from OWASP project; one-line summary each).
+CICD_SEC_TITLES = {
+    1:  "Insufficient flow control",
+    2:  "Inadequate IAM",
+    3:  "Dependency chain abuse",
+    4:  "Poisoned pipeline execution",
+    5:  "Insufficient PBAC",
+    6:  "Insufficient credential hygiene",
+    7:  "Insecure system configuration",
+    8:  "Ungoverned 3rd-party services",
+    9:  "Improper artifact integrity validation",
+    10: "Insufficient logging & visibility",
+}
+
+
+def _catches(scn: dict, scanner: dict, sarif_data: dict) -> bool:
+    """True if scanner gets ✅ on this scenario."""
+    return verdict(scn, scanner, sarif_data) == VERDICT_FULL
+
+
+def render_cicd_sec_coverage(data: dict, sarif_data: dict) -> str:
+    """One row per CICD-SEC category 1..10; cells show catches/total."""
+    scanners = data["scanners"]
+    # Bucket scenarios by category (a scenario can appear in multiple buckets).
+    by_cat: dict[int, list[dict]] = {c: [] for c in range(1, 11)}
+    for scn in data["scenarios"]:
+        for c in scn["cicd_sec"]:
+            by_cat.setdefault(c, []).append(scn)
+    rows: list[str] = []
+    rows.append("| # | Category | Scenarios | " + " | ".join(s["label"] for s in scanners) + " |")
+    rows.append("| :-: | :-- | :-: | " + " | ".join(":-:" for _ in scanners) + " |")
+    for c in range(1, 11):
+        scns = by_cat.get(c, [])
+        n = len(scns)
+        if n == 0:
+            cells = ["—" for _ in scanners]
+        else:
+            cells = [
+                f"{sum(1 for sc in scns if _catches(sc, s, sarif_data))}/{n}"
+                for s in scanners
+            ]
+        rows.append(
+            f"| {c} | {CICD_SEC_TITLES.get(c, '')} | {n if n else '—'} | "
+            + " | ".join(cells) + " |"
+        )
+    return "\n".join(rows)
+
+
+def render_severity_coverage(data: dict, sarif_data: dict) -> str:
+    """One row per severity tier; cells show catches/total at that tier."""
+    scanners = data["scanners"]
+    order = ["critical", "high", "medium", "low"]
+    by_sev: dict[str, list[dict]] = {sev: [] for sev in order}
+    for scn in data["scenarios"]:
+        by_sev.setdefault(scn["severity"], []).append(scn)
+    rows: list[str] = []
+    rows.append("| Severity | Scenarios | " + " | ".join(s["label"] for s in scanners) + " |")
+    rows.append("| :-- | :-: | " + " | ".join(":-:" for _ in scanners) + " |")
+    for sev in order:
+        scns = by_sev.get(sev, [])
+        n = len(scns)
+        if n == 0:
+            continue
+        label = SEVERITY_LABELS.get(sev, sev)
+        cells = [
+            f"{sum(1 for sc in scns if _catches(sc, s, sarif_data))}/{n}"
+            for s in scanners
+        ]
+        rows.append(f"| {label} | {n} | " + " | ".join(cells) + " |")
+    return "\n".join(rows)
+
+
+def render_rule_firings(data: dict, sarif_data: dict) -> str:
+    """For each scenario, render every rule each scanner fired.
+
+    Annotates rules that are on the scenario's `expected:` canonical-bug
+    list with **bold**, so noise/off-target firings are visually distinct
+    from canonical-bug matches.
+    """
+    scanners = data["scanners"]
+    out: list[str] = []
+    for scn in data["scenarios"]:
+        out.append(f"### Scenario {scn['id']:02d} — {scn['title']}")
+        out.append("")
+        out.append("| Scanner | Rules fired | Verdict |")
+        out.append("| :-- | :-- | :-: |")
+        for s in scanners:
+            fired = sorted(
+                sarif_data.get(s["sarif_tool"], {}).get(scn["id"], set())
+            )
+            expected = scn["expected"].get(s["id"])
+            expected_set: set[str] = (
+                set(expected) if isinstance(expected, list) else set()
+            )
+            if fired:
+                rules_text = ", ".join(
+                    (f"**`{r}`**" if r in expected_set else f"`{r}`")
+                    for r in fired
+                )
+            else:
+                rules_text = "_(none)_"
+            v = verdict(scn, s, sarif_data)
+            out.append(f"| {s['label']} | {rules_text} | {v} |")
+        out.append("")
+    return "\n".join(out).rstrip()
+
+
+def render_unique_catches(data: dict, sarif_data: dict) -> str:
+    """Scenarios where exactly one scanner catches the canonical bug."""
+    scanners = data["scanners"]
+    label = {s["id"]: s["label"] for s in scanners}
+    unique_count: dict[str, int] = {s["id"]: 0 for s in scanners}
+    table_rows: list[str] = []
+    table_rows.append("| #  | Scenario | Solo catcher |")
+    table_rows.append("| :-: | :-- | :-- |")
+    for scn in data["scenarios"]:
+        catchers = [s for s in scanners if _catches(scn, s, sarif_data)]
+        if len(catchers) != 1:
+            continue
+        sid = catchers[0]["id"]
+        unique_count[sid] += 1
+        link = f"../scenarios/{scn['slug']}/README.md"
+        table_rows.append(
+            f"| {scn['id']:02d} | [{scn['title']}]({link}) | **{label[sid]}** |"
+        )
+    # Trailing summary table.
+    summary: list[str] = []
+    summary.append("")
+    summary.append("**Solo catches per scanner** — scenarios where this is the only ✅ on the row:")
+    summary.append("")
+    summary.append("| Scanner | Solo catches |")
+    summary.append("| :-- | :-: |")
+    # Sort by count desc, stable on scanners.yaml order.
+    order = sorted(
+        [s["id"] for s in scanners],
+        key=lambda sid: -unique_count[sid],
+    )
+    for sid in order:
+        summary.append(f"| {label[sid]} | **{unique_count[sid]}** |")
+    return "\n".join(table_rows + summary)
+
+
 def render_badge_line(data: dict) -> str:
     n_scn = len(data["scenarios"])
     n_scan = len(data["scanners"])
@@ -334,6 +478,14 @@ def main() -> int:
         MATRIX_DOC: {
             "matrix":           render_matrix(data, sarif_data),
             "scenarios-index":  render_scenarios_index(data),
+        },
+        COVERAGE_AXES_DOC: {
+            "cicd-sec-coverage": render_cicd_sec_coverage(data, sarif_data),
+            "severity-coverage": render_severity_coverage(data, sarif_data),
+            "unique-catches":    render_unique_catches(data, sarif_data),
+        },
+        RULE_FIRINGS_DOC: {
+            "rule-firings": render_rule_firings(data, sarif_data),
         },
     }
     for path, sections in sections_by_file.items():

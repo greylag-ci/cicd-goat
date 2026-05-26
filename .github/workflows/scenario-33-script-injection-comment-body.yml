@@ -1,0 +1,32 @@
+# scenarios/33-script-injection-comment-body
+# CICD-SEC-4 (Poisoned Pipeline Execution)
+# Variant of scenario 02 — same canonical bug (template injection of
+# attacker-controlled github.event.* into a run: block), different
+# untrusted context: ${{ github.event.comment.body }} from an
+# issue_comment trigger.
+#
+# issue_comment fires on every comment to every issue *and* PR — anyone
+# who can comment (which on public repos is anyone with a GitHub account)
+# can drive this primitive.  The body is plain text from the commenter,
+# interpolated raw into the generated shell.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios/33-script-injection-comment-body/README.md for details.
+
+name: scenario-33-script-injection-comment-body
+
+on:
+  issue_comment:
+    types: [created, edited]
+
+permissions:
+  issues: write
+
+jobs:
+  triage:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo comment for triage (DANGER - direct interpolation)
+        run: |
+          echo "Comment: ${{ github.event.comment.body }}"

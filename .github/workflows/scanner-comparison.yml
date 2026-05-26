@@ -180,9 +180,92 @@ jobs:
           name: kics-sarif
           path: kics-results
 
+  actionlint:
+    name: actionlint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+        with:
+          persist-credentials: false
+      - name: Install actionlint (verified)
+        # Pinned to 1.7.12 + the SHA-256 from the official
+        # actionlint_1.7.12_checksums.txt file shipped with the release.
+        # MIT-licensed; tarball download + checksum match this repo's
+        # safety model (see SAFETY MODEL note at top of this file).
+        run: |
+          set -euo pipefail
+          ACTIONLINT_VERSION=1.7.12
+          ACTIONLINT_SHA256=8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
+          curl -fsSL -o actionlint.tgz \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          echo "${ACTIONLINT_SHA256}  actionlint.tgz" | sha256sum -c -
+          tar -xzf actionlint.tgz actionlint
+      - name: Run actionlint -> SARIF
+        # actionlint has no native SARIF emitter; -format '{{json .}}'
+        # produces a JSON array of findings, which tools/actionlint-to-sarif.py
+        # wraps as a SARIF v2.1.0 run.
+        run: |
+          set -euo pipefail
+          ./actionlint -format '{{json .}}' .github/workflows/ \
+            > actionlint-findings.json || [ $? -eq 1 ]
+          python3 tools/actionlint-to-sarif.py \
+            < actionlint-findings.json > actionlint.sarif
+      - uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba  # v4
+        if: always()
+        with:
+          sarif_file: actionlint.sarif
+          category: actionlint
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
+        if: always()
+        with:
+          name: actionlint-sarif
+          path: actionlint.sarif
+
+  octoscan:
+    name: octoscan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+        with:
+          persist-credentials: false
+      - name: Install octoscan (verified)
+        # Pinned to v0.1.7 + an inline SHA-256 we computed from the
+        # release binary on first integration.  The synacktiv release
+        # doesn't ship a checksums file of its own — this commit fixes
+        # the hash, so any upstream re-upload trips `sha256sum -c -`.
+        # GPL-3.0; we invoke the binary, we don't redistribute its
+        # source, so GPL terms attach to upstream, not to this repo.
+        run: |
+          set -euo pipefail
+          OCTOSCAN_VERSION=0.1.7
+          OCTOSCAN_SHA256=6435e9cc0e6346741367cbb1803e5b545d8e7031d188c733a0b30f768ab6ebe2
+          curl -fsSL -o octoscan \
+            "https://github.com/synacktiv/octoscan/releases/download/v${OCTOSCAN_VERSION}/octoscan"
+          echo "${OCTOSCAN_SHA256}  octoscan" | sha256sum -c -
+          chmod +x octoscan
+      - name: Run octoscan
+        # octoscan emits SARIF v2.1.0 natively (tool.driver.name = "octoscan").
+        # Exit code 1 means findings present — let the SARIF upload tell the story.
+        run: |
+          set -euo pipefail
+          ./octoscan scan --format sarif .github/workflows/ \
+            > octoscan.sarif || [ $? -eq 1 ]
+      - uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba  # v4
+        if: always()
+        with:
+          sarif_file: octoscan.sarif
+          category: octoscan
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
+        if: always()
+        with:
+          name: octoscan-sarif
+          path: octoscan.sarif
+
   summary:
     name: comparison-summary
-    needs: [pipeline-check, zizmor, poutine, checkov, kics]
+    needs: [pipeline-check, zizmor, poutine, checkov, kics, actionlint, octoscan]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5

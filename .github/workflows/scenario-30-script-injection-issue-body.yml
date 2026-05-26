@@ -1,0 +1,30 @@
+# scenarios/30-script-injection-issue-body
+# CICD-SEC-4 (Poisoned Pipeline Execution)
+# Variant of scenario 02 — same canonical bug (template injection of
+# attacker-controlled github.event.* into a run: block), different
+# untrusted context: the issue *body* instead of the title.
+#
+# Probes whether each scanner's untrusted-input list is complete: some
+# scanners scope their rule narrowly to .title and miss .body / other
+# event payload fields.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios/30-script-injection-issue-body/README.md for details.
+
+name: scenario-30-script-injection-issue-body
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  issues: write
+
+jobs:
+  parse:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo issue body (DANGER - direct interpolation)
+        run: |
+          echo "Issue reported: ${{ github.event.issue.body }}"

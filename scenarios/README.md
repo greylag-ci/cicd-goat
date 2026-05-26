@@ -1,8 +1,13 @@
 # Scenarios
 
-Twenty-nine deliberately-vulnerable GitHub Actions workflows, each
+Thirty-three deliberately-vulnerable GitHub Actions workflows, each
 demonstrating one canonical attack pattern from the modern threat
-landscape. Every scenario lives as a runnable-but-gated workflow at
+landscape. Scenarios 30–33 are **variants** of scenario 02 that probe
+each scanner's untrusted-input list across four different
+`github.event.*` contexts (issue body, head_ref, commit message,
+comment body) — they share scenario 02's `expected:` rules so a
+scanner that scopes its rule narrower than its competitors surfaces as
+drift on the matrix. Every scenario lives as a runnable-but-gated workflow at
 [`.github/workflows/scenario-NN-*.yml`](../.github/workflows/) so every
 GHA-aware static scanner can analyze it, plus a writeup here.
 
@@ -41,6 +46,10 @@ but no runner is ever assigned.
 | 27 | [Secret leak in workflow logs](27-secret-leak-in-logs/README.md) | 10 | `set -x` + URL-embedded + derived values |
 | 28 | [Reusable workflow `${{ inputs.* }}` injection](28-reusable-workflow-input-injection/README.md) | 4 | Cross-`workflow_call` taint |
 | 29 | [npm lifecycle-script RCE](29-npm-lifecycle-script-rce/README.md) | 3 | `npm install` runs `preinstall` / `postinstall` |
+| 30 | [Script injection via issue body](30-script-injection-issue-body/README.md) | 4 | Variant of 02 — `.body` instead of `.title` |
+| 31 | [Script injection via `github.head_ref`](31-script-injection-head-ref/README.md) | 4 | Variant of 02 — PR branch name |
+| 32 | [Script injection via commit message](32-script-injection-commit-message/README.md) | 4 | Variant of 02 — `head_commit.message` |
+| 33 | [Script injection via comment body](33-script-injection-comment-body/README.md) | 4 | Variant of 02 — `comment.body` on `issue_comment` |
 
 ## OWASP CICD-SEC top 10 — full coverage
 
@@ -49,7 +58,7 @@ but no runner is ever assigned.
 | CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25 |
 | CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22 |
 | CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29 |
-| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28 |
+| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33 |
 | CICD-SEC-5: Insufficient Pipeline-Based Access Controls       | ✅ | 1, 4, 6, 25, 26 |
 | CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17 |
 | CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22 |

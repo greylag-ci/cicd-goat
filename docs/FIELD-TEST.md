@@ -40,6 +40,8 @@ any one tool. The full per-scenario table is in [MATRIX.md](MATRIX.md).
 | KICS               |   ✅    | `555ab8f9-…` — _Unpinned Actions Full Length Commit SHA_                 |
 | poutine            |   ✅    | `github_action_from_unverified_creator_used` — routes through creator trust, not SHA pinning, but still flags the action for review |
 | Checkov            |   ❌    | —                                                                        |
+| actionlint         |   ❌    | — _generalist linter; no unpinned-action rule_                           |
+| octoscan           |   ❌    | — _`dangerous-action` targets untrusted-artifact misuse, not mutable refs; `repo-jacking` only fires when the referenced org doesn't exist_ |
 
 ---
 
@@ -73,13 +75,15 @@ any one tool. The full per-scenario table is in [MATRIX.md](MATRIX.md).
 | poutine            | ❌                                                                              | ❌                     |
 | KICS               | ❌&nbsp;_Catches `aws-actions/...@v4` as unpinned action; misses the wildcard sub_ | ❌                     |
 | Checkov            | ❌                                                                              | ❌                     |
+| actionlint         | ❌                                                                              | ❌                     |
+| octoscan           | ❌&nbsp;_no rule walks sibling JSON / Terraform; `debug-oidc-action` only notes that the step uses OIDC_ | ❌                     |
 
 > **Pipeline-check is the only scanner here that crosses scopes for
 > this scenario.** GHA-062 was added in the v1.3 cycle precisely for
 > cicd-goat scenarios 10 and 22: instead of asking the workflow file
 > alone (where the bug isn't visible), the rule walks the repo for
 > sibling `trust-policy*.json` and Terraform / Pulumi WIF declarations
-> and flags broad `:sub` claims directly. The other four scanners stay
+> and flags broad `:sub` claims directly. The other six scanners stay
 > on the workflow side, so the actual misconfig — `"repo:*"` in the
 > trust policy JSON — slips past them. The OIDC-step half (KICS's
 > unpinned-actions noise) is a false anchor, not the canonical bug.
@@ -113,14 +117,18 @@ any one tool. The full per-scenario table is in [MATRIX.md](MATRIX.md).
 | poutine            | ❌                                                                                                                     |
 | KICS               | ❌                                                                                                                     |
 | Checkov            | ❌                                                                                                                     |
+| actionlint         | ❌                                                                                                                     |
+| octoscan           | ✅&nbsp;`dangerous-artefact` — _rule is literally "workflow that upload artefacts containing sensitive files"_           |
 
-> Two scanners ship rules precisely for this disclosure. **Zizmor**
+> Three scanners ship rules precisely for this disclosure. **Zizmor**
 > catches both halves with one named rule (`artipacked`).
 > **Pipeline-check** catches both halves with three rules across two
 > concerns: the persist-credentials default (`GHA-037`), the
 > credential-bearing artifact (`GHA-019`), and the workspace-wildcard
 > upload (`GHA-066`, shipped in v1.4.0 from the zizmor parity sweep).
-> The other three scanners miss entirely.
+> **Octoscan**'s `dangerous-artefact` flags the upload step shipping
+> sensitive files but doesn't separately attribute the
+> persist-credentials default. The other four scanners miss entirely.
 
 ---
 
@@ -145,16 +153,18 @@ any one tool. The full per-scenario table is in [MATRIX.md](MATRIX.md).
 | poutine            |   ⚠️   | `github_action_from_unverified_creator_used` — flags the third-party action, not the persist-credentials root cause |
 | KICS               |   ⚠️   | `555ab8f9-…` — fires on `actions/checkout@v4` as unpinned, not on persist-credentials specifically |
 | Checkov            |   ❌    | —                                                       |
+| actionlint         |   ❌    | —                                                       |
+| octoscan           |   ❌    | — _`dangerous-checkout` only fires on the privileged-trigger shape (workflow_run / pull_request_target), not on the default persist-credentials behavior of a regular checkout_ |
 
 ---
 
 ## ⑤ The hygiene baseline — a scope difference layered on top of a coverage one
 
-The strict per-scenario matrix shows pipeline-check leading by fifteen
-scenarios over zizmor (27 ✅ vs 12 ✅), so the leaderboard *is* part of
-the story now — but it's still not the whole story. Pipeline-check also
-ships an **absence-of-control** rule family that the other four
-scanners in this comparison don't carry at all: rules that fire when a
+The strict per-scenario matrix shows pipeline-check leading the field,
+so the leaderboard *is* part of the story now — but it's still not the
+whole story. Pipeline-check also ships an **absence-of-control** rule
+family that the other six scanners in this comparison don't carry at
+all: rules that fire when a
 workflow *lacks* an expected step (SBOM, SLSA, signing, vuln-scan,
 etc.). Pipeline-check 1.4.0 carries **78 rules** across the `GHA-*`,
 `TAINT-*`, and `AC-*` (attack-chain) families. The hygiene subset

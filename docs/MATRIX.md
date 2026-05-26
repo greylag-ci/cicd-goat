@@ -16,46 +16,53 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | —   | not applicable to that scanner's class                   |
 
 <!-- AUTOGEN:matrix -->
-| #  | Scenario | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov |
-| :-:| :--- | :-: | :-: | :-: | :-: | :-: |
-| 01 | `pull_request_target` + fork-head checkout | ✅ | ✅ | ✅ | ❌ | ❌ |
-| 02 | Script injection via issue title | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 03 | Action pinned to mutable ref | ✅ | ✅ | ✅ | ✅ | ❌ |
-| 04 | `GITHUB_TOKEN` `write-all` | ✅ | ❌ | ❌ | ❌ | ✅ |
-| 05 | Cache poisoning via PR title | ✅ | ❌ | ❌ | ❌ | ❌ |
-| 06 | Reusable workflow `secrets: inherit` | ✅ | ✅ | ❌ | ❌ | ❌ |
-| 07 | `workflow_run` artifact RCE | ✅ | ✅ | ✅ | ❌ | ❌ |
-| 08 | Self-hosted runner on public repo | ✅ | ❌ | ✅ | ❌ | ❌ |
-| 09 | Container image `:latest` | ✅ | ✅ | ❌ | ❌ | ❌ |
-| 10 | AWS OIDC wildcard `sub` | ✅ | ❌ | ❌ | ❌ | ❌ |
-| 11 | `pip install` no hashes | ✅ | — | ❌ | ❌ | ❌ |
-| 12 | `persist-credentials` leak | ✅ | ✅ | ✅ | ✅ | ❌ |
-| 13 | `workflow_dispatch` input injection | ✅ | ✅ | ❌ | ❌ | ✅ |
-| 14 | `$GITHUB_ENV` poisoning | ✅ | ✅ | ✅ | ❌ | ✅ |
-| 15 | Hardcoded secret in `env:` | ✅ | ❌ | ❌ | ✅ | ❌ |
-| 16 | `curl \| sh` install | ✅ | ❌ | ✅ | ❌ | ❌ |
-| 17 | ArtiPACKED — `.git/` in artifact | ✅ | ✅ | ❌ | ❌ | ❌ |
-| 18 | Composite action `${{ inputs.* }}` injection | ✅ | ❌ | ❌ | ❌ | ❌ |
-| 19 | Codecov-style trusted-installer | ✅ | ❌ | ❌ | ❌ | ❌ |
-| 20 | Dependency confusion (Birsan) | ❌ | ❌ | ❌ | ❌ | ❌ |
-| 21 | Matrix expansion injection | ✅ | ✅ | ❌ | ❌ | ❌ |
-| 22 | GCP OIDC over-broad WIF | ✅ | ❌ | ❌ | ❌ | ❌ |
-| 23 | `github-actions[bot]` branch-protection bypass | ✅ | ❌ | ❌ | ❌ | ❌ |
-| 24 | Third-party webhook exfiltration | ✅ | ❌ | ❌ | ❌ | ❌ |
-| 25 | Environment branch-pattern bypass | ✅ | ❌ | ❌ | ❌ | ❌ |
-| 26 | GitHub App token over-scope | ✅ | ✅ | ❌ | ❌ | ❌ |
-| 27 | Secret leak in workflow logs | ✅ | ❌ | ❌ | ❌ | ❌ |
-| 28 | Reusable workflow `${{ inputs.* }}` injection | ✅ | ❌ | ❌ | ❌ | ❌ |
-| 29 | npm lifecycle-script RCE | ❌ | ❌ | ❌ | ❌ | ❌ |
-|    | **canonical bugs caught** | **27 ✅** | **12 ✅** | **8 ✅** | **4 ✅** | **4 ✅** |
+| #  | Scenario | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan |
+| :-:| :--- | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| 01 | `pull_request_target` + fork-head checkout | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ |
+| 02 | Script injection via issue title | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 03 | Action pinned to mutable ref | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| 04 | `GITHUB_TOKEN` `write-all` | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ |
+| 05 | Cache poisoning via PR title | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 06 | Reusable workflow `secrets: inherit` | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 07 | `workflow_run` artifact RCE | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ |
+| 08 | Self-hosted runner on public repo | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ |
+| 09 | Container image `:latest` | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 10 | AWS OIDC wildcard `sub` | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 11 | `pip install` no hashes | ✅ | — | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 12 | `persist-credentials` leak | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| 13 | `workflow_dispatch` input injection | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ | ✅ |
+| 14 | `$GITHUB_ENV` poisoning | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
+| 15 | Hardcoded secret in `env:` | ✅ | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| 16 | `curl \| sh` install | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| 17 | ArtiPACKED — `.git/` in artifact | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| 18 | Composite action `${{ inputs.* }}` injection | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ✅ |
+| 19 | Codecov-style trusted-installer | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 20 | Dependency confusion (Birsan) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 21 | Matrix expansion injection | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ✅ |
+| 22 | GCP OIDC over-broad WIF | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 23 | `github-actions[bot]` branch-protection bypass | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 24 | Third-party webhook exfiltration | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
+| 25 | Environment branch-pattern bypass | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 26 | GitHub App token over-scope | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 27 | Secret leak in workflow logs | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 28 | Reusable workflow `${{ inputs.* }}` injection | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ | ✅ |
+| 29 | npm lifecycle-script RCE | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 30 | Script injection via issue body | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 31 | Script injection via `github.head_ref` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 32 | Script injection via commit message | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| 33 | Script injection via comment body | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+|    | **canonical bugs caught** | **33 ✅** | **22 ✅** | **12 ✅** | **8 ✅** | **10 ✅** | **10 ✅** | **14 ✅** |
 <!-- /AUTOGEN:matrix -->
 
 > [!IMPORTANT]
-> Ten scenarios (10, 11, 18, 19, 20, 22, 23, 24, 25, 27) are **caught
-> by no scanner in this comparison.** Those are the hard cases —
-> multi-file scope, network-egress reasoning, GitHub-settings-level
-> configuration that doesn't appear in any file. Their primary value
-> here is as a target for the *next* generation of rules.
+> The hard cases — multi-file scope (10, 22), network-egress reasoning
+> (16, 19, 24), sibling-manifest analysis (11, 20, 29), and
+> GitHub-settings-level configuration that doesn't appear in any file
+> (23, 25, 27) — collapse to *solo catches by one scanner* on the
+> current matrix. See [COVERAGE-AXES § ③](COVERAGE-AXES.md#-solo-catches)
+> for the live solo-catches list, autogen'd from the same SARIF as the
+> matrix above. Their primary value here is as a target for the *next*
+> generation of rules across the field.
 
 ---
 
@@ -93,6 +100,10 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 27 | [Secret leak in workflow logs](../scenarios/27-secret-leak-in-logs/README.md) | 10 | 🟠 high |
 | 28 | [Reusable workflow `${{ inputs.* }}` injection](../scenarios/28-reusable-workflow-input-injection/README.md) | 4 | 🟠 high |
 | 29 | [npm lifecycle-script RCE](../scenarios/29-npm-lifecycle-script-rce/README.md) | 3 | 🔴 critical |
+| 30 | [Script injection via issue body](../scenarios/30-script-injection-issue-body/README.md) | 4 | 🟠 high |
+| 31 | [Script injection via `github.head_ref`](../scenarios/31-script-injection-head-ref/README.md) | 4 | 🟠 high |
+| 32 | [Script injection via commit message](../scenarios/32-script-injection-commit-message/README.md) | 4 | 🟠 high |
+| 33 | [Script injection via comment body](../scenarios/33-script-injection-comment-body/README.md) | 4 | 🟠 high |
 <!-- /AUTOGEN:scenarios-index -->
 
 > [!NOTE]
