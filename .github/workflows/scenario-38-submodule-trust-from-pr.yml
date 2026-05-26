@@ -1,0 +1,45 @@
+# scenarios/38-submodule-trust-from-pr
+# CICD-SEC-3 (Dependency Chain Abuse) + CICD-SEC-4 (Poisoned Pipeline
+# Execution)
+# Pattern: `actions/checkout` invoked with `submodules: recursive`
+# (or `true`) on a pull_request trigger.  A contributor can modify
+# `.gitmodules` in their PR head to re-point any submodule URL at an
+# attacker-controlled repo; the recursive checkout pulls that repo
+# into the workspace, and any later step that walks the tree —
+# `make`, `npm ci`, `cargo build`, even `find . -name 'package.json'
+# -exec npm install \;` — executes attacker code.  Submodule
+# package.json's `postinstall` is a direct RCE primitive on the
+# runner.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios/38-submodule-trust-from-pr/README.md for details.
+
+name: scenario-38-submodule-trust-from-pr
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # DANGER: recursive submodule checkout from a PR head trusts
+          # the `.gitmodules` URLs in the PR diff.  A contributor can
+          # re-point any submodule at an attacker-controlled repo
+          # (and the URL can even be a https://github.com fork they
+          # control — looks legitimate in `git diff`).
+          submodules: recursive
+      - name: Build (runs submodule contents)
+        run: |
+          # Any of these implicitly executes submodule code:
+          #   - make (if a Makefile references files in the submodule dir)
+          #   - npm ci (if any submodule contains a package.json — postinstall RCE)
+          #   - cargo build / pip install / go generate, etc.
+          make build

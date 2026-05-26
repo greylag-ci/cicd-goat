@@ -7,7 +7,7 @@
    cicd-goat   ·   greylag-ci                                          v1.0
    ──────────────────────────────────────────────────────────────────────
    A test range for CI/CD security scanners.
-   33 vulnerable GitHub Actions workflows.  7 scanners.  1 leaderboard.
+   38 vulnerable GitHub Actions workflows.  7 scanners.  1 leaderboard.
 ══════════════════════════════════════════════════════════════════════════════
 ```
 
@@ -15,7 +15,7 @@
 [![scanner-comparison](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml/badge.svg)](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml)
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-3a3a3a?style=flat-square)](LICENSE)
 [![CICD-SEC top 10](https://img.shields.io/badge/owasp-CICD--SEC_10%2F10-9c2b2b?style=flat-square)](https://owasp.org/www-project-top-10-ci-cd-security-risks/)
-[![scenarios 33](https://img.shields.io/badge/scenarios-33-1f6feb?style=flat-square)](scenarios/README.md)
+[![scenarios 38](https://img.shields.io/badge/scenarios-38-1f6feb?style=flat-square)](scenarios/README.md)
 [![scanners 7](https://img.shields.io/badge/scanners-7-1f6feb?style=flat-square)](docs/MATRIX.md)
 <!-- /AUTOGEN:badges -->
 
@@ -24,33 +24,37 @@
 > Every CI/CD scanner has blind spots. The only honest way to measure them
 > is on a target where the bugs are catalogued in advance. This is that target.
 
-Thirty-three GitHub Actions workflows, each demonstrating one specific
+Thirty-eight GitHub Actions workflows, each demonstrating one specific
 attack pattern drawn from named incident disclosures (tj-actions 2025,
 ArtiPACKED 2024, Codecov 2021, Birsan dependency confusion 2021,
-event-stream/ua-parser-js/node-ipc/Shai-Hulud npm lifecycle abuse) and
-the **OWASP Top 10 CI/CD Security Risks** — all ten categories covered.
+event-stream/ua-parser-js/node-ipc/Shai-Hulud npm lifecycle abuse,
+Project Zero bug 2070, Synacktiv Dependabot exploitation) and the
+**OWASP Top 10 CI/CD Security Risks** — all ten categories covered.
 Scenarios 30–33 are variants of scenario 02 that probe scanner
 untrusted-input list completeness across four `github.event.*`
-contexts. Every job is gated with `if: false` so the workflows show up
-in run history but never spawn a runner.
+contexts; 34–38 broaden the corpus with unsecure-commands revival,
+signed-but-not-bound `cosign verify`, cross-job environment-secret
+leak, confused-deputy auto-merge, and recursive submodule checkout
+from PR. Every job is gated with `if: false` so the workflows show
+up in run history but never spawn a runner.
 
 ## Leaderboard
 
-How many of the 33 scenarios each scanner catches. A scanner scores ✅ on
+How many of the 38 scenarios each scanner catches. A scanner scores ✅ on
 a scenario only when it fires a rule that names that scenario's *specific
 intended bug* — not just any finding on the workflow file. Auto-generated
 from the latest [`scanner-comparison`](../../actions/workflows/scanner-comparison.yml)
 run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 
 <!-- AUTOGEN:leaderboard -->
-| Scanner | Scenarios caught (of 33) |
+| Scanner | Scenarios caught (of 38) |
 | :--- | :--- |
-| pipeline&#x2011;check | **31 ✅** |
+| pipeline&#x2011;check | **33 ✅** |
 | zizmor | **16 ✅** |
-| poutine | **12 ✅** |
-| octoscan | **11 ✅** |
-| Checkov | **8 ✅** |
-| KICS | **6 ✅** |
+| poutine | **13 ✅** |
+| octoscan | **12 ✅** |
+| Checkov | **9 ✅** |
+| KICS | **7 ✅** |
 | actionlint | **6 ✅** |
 <!-- /AUTOGEN:leaderboard -->
 
@@ -60,15 +64,15 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 **[Walkthroughs of five hand-picked scenarios](docs/FIELD-TEST.md)**
 
 > [!NOTE]
-> **Corpus scope.** All 33 scenarios are GitHub Actions workflows. Scanners
+> **Corpus scope.** All 38 scenarios are GitHub Actions workflows. Scanners
 > whose primary design target is something else (container scanning,
-> source-tree secret detection) aren't included here — they'd score 0/33
+> source-tree secret detection) aren't included here — they'd score 0/38
 > on a corpus they were never built for. Trivy belongs in a container/IaC
 > bench; Gitleaks in a source-secrets bench.
 
 ## What's in this repo
 
-- **[Scenarios](scenarios/README.md)** — 33 vulnerable workflows, each
+- **[Scenarios](scenarios/README.md)** — 38 vulnerable workflows, each
   with its own writeup (exploitation walkthrough, per-scanner coverage,
   the fix). Indexed by attack class and CICD-SEC category.
 - **[Full matrix](docs/MATRIX.md)** — per-(scenario × scanner) verdict

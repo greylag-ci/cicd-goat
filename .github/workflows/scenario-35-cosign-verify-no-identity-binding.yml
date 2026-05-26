@@ -1,0 +1,49 @@
+# scenarios/35-cosign-verify-no-identity-binding
+# CICD-SEC-3 (Dependency Chain Abuse) + CICD-SEC-9 (Improper Artifact
+# Integrity Validation)
+# Pattern: `cosign verify-blob` invoked without `--certificate-identity`
+# / `--certificate-identity-regexp` / `--certificate-oidc-issuer`.  In
+# keyless Sigstore mode, the verification only proves "SOMEBODY with
+# a valid OIDC token signed this".  Without an identity pin, an
+# attacker who can run a workflow on GitHub Actions (i.e. anyone)
+# can mint a valid keyless signature over their own malicious blob
+# and the verify command will accept it — signed-but-not-bound.
+#
+# Safety: every job is gated with `if: false`.
+# See scenarios/35-cosign-verify-no-identity-binding/README.md for details.
+
+name: scenario-35-cosign-verify-no-identity-binding
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: sigstore/cosign-installer@v3
+      - name: Fetch + verify release artifact (DANGER - no identity pin)
+        run: |
+          set -euo pipefail
+          curl -fsSL https://releases.example.com/installer       -o installer
+          curl -fsSL https://releases.example.com/installer.sig   -o installer.sig
+          curl -fsSL https://releases.example.com/installer.crt   -o installer.crt
+          # DANGER: cosign verify-blob accepts ANY keyless signer
+          # from the default Sigstore trust root — no
+          # `--certificate-identity-regexp` or `--certificate-oidc-issuer`
+          # restricts WHO the signer can be.  An attacker who can run
+          # a github.com workflow (anyone) can produce a valid signature
+          # over a payload of their choice and this step accepts it.
+          cosign verify-blob \
+            --signature installer.sig \
+            --certificate installer.crt \
+            installer
+          chmod +x installer
+          ./installer
