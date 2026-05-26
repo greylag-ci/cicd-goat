@@ -48,7 +48,7 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 | pipeline&#x2011;check | **31 ✅** |
 | zizmor | **16 ✅** |
 | poutine | **12 ✅** |
-| octoscan | **10 ✅** |
+| octoscan | **11 ✅** |
 | Checkov | **8 ✅** |
 | KICS | **6 ✅** |
 | actionlint | **6 ✅** |

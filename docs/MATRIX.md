@@ -38,7 +38,7 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 18 | Composite action `${{ inputs.* }}` injection | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | 19 | Codecov-style trusted-installer | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 20 | Dependency confusion (Birsan) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| 21 | Matrix expansion injection | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 21 | Matrix expansion injection | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | 22 | GCP OIDC over-broad WIF | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 23 | `github-actions[bot]` branch-protection bypass | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 24 | Third-party webhook exfiltration | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
@@ -51,7 +51,7 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 31 | Script injection via `github.head_ref` | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
 | 32 | Script injection via commit message | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
 | 33 | Script injection via comment body | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-|    | **canonical bugs caught** | **31 ✅** | **16 ✅** | **12 ✅** | **6 ✅** | **8 ✅** | **6 ✅** | **10 ✅** |
+|    | **canonical bugs caught** | **31 ✅** | **16 ✅** | **12 ✅** | **6 ✅** | **8 ✅** | **6 ✅** | **11 ✅** |
 <!-- /AUTOGEN:matrix -->
 
 > [!IMPORTANT]
