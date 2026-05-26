@@ -254,10 +254,17 @@ jobs:
       - name: Run octoscan
         # octoscan emits SARIF v2.1.0 natively (tool.driver.name = "octoscan").
         # Exit code 1 means findings present — let the SARIF upload tell the story.
+        #
+        # IMPORTANT: pass the repo ROOT (`.`), not `.github/workflows/`.
+        # `octoscan scan <dir>` does WalkDir(<dir>) looking for
+        # `<subdir>/.github/workflows/` subdirectories (it's designed to scan
+        # multiple repos at once via the synacktiv `dl` workflow). Passing
+        # the workflows dir directly causes octoscan to look for
+        # `.github/workflows/.github/workflows/` which doesn't exist, so
+        # zero scanning happens. With `.`, octoscan walks the repo and
+        # finds `./.github/workflows/` exactly once.
         run: |
-          set -euo pipefail
-          ./octoscan scan --format sarif .github/workflows/ \
-            > octoscan.sarif || [ $? -eq 1 ]
+          ./octoscan scan --format sarif . > octoscan.sarif || true
       - uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba  # v4
         if: always()
         with:
