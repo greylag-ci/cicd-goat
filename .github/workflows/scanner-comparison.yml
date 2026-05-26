@@ -205,10 +205,16 @@ jobs:
         # actionlint has no native SARIF emitter; -format '{{json .}}'
         # produces a JSON array of findings, which tools/actionlint-to-sarif.py
         # wraps as a SARIF v2.1.0 run.
+        #
+        # actionlint's CLI takes file paths or globs (not directories) — with
+        # no positional argument it auto-discovers .github/workflows/*.yml
+        # from the working directory, which is what we want here.
+        # Exit code 1 means findings present; `|| true` tolerates it.
+        # tools/actionlint-to-sarif.py handles empty input gracefully (emits
+        # SARIF with zero results), so a fatal actionlint failure surfaces as
+        # ❌ verdicts in the matrix + drift in --verify, not a CI red mark.
         run: |
-          set -euo pipefail
-          ./actionlint -format '{{json .}}' .github/workflows/ \
-            > actionlint-findings.json || [ $? -eq 1 ]
+          ./actionlint -format '{{json .}}' > actionlint-findings.json || true
           python3 tools/actionlint-to-sarif.py \
             < actionlint-findings.json > actionlint.sarif
       - uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba  # v4
