@@ -45,13 +45,13 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 <!-- AUTOGEN:leaderboard -->
 | Scanner | Scenarios caught (of 33) |
 | :--- | :--- |
-| pipeline&#x2011;check | **33 ✅** |
-| zizmor | **22 ✅** |
-| octoscan | **14 ✅** |
+| pipeline&#x2011;check | **31 ✅** |
+| zizmor | **16 ✅** |
 | poutine | **12 ✅** |
-| Checkov | **10 ✅** |
-| actionlint | **10 ✅** |
-| KICS | **8 ✅** |
+| octoscan | **10 ✅** |
+| Checkov | **8 ✅** |
+| KICS | **6 ✅** |
+| actionlint | **6 ✅** |
 <!-- /AUTOGEN:leaderboard -->
 
 → **[Full per-scenario matrix](docs/MATRIX.md)**  ·
