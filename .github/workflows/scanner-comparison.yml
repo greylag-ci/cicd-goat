@@ -56,7 +56,7 @@ jobs:
         run: |
           set -euo pipefail
           pip install --require-hashes --no-deps -r /dev/stdin <<'REQ'
-          pipeline-check==1.4.0 --hash=sha256:f1cbb9d954dfe70b98064552fe49e66f489f5c3e4dbe815f793f13bf93df7c26
+          pipeline-check==1.5.0 --hash=sha256:da9ed3e242ea213ce2df53e7d054258acce12fc6e8cc77607680d2ff77182625
           REQ
           pip install 'boto3' 'click' 'PyYAML' 'rich'
       - name: Run pipeline-check
