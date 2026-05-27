@@ -2,15 +2,6 @@
 > Every workflow file in `.github/workflows/scenario-*.yml` is intentionally broken.
 > Do not reuse the patterns. Do not enable Actions on a clone you forgot to read first.
 
-```
-══════════════════════════════════════════════════════════════════════════════
-   cicd-goat   ·   greylag-ci                                          v1.0
-   ──────────────────────────────────────────────────────────────────────
-   A test range for CI/CD security scanners.
-   38 vulnerable GitHub Actions workflows.  7 scanners.  1 leaderboard.
-══════════════════════════════════════════════════════════════════════════════
-```
-
 <!-- AUTOGEN:badges -->
 [![scanner-comparison](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml/badge.svg)](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml)
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-3a3a3a?style=flat-square)](LICENSE)
@@ -67,8 +58,7 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 > **Corpus scope.** All 38 scenarios are GitHub Actions workflows. Scanners
 > whose primary design target is something else (container scanning,
 > source-tree secret detection) aren't included here — they'd score 0/38
-> on a corpus they were never built for. Trivy belongs in a container/IaC
-> bench; Gitleaks in a source-secrets bench.
+> on a corpus they were never built for.
 
 ## What's in this repo
 
