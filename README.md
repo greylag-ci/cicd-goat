@@ -15,26 +15,35 @@
 > Every CI/CD scanner has blind spots. The only honest way to measure them
 > is on a target where the bugs are catalogued in advance. This is that target.
 
-Thirty-eight GitHub Actions workflows, each demonstrating one specific
-attack pattern drawn from named incident disclosures (tj-actions 2025,
-ArtiPACKED 2024, Codecov 2021, Birsan dependency confusion 2021,
+Forty vulnerable pipelines, each demonstrating one specific attack pattern
+drawn from named incident disclosures (tj-actions 2025, ArtiPACKED 2024,
+Codecov 2021, Birsan dependency confusion 2021,
 event-stream/ua-parser-js/node-ipc/Shai-Hulud npm lifecycle abuse,
 Project Zero bug 2070, Synacktiv Dependabot exploitation) and the
 **OWASP Top 10 CI/CD Security Risks** — all ten categories covered.
-Scenarios 30–33 are variants of scenario 02 that probe scanner
-untrusted-input list completeness across four `github.event.*`
-contexts; 34–38 broaden the corpus with unsecure-commands revival,
-signed-but-not-bound `cosign verify`, cross-job environment-secret
-leak, confused-deputy auto-merge, and recursive submodule checkout
-from PR. Every job is gated with `if: false` so the workflows show
-up in run history but never spawn a runner.
+Scenarios 01–38 are GitHub Actions: 30–33 are variants of scenario 02 that
+probe scanner untrusted-input list completeness across four `github.event.*`
+contexts; 34–38 broaden the GHA corpus with unsecure-commands revival,
+signed-but-not-bound `cosign verify`, cross-job environment-secret leak,
+confused-deputy auto-merge, and recursive submodule checkout from PR. Every
+GHA job is gated with `if: false` so the workflows show up in run history but
+never spawn a runner.
+
+**Scenarios 39+ extend the range to other providers** — the same one-bug,
+one-writeup model on the platforms where most pipelines actually live, starting
+with GitLab CI and Jenkins. These ship as static fixtures nested under
+`scenarios/NN-*/` (never at a provider's auto-run path), so they're readable by
+scanners but inert on every platform. Only the scanners that parse a given
+provider score those rows — see the per-provider leaderboards below.
 
 ## Leaderboard
 
-How many of the 38 scenarios each scanner catches. A scanner scores ✅ on
-a scenario only when it fires a rule that names that scenario's *specific
-intended bug* — not just any finding on the workflow file. Auto-generated
-from the latest [`scanner-comparison`](../../actions/workflows/scanner-comparison.yml)
+How many scenarios each scanner catches, **ranked separately per provider** —
+because most scanners only read one provider's files. A scanner scores ✅ on a
+scenario only when it fires a rule that names that scenario's *specific
+intended bug* — not just any finding on the file; it doesn't appear in a
+provider's table at all if it can't parse that provider. Auto-generated from
+the latest [`scanner-comparison`](../../actions/workflows/scanner-comparison.yml)
 run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 
 <!-- AUTOGEN:leaderboard -->
@@ -55,9 +64,14 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 **[Walkthroughs of five hand-picked scenarios](docs/FIELD-TEST.md)**
 
 > [!NOTE]
-> **Corpus scope.** All 38 scenarios are GitHub Actions workflows. Scanners
-> whose primary design target is something else (container scanning,
-> source-tree secret detection) aren't included here — they'd score 0/38
+> **Corpus scope.** Scenarios 01–38 are GitHub Actions; 39+ are the
+> multi-provider expansion (GitLab CI, Jenkins, more to come). Each scenario
+> is scored only by the scanners that actually parse its provider — a
+> GHA-only scanner (zizmor, KICS, actionlint, octoscan) shows `—`
+> (not-applicable), never a miss, on a GitLab or Jenkins row it was never
+> built to read; that's why the leaderboards are ranked per provider. Scanners
+> whose primary design target is something else entirely (container scanning,
+> source-tree secret detection) still aren't included here — they'd score 0
 > on a corpus they were never built for.
 
 ## What's in this repo
@@ -133,5 +147,5 @@ the Python rule engine lives at
 Apache 2.0 — see [LICENSE](LICENSE). Soft fork of
 [`cider-security-research/cicd-goat`](https://github.com/cider-security-research/cicd-goat);
 all upstream content has since been removed, the project is now
-standalone and focused on GitHub Actions. See [NOTICE](NOTICE) for the
-full lineage.
+standalone — originally focused on GitHub Actions, now expanding across
+CI/CD providers. See [NOTICE](NOTICE) for the full lineage.

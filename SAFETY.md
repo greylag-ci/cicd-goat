@@ -3,10 +3,13 @@
 > **The whole point of this repository is that the patterns inside it
 > are dangerous to copy.** Every workflow file under
 > [`.github/workflows/scenario-*.yml`](.github/workflows) and
-> [`_reusable-deploy.yml`](.github/workflows/_reusable-deploy.yml)
+> [`_reusable-deploy.yml`](.github/workflows/_reusable-deploy.yml), plus
+> the nested non-GHA pipeline fixtures under
+> [`scenarios/NN-*/`](scenarios) (`.gitlab-ci.yml`, `Jenkinsfile`, …),
 > demonstrates a real CI/CD attack pattern. The patterns must be
 > visible to static scanners (that's the comparison target) but they
-> must **never execute on a runner.**
+> must **never execute on a runner** — on this platform or any other a
+> clone might be mirrored to.
 
 This document describes how that invariant is enforced.
 
@@ -37,6 +40,35 @@ The check is automated:
   `scenarios-are-gated` check before merging. Without that required
   check, the safety gate is advisory: a PR could land with `if: false`
   removed even though the check failed.
+
+## Invariant 1b — non-GHA provider files are nested, never at a canonical path
+
+The multi-provider scenarios (39+) ship pipeline files for platforms other
+than GitHub Actions — `.gitlab-ci.yml`, `Jenkinsfile`, `.circleci/config.yml`,
+`bitbucket-pipelines.yml`, and so on. GitHub Actions never runs these (it only
+runs `.github/workflows/*`), so they are inert **here**. The residual risk is
+a clone that gets **mirrored to that other platform**, where a file sitting at
+the platform's canonical auto-run path (the repository root, `.circleci/`,
+`.buildkite/`, …) would be auto-discovered and executed.
+
+The invariant that neutralises this: **every non-GHA pipeline file lives nested
+under `scenarios/NN-<slug>/`, never at a canonical auto-run path.** None of
+these platforms auto-discover a pipeline file in an arbitrary subdirectory —
+each runs only the one at its fixed location — so a nested copy is a static
+fixture that scanners can read but no platform will ever run. As defense in
+depth, providers that support an always-skip gate also carry one (e.g. GitLab
+`workflow: rules: - when: never`), the cross-platform analogue of `if: false`.
+
+The check is automated:
+
+- [`tools/check-provider-files-safe.py`](tools/check-provider-files-safe.py)
+  walks the tree and fails closed if any recognised non-GHA pipeline file
+  appears outside `scenarios/`.
+- [`.github/workflows/safety-check.yml`](.github/workflows/safety-check.yml)
+  runs it alongside the `if: false` gate on every push and **fork/branch PR
+  via `pull_request_target`** (from the base tree, so a PR can't disable it).
+  As with invariant 1, the script only walks the filesystem and inspects
+  names/paths — nothing from the PR is executed.
 
 ## Invariant 2 — only three workflows execute, with documented permissions
 

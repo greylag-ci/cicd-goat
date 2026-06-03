@@ -5,7 +5,12 @@ name: safety-check
 # Invariants checked:
 #   1. Every job in every scenarios/.../ workflow has `if: false`.
 #      This is the only thing that keeps the deliberately-vulnerable
-#      patterns from actually executing on a runner.
+#      GitHub Actions patterns from actually executing on a runner.
+#   2. No non-GHA pipeline file (.gitlab-ci.yml, Jenkinsfile,
+#      .circleci/config.yml, bitbucket-pipelines.yml, …) sits at a
+#      provider's canonical auto-run path. Multi-provider scenarios are
+#      nested under scenarios/NN-<slug>/ so a clone mirrored to GitLab /
+#      Bitbucket / CircleCI / … can't auto-run them.
 #
 # Trigger model:
 #   - push (main) / workflow_dispatch: inspects the base tree.
@@ -72,3 +77,9 @@ jobs:
       - name: Enforce if:false on every scenario (base)
         if: github.event_name != 'pull_request_target'
         run: python tools/check-scenarios-gated.py
+      - name: Enforce nested-only non-GHA pipeline files (PR head)
+        if: github.event_name == 'pull_request_target'
+        run: python tools/check-provider-files-safe.py pr-head
+      - name: Enforce nested-only non-GHA pipeline files (base)
+        if: github.event_name != 'pull_request_target'
+        run: python tools/check-provider-files-safe.py

