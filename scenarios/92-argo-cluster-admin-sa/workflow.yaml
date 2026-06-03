@@ -1,0 +1,30 @@
+# scenarios/92-argo-cluster-admin-sa
+# CICD-SEC-2 (Inadequate IAM) · CICD-SEC-5 (Insufficient PBAC) — Argo — CRITICAL
+#
+# Pattern: a Workflow is bound to a cluster-wide admin ServiceAccount. Any step
+# (or injected code) uses the automounted token to act as cluster-admin — read
+# every secret in the cluster, create privileged pods on any node, bind more
+# roles: full cluster takeover. The over-privileged escalation of scenario 76
+# (default SA): here the SA is deliberately powerful.
+#
+# SAFETY: static fixture, nested under scenarios/ — Argo resources only run
+# when applied to a cluster; this file is never applied. See README.md.
+
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: deploy-
+spec:
+  entrypoint: main
+  # DANGER — workflow runs as a cluster-admin-bound ServiceAccount; bind a
+  # dedicated, least-privilege SA scoped to the target namespace instead.
+  serviceAccountName: cluster-admin
+  templates:
+    - name: main
+      container:
+        image: cgr.dev/chainguard/kubectl@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+        command: [sh, -c]
+        args: ["kubectl apply -f manifests/ && kubectl get secrets -A"]
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000

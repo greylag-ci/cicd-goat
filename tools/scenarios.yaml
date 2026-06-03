@@ -286,3 +286,28 @@ scenarios:
   # the missing control that lets a fork PR reach the secret.
   - {id: 87, title: "CircleCI: secrets passed to forked PRs",             provider: circleci,  cicd_sec: [6, 4], severity: critical, slug: 87-circleci-forked-pr-secrets,    expected: {pipeline-check: [CC-030], checkov: []}}
   - {id: 88, title: "Bitbucket: fork PR pipeline exposes secrets",        provider: bitbucket, cicd_sec: [6, 4], severity: critical, slug: 88-bitbucket-forked-pr-secrets,   expected: {pipeline-check: [BB-004], checkov: []}}
+
+  # ── Wave 5: more CRITICAL examples (89-93) ───────────────────────────
+  # Novel high-impact classes: IaC plan/apply RCE (running `terraform apply` on
+  # untrusted PR/MR input runs attacker code at apply time), untrusted external
+  # template on a persistent self-hosted agent, K8s RBAC takeover, and host-
+  # socket escape. Grounded against pipeline-check 1.0.4 / Checkov 3.2.532 /
+  # ciguard 0.11.2, reconciled to CI 1.5.0 SARIF.
+  #
+  # 89 (GHA) IaC apply on pull_request — expected reconciled from the first CI
+  # run across all 7 GHA scanners (no scanner here is known to flag apply-on-PR
+  # specifically; left [] and reconciled).
+  - {id: 89, title: "GHA: `terraform apply` on untrusted PR (IaC RCE)", cicd_sec: [4], severity: critical, slug: 89-iac-apply-untrusted, expected: {pipeline-check: [], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
+  # 90 (Azure) untrusted external template (mutable ref) on a persistent self-
+  # hosted agent — supply-chain RCE with a foothold; ADO-025 names the bug.
+  - {id: 90, title: "Azure: untrusted `resources` template on self-hosted agent", provider: azure, cicd_sec: [3, 7], severity: critical, slug: 90-azure-untrusted-template-selfhosted, expected: {pipeline-check: [ADO-025], checkov: []}}
+  # 91 (GitLab) terraform apply in an MR pipeline — GitLab twin of 89; caught as
+  # an ungated MR-triggered deploy (GL-004); the apply-RCE specifics are a gap.
+  - {id: 91, title: "GitLab: `terraform apply` in a merge-request pipeline", provider: gitlab, cicd_sec: [4], severity: critical, slug: 91-gitlab-iac-apply-mr, expected: {pipeline-check: [GL-004], checkov: [], ciguard: []}}
+  # 92 (Argo) workflow bound to a cluster-admin ServiceAccount — cluster
+  # takeover. All-miss next-gen: the over-privilege lives in RBAC (config-spread),
+  # not the workflow; no scanner here flags a named over-privileged SA.
+  - {id: 92, title: "Argo: cluster-admin ServiceAccount → cluster takeover", provider: argo, cicd_sec: [2, 5], severity: critical, slug: 92-argo-cluster-admin-sa, expected: {pipeline-check: [], checkov: []}}
+  # 93 (Drone) privileged step mounting the host Docker socket — host takeover;
+  # DR-007 (sensitive host path) names it (DR-002 privileged also fires).
+  - {id: 93, title: "Drone: privileged step mounts host Docker socket", provider: drone, cicd_sec: [7], severity: critical, slug: 93-drone-host-socket, expected: {pipeline-check: [DR-007]}}

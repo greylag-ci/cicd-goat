@@ -1,0 +1,35 @@
+# scenarios/89-iac-apply-untrusted
+# CICD-SEC-4 (Poisoned Pipeline Execution)
+# Pattern: a workflow runs `terraform apply` (or even `plan`) on
+# pull_request-controlled IaC. Terraform executes attacker-supplied code at
+# plan/apply time — a malicious `external` data source, a custom/`local-exec`
+# provisioner, or a hijacked provider — so a PR author gets arbitrary code
+# execution on the runner, plus whatever cloud credentials the apply uses
+# (here an OIDC `id-token`). The "plan/apply on untrusted input" RCE class.
+#
+# Safety: every job is gated with `if: false`. See
+# scenarios/89-iac-apply-untrusted/README.md for details.
+
+name: scenario-89-iac-apply-untrusted
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  id-token: write          # cloud OIDC consumed by `terraform apply`
+
+jobs:
+  apply:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+      - uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd  # v3
+      - name: Apply PR-controlled IaC (DANGER)
+        run: |
+          terraform init
+          # DANGER — applies the PR's Terraform; a malicious external data
+          # source / local-exec provisioner runs on the runner with the OIDC
+          # cloud credentials in scope.
+          terraform apply -auto-approve
