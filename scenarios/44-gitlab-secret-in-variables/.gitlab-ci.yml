@@ -1,0 +1,28 @@
+# scenarios/44-gitlab-secret-in-variables
+# CICD-SEC-6 (Insufficient Credential Hygiene) — GitLab CI
+#
+# Pattern: a credential pasted into the pipeline's `variables:` block — visible
+# to anyone who can read the repo, anyone who can read a job log, and anyone who
+# greps the host for tokens of that shape. The GitLab analogue of scenario 15.
+#
+# SAFETY: static fixture, nested under scenarios/ (never auto-run); the
+# `workflow: rules: when: never` gate is belt-and-suspenders. The token below
+# is a FAKE 40-char hex value that matches generic secret-scanner patterns but
+# is not any real provider's credential format. See README.md.
+
+workflow:
+  rules:
+    - when: never
+
+variables:
+  # DANGER — hardcoded credentials committed in plaintext.
+  LEGACY_API_TOKEN: "deadbeefcafef00dfeedfacebadc0ffee0ddf00d"
+  DB_PASSWORD: "P@ssw0rd-do-not-actually-do-this"
+
+stages: [deploy]
+
+deploy:
+  stage: deploy
+  image: alpine@sha256:beefdbd8a1da6d2915566fde36db9db0b524eb737fc57cd1367effd16dc0d06d
+  script:
+    - curl -H "Authorization: Bearer $LEGACY_API_TOKEN" https://api.example.com/release

@@ -108,6 +108,9 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+.scanvenv/
+.minvenv/
+/sarif/
 .env
 .venv
 env/

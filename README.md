@@ -16,7 +16,7 @@
 > Every CI/CD scanner has blind spots. The only honest way to measure them
 > is on a target where the bugs are catalogued in advance. This is that target.
 
-Forty vulnerable pipelines, each demonstrating one specific attack pattern
+Forty-eight vulnerable pipelines, each demonstrating one specific attack pattern
 drawn from named incident disclosures (tj-actions 2025, ArtiPACKED 2024,
 Codecov 2021, Birsan dependency confusion 2021,
 event-stream/ua-parser-js/node-ipc/Shai-Hulud npm lifecycle abuse,
@@ -94,8 +94,8 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 
 ## What's in this repo
 
-- **[Scenarios](scenarios/README.md)** — 40 vulnerable pipelines (38
-  GitHub Actions + GitLab/Jenkins), each with its own writeup
+- **[Scenarios](scenarios/README.md)** — 48 vulnerable pipelines (38
+  GitHub Actions + 9 GitLab CI + 1 Jenkins), each with its own writeup
   (exploitation walkthrough, per-scanner coverage, the fix). Indexed by
   attack class and CICD-SEC category.
 - **[Full matrix](docs/MATRIX.md)** — per-(scenario × scanner) verdict

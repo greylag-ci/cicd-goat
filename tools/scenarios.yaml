@@ -164,3 +164,32 @@ scenarios:
   # ciguard fires only agent/hygiene rules on this file, none naming the
   # interpolation sink ([]).
   - {id: 40, title: "Jenkins: `sh` string-interpolation injection",      provider: jenkins, cicd_sec: [4], severity: high, slug: 40-jenkins-shell-injection,   expected: {pipeline-check: [JF-002], ciguard: []}}
+
+  # ── Wave 1: GitLab CI full set (41-48) ───────────────────────────────
+  # Rule IDs grounded against pipeline-check 1.0.4 / Checkov 3.2.532 /
+  # ciguard 0.11.2 over the nested fixtures, then reconciled to CI's
+  # pipeline-check 1.5.0 SARIF. Checkov's gitlab_ci ruleset is thin — it
+  # fires no canonical-bug rule on any of these (0/9 GitLab), so every
+  # checkov entry is [] (a real miss, not na).
+  #
+  # CI_JOB_TOKEN used for cross-project access (issue #243703 / CVE-2024-8641).
+  # ciguard IAM-002 names it; pipeline-check has no job-token-scope rule here.
+  - {id: 41, title: "GitLab: `CI_JOB_TOKEN` cross-project access",       provider: gitlab, cicd_sec: [2, 5], severity: high,     slug: 41-gitlab-ci-job-token-cross-project, expected: {pipeline-check: [], checkov: [], ciguard: [IAM-002]}}
+  # include: remote + project pinned to a mutable ref (supply chain).
+  - {id: 42, title: "GitLab: untrusted `include:` (remote / mutable ref)", provider: gitlab, cicd_sec: [3, 9], severity: high,   slug: 42-gitlab-include-remote-untrusted,   expected: {pipeline-check: [GL-005], checkov: [], ciguard: [PIPE-002]}}
+  # Secret-bearing deploy job gated only on merge_request_event -> fork-MR
+  # secret exposure. Caught as an ungated deploy (GL-004 / PIPE-004).
+  - {id: 43, title: "GitLab: secret job on fork merge-request pipeline", provider: gitlab, cicd_sec: [1, 6], severity: high,     slug: 43-gitlab-fork-mr-secrets,            expected: {pipeline-check: [GL-004], checkov: [], ciguard: [PIPE-004]}}
+  # Hardcoded credential in the `variables:` block (GitLab analogue of #15).
+  - {id: 44, title: "GitLab: hardcoded secret in `variables:`",         provider: gitlab, cicd_sec: [6],    severity: high,     slug: 44-gitlab-secret-in-variables,        expected: {pipeline-check: [GL-003], checkov: [], ciguard: [IAM-001]}}
+  # before_script pipes a remote installer into a shell (analogue of #16).
+  - {id: 45, title: "GitLab: `curl \\| sh` in `before_script`",         provider: gitlab, cicd_sec: [3, 4], severity: medium,   slug: 45-gitlab-curl-pipe-sh,               expected: {pipeline-check: [GL-016], checkov: [], ciguard: [SC-001]}}
+  # Job image pinned to a mutable tag (`node:latest`; analogue of #09).
+  - {id: 46, title: "GitLab: job `image:` mutable tag",                 provider: gitlab, cicd_sec: [3, 9], severity: medium,   slug: 46-gitlab-image-latest,               expected: {pipeline-check: [GL-001], checkov: [], ciguard: [SCA-PIN-002]}}
+  # id_tokens generic aud + sibling trust-policy.json with wildcard sub
+  # (analogue of #10 / #22). pipeline-check GL-031 catches the workflow side;
+  # ciguard has no OIDC rule.
+  - {id: 47, title: "GitLab: OIDC `id_tokens` over-broad aud/sub",      provider: gitlab, cicd_sec: [2, 7], severity: critical, slug: 47-gitlab-oidc-broad-aud-sub,          expected: {pipeline-check: [GL-031], checkov: [], ciguard: []}}
+  # Untagged (shared-runner) job spinning privileged docker:dind with TLS
+  # off. ciguard RUN-002 names it; pipeline-check has no equivalent rule.
+  - {id: 48, title: "GitLab: untagged shared-runner + privileged dind", provider: gitlab, cicd_sec: [7, 4], severity: high,     slug: 48-gitlab-shared-runner-privileged,   expected: {pipeline-check: [], checkov: [], ciguard: [RUN-002]}}

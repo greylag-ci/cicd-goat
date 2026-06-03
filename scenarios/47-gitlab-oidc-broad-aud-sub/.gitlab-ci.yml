@@ -1,0 +1,35 @@
+# scenarios/47-gitlab-oidc-broad-aud-sub
+# CICD-SEC-2 (Inadequate IAM) · CICD-SEC-7 (Insecure System Configuration)
+#
+# Pattern: a GitLab `id_tokens:` (OIDC) block uses a generic, shared audience,
+# and the cloud trust policy it federates into matches the token `sub` far too
+# loosely (any project, any branch). A different project — or a fork pipeline —
+# can mint a token that still satisfies the audience + sub condition and assume
+# the cloud role. GitLab analogue of the AWS / GCP OIDC scenarios (10 / 22):
+# the over-broad condition lives in the sibling trust-policy.json.
+#
+# SAFETY: static fixture, nested under scenarios/ (never auto-run); the
+# `workflow: rules: when: never` gate is belt-and-suspenders. The sibling
+# trust-policy.json is an inert IaC document. See README.md.
+
+workflow:
+  rules:
+    - when: never
+
+stages: [deploy]
+
+deploy:
+  stage: deploy
+  image: alpine@sha256:beefdbd8a1da6d2915566fde36db9db0b524eb737fc57cd1367effd16dc0d06d
+  id_tokens:
+    AWS_ID_TOKEN:
+      # DANGER — generic shared audience. Any project configured with the same
+      # `aud:` can mint a token the role below will accept. The fix is a unique
+      # audience per service AND a tight `sub` condition (see trust-policy.json).
+      aud: https://gitlab.example.com
+  script:
+    - >
+      aws sts assume-role-with-web-identity
+      --role-arn "$AWS_DEPLOY_ROLE_ARN"
+      --role-session-name ci
+      --web-identity-token "$AWS_ID_TOKEN"

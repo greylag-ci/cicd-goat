@@ -1,6 +1,6 @@
 # Scenarios
 
-Forty deliberately-vulnerable pipelines, each demonstrating one canonical
+Forty-eight deliberately-vulnerable pipelines, each demonstrating one canonical
 attack pattern from the modern threat landscape. **Scenarios 01–38 are
 GitHub Actions** workflows; scenarios 30–33 are **variants** of scenario 02
 that probe each scanner's untrusted-input list across four different
@@ -13,12 +13,13 @@ Scenarios 34–38 broaden the GHA corpus: a Project-Zero-bug-2070
 auto-merge (Synacktiv's Dependabot exploit), and a recursive submodule
 checkout from a PR.
 
-**Scenarios 39+ begin the multi-provider expansion** — the same one-bug,
+**Scenarios 39+ are the multi-provider expansion** — the same one-bug,
 one-writeup model applied to the *other* CI/CD platforms where most real
-pipelines live (GitLab CI, Jenkins, and more to come). Only the scanners
-that actually parse a given provider's files score those rows; the rest
-render `—` (not-applicable). See the per-provider leaderboards in the
-[README](../README.md) and the sectioned [matrix](../docs/MATRIX.md).
+pipelines live. Scenario 40 is a Jenkins pilot; **39 + 41–48 are the GitLab CI
+set** (script/`include`/`CI_JOB_TOKEN`/OIDC/runner/secret-hygiene patterns).
+Only the scanners that actually parse a given provider's files score those
+rows; the rest render `—` (not-applicable). See the per-provider leaderboards
+in the [README](../README.md) and the sectioned [matrix](../docs/MATRIX.md).
 
 **Safety — two placement rules keep every pattern inert:**
 
@@ -75,20 +76,28 @@ render `—` (not-applicable). See the per-provider leaderboards in the
 | 38 | [Recursive submodule checkout from PR](38-submodule-trust-from-pr/README.md) | 3, 4 | `submodules: recursive` trusts attacker `.gitmodules` |
 | 39 | [GitLab CI — script injection via `$CI_*`](39-gitlab-ci-script-injection/README.md) | 4 | **GitLab** — untrusted MR/commit var in `script:` |
 | 40 | [Jenkins — `sh` string-interpolation injection](40-jenkins-shell-injection/README.md) | 4 | **Jenkins** — untrusted value in double-quoted GString |
+| 41 | [GitLab — `CI_JOB_TOKEN` cross-project access](41-gitlab-ci-job-token-cross-project/README.md) | 2, 5 | **GitLab** — job token used across projects |
+| 42 | [GitLab — untrusted `include:`](42-gitlab-include-remote-untrusted/README.md) | 3, 9 | **GitLab** — remote / mutable-ref include |
+| 43 | [GitLab — secret job on fork MR pipeline](43-gitlab-fork-mr-secrets/README.md) | 1, 6 | **GitLab** — `merge_request_event` + secret |
+| 44 | [GitLab — hardcoded secret in `variables:`](44-gitlab-secret-in-variables/README.md) | 6 | **GitLab** — credential in source |
+| 45 | [GitLab — `curl \| sh` in `before_script`](45-gitlab-curl-pipe-sh/README.md) | 3, 4 | **GitLab** — TOFU install script |
+| 46 | [GitLab — job `image:` mutable tag](46-gitlab-image-latest/README.md) | 3, 9 | **GitLab** — mutable base image |
+| 47 | [GitLab — OIDC `id_tokens` over-broad aud/sub](47-gitlab-oidc-broad-aud-sub/README.md) | 2, 7 | **GitLab** — federation misconfig |
+| 48 | [GitLab — untagged shared-runner + privileged dind](48-gitlab-shared-runner-privileged/README.md) | 7, 4 | **GitLab** — runner isolation |
 
 ## OWASP CICD-SEC top 10 — full coverage
 
 | Risk | Coverage | Scenarios |
 |:---|:---|:---|
-| CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25, 37 |
-| CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22, 36 |
-| CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29, 35, 38 |
-| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33, 34, 38, 39, 40 |
-| CICD-SEC-5: Insufficient Pipeline-Based Access Controls       | ✅ | 1, 4, 6, 25, 26, 36 |
-| CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17 |
-| CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22 |
+| CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25, 37, 43 |
+| CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22, 36, 41, 47 |
+| CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29, 35, 38, 42, 45, 46 |
+| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33, 34, 38, 39, 40, 45, 48 |
+| CICD-SEC-5: Insufficient Pipeline-Based Access Controls       | ✅ | 1, 4, 6, 25, 26, 36, 41 |
+| CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17, 43, 44 |
+| CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22, 47, 48 |
 | CICD-SEC-8: Ungoverned Usage of Third-Party Services          | ✅ | 24 |
-| CICD-SEC-9: Improper Artifact Integrity Validation            | ✅ | 5, 7, 9, 17, 19, 35 |
+| CICD-SEC-9: Improper Artifact Integrity Validation            | ✅ | 5, 7, 9, 17, 19, 35, 42, 46 |
 | CICD-SEC-10: Insufficient Logging and Visibility              | ✅ | 27 |
 
 Every risk in the top 10 has at least one scenario. See the
