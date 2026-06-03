@@ -16,8 +16,8 @@
 > Every CI/CD scanner has blind spots. The only honest way to measure them
 > is on a target where the bugs are catalogued in advance. This is that target.
 
-Ninety-three vulnerable pipelines, each demonstrating one specific attack pattern
-drawn from named incident disclosures (tj-actions 2025, ArtiPACKED 2024,
+One hundred and four vulnerable pipelines and IaC manifests, each demonstrating
+one specific attack pattern drawn from named incident disclosures (tj-actions 2025, ArtiPACKED 2024,
 Codecov 2021, Birsan dependency confusion 2021,
 event-stream/ua-parser-js/node-ipc/Shai-Hulud npm lifecycle abuse,
 Project Zero bug 2070, Synacktiv Dependabot exploitation) and the
@@ -34,7 +34,10 @@ never spawn a runner.
 later GitHub Actions additions, e.g. 89) — the same one-bug, one-writeup model
 on the platforms where most pipelines actually live: GitLab CI,
 Jenkins, Azure Pipelines, CircleCI, Bitbucket Pipelines, Tekton, Argo Workflows,
-Drone CI, Buildkite, and Google Cloud Build. These ship as static fixtures
+Drone CI, Buildkite, and Google Cloud Build. **Scenarios 94–104 push past the
+pipeline file into the Infrastructure-as-Code the pipeline deploys** — Dockerfile,
+Kubernetes manifests, Terraform, CloudFormation, and Helm — the artifacts a CI/CD
+scanner increasingly has to read too. These all ship as static fixtures
 nested under `scenarios/NN-*/` (never at a provider's auto-run path), so they're
 readable by scanners but inert on every platform. Only the scanners that parse a
 given provider score those rows — and several are all-miss *next-gen targets* no
@@ -137,23 +140,27 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 **[Walkthroughs of five hand-picked scenarios](docs/FIELD-TEST.md)**
 
 > [!NOTE]
-> **Corpus scope.** Scenarios 01–38 (and 89) are GitHub Actions; 39+ are the
+> **Corpus scope.** Scenarios 01–38 (and 89) are GitHub Actions; 39–93 are the
 > multi-provider expansion (GitLab CI, Jenkins, Azure Pipelines, CircleCI,
-> Bitbucket Pipelines, Tekton, Argo, Drone, Buildkite, Cloud Build). Each scenario
+> Bitbucket Pipelines, Tekton, Argo, Drone, Buildkite, Cloud Build); 94–104 are
+> the IaC/manifest layer the pipeline deploys (Dockerfile, Kubernetes, Terraform,
+> CloudFormation, Helm). Each scenario
 > is scored only by the scanners that actually parse its provider — a
 > GHA-only scanner (zizmor, KICS, actionlint, octoscan) shows `—`
 > (not-applicable), never a miss, on a GitLab or Jenkins row it was never
-> built to read; that's why the leaderboards are ranked per provider. Scanners
-> whose primary design target is something else entirely (container scanning,
-> source-tree secret detection) still aren't included here — they'd score 0
-> on a corpus they were never built for.
+> built to read; that's why the leaderboards are ranked per provider. Dedicated
+> IaC/container scanners (Trivy, hadolint, tfsec) aren't wired in yet — the IaC
+> rows are currently scored by the CI/CD scanners that already read those formats
+> (Checkov, KICS, pipeline-check); adding a purpose-built IaC scanner is a natural
+> next step now that the corpus has IaC rows for it to score.
 
 ## What's in this repo
 
-- **[Scenarios](scenarios/README.md)** — 93 vulnerable pipelines across 11
-  providers (39 GitHub Actions + 11 GitLab CI + 7 Azure + 7 CircleCI +
-  7 Bitbucket + 6 Jenkins + 4 Tekton + 5 Argo + 3 Drone + 2 Buildkite +
-  2 Cloud Build), each with its own writeup
+- **[Scenarios](scenarios/README.md)** — 104 vulnerable pipelines and IaC
+  manifests across 16 providers/formats (39 GitHub Actions + 11 GitLab CI +
+  7 Azure + 7 CircleCI + 7 Bitbucket + 6 Jenkins + 4 Tekton + 5 Argo +
+  3 Drone + 2 Buildkite + 2 Cloud Build + 3 Dockerfile + 3 Kubernetes +
+  3 Terraform + 1 CloudFormation + 1 Helm), each with its own writeup
   (exploitation walkthrough, per-scanner coverage, the fix). Indexed by
   attack class and CICD-SEC category.
 - **[Full matrix](docs/MATRIX.md)** — per-(scenario × scanner) verdict

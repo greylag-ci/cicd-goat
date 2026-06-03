@@ -1,0 +1,20 @@
+# scenarios/103-cloudformation-s3-public
+# CICD-SEC-7 (Insecure System Configuration) · CICD-SEC-6 — CloudFormation
+#
+# Pattern: a CloudFormation template declares an S3 bucket with
+# `AccessControl: PublicReadWrite` — world-readable AND world-writable. A
+# pipeline that deploys this stack exposes (and lets anyone overwrite) the
+# bucket's contents.
+#
+# SAFETY: static fixture nested under scenarios/; never deployed. See README.md.
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ci-goat fixture — do not deploy
+
+Resources:
+  ArtifactsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      # DANGER — public read+write ACL. Use AccessControl: Private + a
+      # PublicAccessBlockConfiguration with all four guards enabled.
+      AccessControl: PublicReadWrite
