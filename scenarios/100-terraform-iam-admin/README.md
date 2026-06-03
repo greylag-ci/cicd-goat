@@ -26,6 +26,7 @@ takeover.
 |---------|-----------|
 | Checkov | `CKV_AWS_62` — IAM policy grants full `*-*` administrative privileges (also fires `CKV_AWS_355/63`) |
 | KICS | `IAM Policies With Full Privileges` (`2f37c4a3-…`) |
+| Trivy | — (its ruleset doesn't flag the IAM `*:*` wildcard here — honest miss) |
 | pipeline-check | — (its Terraform provider needs a `terraform show -json` plan, not raw `.tf`) |
 
 ## Fix

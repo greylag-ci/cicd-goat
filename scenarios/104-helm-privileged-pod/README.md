@@ -24,6 +24,7 @@ vector: the bug travels with the package.
 | Scanner | Detection |
 |---------|-----------|
 | pipeline-check | `K8S-005` — flags the literal `privileged: true` in the chart template (its `HELM-*` rules also fire on Chart.yaml metadata, but K8S-005 names this bug) |
+| Trivy | `KSV-0017` — privileged container (renders the chart) |
 | Checkov | `CKV_K8S_16` — its Kubernetes framework parses the template and flags the privileged container |
 | KICS | — (Helm isn't in KICS's scored providers here, so the row is not-applicable) |
 

@@ -24,9 +24,9 @@ exposure; one weak/leaked key or vuln is a shell on the instance.
 
 | Scanner | Detection |
 |---------|-----------|
-| Trivy | reconciled from CI (CFN security-group misconfig) |
-| Checkov | reconciled from CI |
-| KICS | reconciled from CI |
+| Trivy | `AWS-0107` — security group ingress from public internet |
+| Checkov | `CKV_AWS_24` — no SG ingress from 0.0.0.0/0 to port 22 |
+| KICS | `Security Group With Unrestricted Access To SSH` (`6e856af2-…`) |
 | pipeline-check | — (CloudFormation ruleset thin / non-attributable) |
 
 ## Fix

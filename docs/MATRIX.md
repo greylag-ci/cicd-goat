@@ -184,46 +184,53 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 
 ### Dockerfile
 
-| #  | Scenario | pipeline&#x2011;check | KICS | Checkov |
-| :-:| :--- | :-: | :-: | :-: |
-| 94 | Dockerfile: container runs as root (no USER) | ✅ | ✅ | ✅ |
-| 95 | Dockerfile: base image unpinned (`:latest`) | ✅ | ✅ | ✅ |
-| 96 | Dockerfile: hardcoded secret in `ENV` | ✅ | ❌ | ❌ |
-|    | **canonical bugs caught** | **3 ✅** | **2 ✅** | **2 ✅** |
+| #  | Scenario | pipeline&#x2011;check | KICS | Checkov | Trivy |
+| :-:| :--- | :-: | :-: | :-: | :-: |
+| 94 | Dockerfile: container runs as root (no USER) | ✅ | ✅ | ✅ | ✅ |
+| 95 | Dockerfile: base image unpinned (`:latest`) | ✅ | ✅ | ✅ | ✅ |
+| 96 | Dockerfile: hardcoded secret in `ENV` | ✅ | ❌ | ❌ | ✅ |
+|    | **canonical bugs caught** | **3 ✅** | **2 ✅** | **2 ✅** | **3 ✅** |
 
 ### Kubernetes
 
-| #  | Scenario | pipeline&#x2011;check | KICS | Checkov |
-| :-:| :--- | :-: | :-: | :-: |
-| 97 | Kubernetes: privileged container | ✅ | ❌ | ✅ |
-| 98 | Kubernetes: hostPath mount of node root | ✅ | ✅ | ❌ |
-| 99 | Kubernetes: root + allowPrivilegeEscalation | ✅ | ✅ | ✅ |
-|    | **canonical bugs caught** | **3 ✅** | **2 ✅** | **2 ✅** |
+| #  | Scenario | pipeline&#x2011;check | KICS | Checkov | Trivy |
+| :-:| :--- | :-: | :-: | :-: | :-: |
+| 97 | Kubernetes: privileged container | ✅ | ❌ | ✅ | ✅ |
+| 98 | Kubernetes: hostPath mount of node root | ✅ | ✅ | ❌ | ✅ |
+| 99 | Kubernetes: root + allowPrivilegeEscalation | ✅ | ✅ | ✅ | ✅ |
+|    | **canonical bugs caught** | **3 ✅** | **2 ✅** | **2 ✅** | **3 ✅** |
 
 ### Terraform
 
-| #  | Scenario | KICS | Checkov |
-| :-:| :--- | :-: | :-: |
-| 100 | Terraform: IAM policy `*:*` (full admin) | ✅ | ✅ |
-| 101 | Terraform: security group SSH open to 0.0.0.0/0 | ✅ | ✅ |
-| 102 | Terraform: S3 bucket public-access-block disabled | ✅ | ✅ |
-| 111 | Terraform: CloudTrail logging disabled / single-region | ✅ | ✅ |
-| 112 | Terraform: VPC flow logs + S3 access logging off | ✅ | ✅ |
-|    | **canonical bugs caught** | **5 ✅** | **5 ✅** |
+| #  | Scenario | KICS | Checkov | Trivy |
+| :-:| :--- | :-: | :-: | :-: |
+| 100 | Terraform: IAM policy `*:*` (full admin) | ✅ | ✅ | ❌ |
+| 101 | Terraform: security group SSH open to 0.0.0.0/0 | ✅ | ✅ | ✅ |
+| 102 | Terraform: S3 bucket public-access-block disabled | ✅ | ✅ | ✅ |
+| 111 | Terraform: CloudTrail logging disabled / single-region | ✅ | ✅ | ✅ |
+| 112 | Terraform: VPC flow logs + S3 access logging off | ✅ | ✅ | ✅ |
+| 119 | Terraform: S3 bucket unencrypted + unversioned | ✅ | ✅ | ✅ |
+| 120 | Terraform: RDS publicly accessible + unencrypted | ✅ | ✅ | ✅ |
+|    | **canonical bugs caught** | **7 ✅** | **7 ✅** | **6 ✅** |
 
 ### CloudFormation
 
-| #  | Scenario | KICS | Checkov |
-| :-:| :--- | :-: | :-: |
-| 103 | CloudFormation: S3 bucket public read+write | ✅ | ✅ |
-|    | **canonical bugs caught** | **1 ✅** | **1 ✅** |
+| #  | Scenario | KICS | Checkov | Trivy |
+| :-:| :--- | :-: | :-: | :-: |
+| 103 | CloudFormation: S3 bucket public read+write | ✅ | ✅ | ✅ |
+| 114 | CloudFormation: security group SSH open to 0.0.0.0/0 | ✅ | ✅ | ✅ |
+| 115 | CloudFormation: IAM managed policy `*:*` (full admin) | ✅ | ✅ | ❌ |
+| 116 | CloudFormation: RDS unencrypted + publicly accessible | ✅ | ✅ | ✅ |
+|    | **canonical bugs caught** | **4 ✅** | **4 ✅** | **3 ✅** |
 
 ### Helm
 
-| #  | Scenario | pipeline&#x2011;check | Checkov |
-| :-:| :--- | :-: | :-: |
-| 104 | Helm: privileged container in chart template | ✅ | ✅ |
-|    | **canonical bugs caught** | **1 ✅** | **1 ✅** |
+| #  | Scenario | pipeline&#x2011;check | Checkov | Trivy |
+| :-:| :--- | :-: | :-: | :-: |
+| 104 | Helm: privileged container in chart template | ✅ | ✅ | ✅ |
+| 117 | Helm: container runs as root + privilege escalation | ✅ | ✅ | ✅ |
+| 118 | Helm: hostPath mount of node root in chart | ✅ | ❌ | ✅ |
+|    | **canonical bugs caught** | **3 ✅** | **2 ✅** | **3 ✅** |
 <!-- /AUTOGEN:matrix -->
 
 > [!IMPORTANT]
@@ -356,6 +363,13 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 111 | [Terraform: CloudTrail logging disabled / single-region](../scenarios/111-terraform-cloudtrail-disabled/README.md) | Terraform | 10 | 🟠 high |
 | 112 | [Terraform: VPC flow logs + S3 access logging off](../scenarios/112-terraform-no-flow-logs/README.md) | Terraform | 10 | 🟡 medium |
 | 113 | [GitLab: `CI_DEBUG_TRACE` leaks secrets to job log](../scenarios/113-gitlab-debug-trace/README.md) | GitLab CI | 10 · 6 | 🟡 medium |
+| 114 | [CloudFormation: security group SSH open to 0.0.0.0/0](../scenarios/114-cfn-sg-open/README.md) | CloudFormation | 7 | 🟠 high |
+| 115 | [CloudFormation: IAM managed policy `*:*` (full admin)](../scenarios/115-cfn-iam-admin/README.md) | CloudFormation | 2 | 🔴 critical |
+| 116 | [CloudFormation: RDS unencrypted + publicly accessible](../scenarios/116-cfn-rds-unencrypted-public/README.md) | CloudFormation | 7 · 2 | 🟠 high |
+| 117 | [Helm: container runs as root + privilege escalation](../scenarios/117-helm-weak-securitycontext/README.md) | Helm | 7 | 🟠 high |
+| 118 | [Helm: hostPath mount of node root in chart](../scenarios/118-helm-hostpath/README.md) | Helm | 7 | 🔴 critical |
+| 119 | [Terraform: S3 bucket unencrypted + unversioned](../scenarios/119-terraform-s3-unencrypted/README.md) | Terraform | 7 | 🟠 high |
+| 120 | [Terraform: RDS publicly accessible + unencrypted](../scenarios/120-terraform-rds-public/README.md) | Terraform | 7 · 2 | 🟠 high |
 <!-- /AUTOGEN:scenarios-index -->
 
 > [!NOTE]

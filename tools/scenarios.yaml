@@ -339,37 +339,38 @@ scenarios:
   #
   # Dockerfile (94-96) — pipeline-check + Checkov + KICS. KICS UUIDs:
   # fd54f200=Missing User Instruction, f45ea400=Image Version Using 'latest'.
-  - {id: 94,  title: "Dockerfile: container runs as root (no USER)",      provider: dockerfile,     cicd_sec: [7],    severity: high,     slug: 94-dockerfile-root-user,        expected: {pipeline-check: [DF-002], checkov: [CKV_DOCKER_3], kics: [fd54f200-402c-4333-a5a4-36ef6709af2f]}}
-  - {id: 95,  title: "Dockerfile: base image unpinned (`:latest`)",       provider: dockerfile,     cicd_sec: [3, 9], severity: medium,   slug: 95-dockerfile-unpinned-base,    expected: {pipeline-check: [DF-001], checkov: [CKV_DOCKER_7], kics: [f45ea400-6bbe-4501-9fc7-1c3d75c32067]}}
+  - {id: 94,  title: "Dockerfile: container runs as root (no USER)",      provider: dockerfile,     cicd_sec: [7],    severity: high,     slug: 94-dockerfile-root-user,        expected: {pipeline-check: [DF-002], checkov: [CKV_DOCKER_3], kics: [fd54f200-402c-4333-a5a4-36ef6709af2f], trivy: [DS-0002]}}
+  - {id: 95,  title: "Dockerfile: base image unpinned (`:latest`)",       provider: dockerfile,     cicd_sec: [3, 9], severity: medium,   slug: 95-dockerfile-unpinned-base,    expected: {pipeline-check: [DF-001], checkov: [CKV_DOCKER_7], kics: [f45ea400-6bbe-4501-9fc7-1c3d75c32067], trivy: [DS-0001]}}
   # secret-in-ENV: only pipeline-check DF-006 names it. Checkov's dockerfile
   # framework and KICS fire only HEALTHCHECK noise here -> both honest misses.
-  - {id: 96,  title: "Dockerfile: hardcoded secret in `ENV`",             provider: dockerfile,     cicd_sec: [6],    severity: high,     slug: 96-dockerfile-secret-in-env,    expected: {pipeline-check: [DF-006], checkov: [], kics: []}}
+  - {id: 96,  title: "Dockerfile: hardcoded secret in `ENV`",             provider: dockerfile,     cicd_sec: [6],    severity: high,     slug: 96-dockerfile-secret-in-env,    expected: {pipeline-check: [DF-006], checkov: [], kics: [], trivy: [DS-0031]}}
   # Kubernetes (97-99) — pipeline-check + Checkov + KICS. KICS UUIDs:
   # 5308a7a8=Workload Mounting With Sensitive OS Directory (hostPath),
   # 5572cc5e=Privilege Escalation Allowed.
   # NOTE 97: KICS's "Container Is Privileged" query fires on the Helm Deployment
   # (104) but NOT on this plain Deployment in 1.7.x -> honest KICS miss here.
-  - {id: 97,  title: "Kubernetes: privileged container",                  provider: kubernetes,     cicd_sec: [7],    severity: critical, slug: 97-k8s-privileged-container,    expected: {pipeline-check: [K8S-005], checkov: [CKV_K8S_16], kics: []}}
+  - {id: 97,  title: "Kubernetes: privileged container",                  provider: kubernetes,     cicd_sec: [7],    severity: critical, slug: 97-k8s-privileged-container,    expected: {pipeline-check: [K8S-005], checkov: [CKV_K8S_16], kics: [], trivy: [KSV-0017]}}
   # Checkov has no hostPath-specific canonical in its fired set -> miss;
   # pipeline-check K8S-014 + KICS sensitive-OS-dir mount name it.
-  - {id: 98,  title: "Kubernetes: hostPath mount of node root",           provider: kubernetes,     cicd_sec: [7],    severity: critical, slug: 98-k8s-hostpath-mount,          expected: {pipeline-check: [K8S-014], checkov: [], kics: [5308a7a8-06f8-45ac-bf10-791fe21de46e]}}
-  - {id: 99,  title: "Kubernetes: root + allowPrivilegeEscalation",       provider: kubernetes,     cicd_sec: [7],    severity: high,     slug: 99-k8s-allow-priv-escalation,   expected: {pipeline-check: [K8S-035], checkov: [CKV_K8S_20], kics: [5572cc5e-1e4c-4113-92a6-7a8a3bd25e6d]}}
+  - {id: 98,  title: "Kubernetes: hostPath mount of node root",           provider: kubernetes,     cicd_sec: [7],    severity: critical, slug: 98-k8s-hostpath-mount,          expected: {pipeline-check: [K8S-014], checkov: [], kics: [5308a7a8-06f8-45ac-bf10-791fe21de46e], trivy: [KSV-0023]}}
+  - {id: 99,  title: "Kubernetes: root + allowPrivilegeEscalation",       provider: kubernetes,     cicd_sec: [7],    severity: high,     slug: 99-k8s-allow-priv-escalation,   expected: {pipeline-check: [K8S-035], checkov: [CKV_K8S_20], kics: [5572cc5e-1e4c-4113-92a6-7a8a3bd25e6d], trivy: [KSV-0001]}}
   # Terraform (100-102) — Checkov + KICS (pipeline-check TF needs a plan -> na).
   # KICS UUIDs: 2f37c4a3=IAM Policies With Full Privileges,
   # 65905cec=Security Group With Unrestricted Access To SSH,
   # d0cc8694=S3 Bucket Allows Public ACL.
-  - {id: 100, title: "Terraform: IAM policy `*:*` (full admin)",          provider: terraform,      cicd_sec: [2],    severity: critical, slug: 100-terraform-iam-admin,        expected: {checkov: [CKV_AWS_62], kics: [2f37c4a3-58b9-4afe-8a87-d7f1d2286f84]}}
-  - {id: 101, title: "Terraform: security group SSH open to 0.0.0.0/0",   provider: terraform,      cicd_sec: [7],    severity: high,     slug: 101-terraform-sg-open,          expected: {checkov: [CKV_AWS_24], kics: [65905cec-d691-4320-b320-2000436cb696]}}
-  - {id: 102, title: "Terraform: S3 bucket public-access-block disabled", provider: terraform,      cicd_sec: [7, 6], severity: high,     slug: 102-terraform-s3-public,        expected: {checkov: [CKV_AWS_53], kics: [d0cc8694-fcad-43ff-ac86-32331d7e867f]}}
+  # Trivy missed the IAM *:* wildcard here (no AVD fired) -> honest Trivy miss.
+  - {id: 100, title: "Terraform: IAM policy `*:*` (full admin)",          provider: terraform,      cicd_sec: [2],    severity: critical, slug: 100-terraform-iam-admin,        expected: {checkov: [CKV_AWS_62], kics: [2f37c4a3-58b9-4afe-8a87-d7f1d2286f84], trivy: []}}
+  - {id: 101, title: "Terraform: security group SSH open to 0.0.0.0/0",   provider: terraform,      cicd_sec: [7],    severity: high,     slug: 101-terraform-sg-open,          expected: {checkov: [CKV_AWS_24], kics: [65905cec-d691-4320-b320-2000436cb696], trivy: [AWS-0107]}}
+  - {id: 102, title: "Terraform: S3 bucket public-access-block disabled", provider: terraform,      cicd_sec: [7, 6], severity: high,     slug: 102-terraform-s3-public,        expected: {checkov: [CKV_AWS_53], kics: [d0cc8694-fcad-43ff-ac86-32331d7e867f], trivy: [AWS-0086]}}
   # CloudFormation (103) — Checkov + KICS (pipeline-check CFN thin -> na).
   # Both catch the PublicReadWrite ACL: Checkov CKV_AWS_20/57 (public read/write),
   # KICS 48f100d9=S3 Bucket Allows Public ACL.
-  - {id: 103, title: "CloudFormation: S3 bucket public read+write",       provider: cloudformation, cicd_sec: [7, 6], severity: high,     slug: 103-cloudformation-s3-public,   expected: {checkov: [CKV_AWS_20, CKV_AWS_57], kics: [48f100d9-f499-4c6d-b2b8-deafe47ffb26]}}
+  - {id: 103, title: "CloudFormation: S3 bucket public read+write",       provider: cloudformation, cicd_sec: [7, 6], severity: high,     slug: 103-cloudformation-s3-public,   expected: {checkov: [CKV_AWS_20, CKV_AWS_57], kics: [48f100d9-f499-4c6d-b2b8-deafe47ffb26], trivy: [AWS-0086]}}
   # Helm (104) — privileged container in a chart template. The securityContext is
   # literal (only names/labels are templated), so both pipeline-check (K8S-005)
   # and Checkov (CKV_K8S_16) parse the template and flag it. KICS doesn't score
   # helm (provider not in its capability list) -> na.
-  - {id: 104, title: "Helm: privileged container in chart template",      provider: helm,           cicd_sec: [7],    severity: critical, slug: 104-helm-privileged-pod,        expected: {pipeline-check: [K8S-005], checkov: [CKV_K8S_16]}}
+  - {id: 104, title: "Helm: privileged container in chart template",      provider: helm,           cicd_sec: [7],    severity: critical, slug: 104-helm-privileged-pod,        expected: {pipeline-check: [K8S-005], checkov: [CKV_K8S_16], trivy: [KSV-0017]}}
 
   # ── Wave 7: fill the thin OWASP categories (SEC-8 ungoverned 3rd-party,
   #            SEC-1 flow control, SEC-10 logging/visibility). Scenarios 105-113.
@@ -398,8 +399,8 @@ scenarios:
   # Checkov + KICS (pipeline-check TF needs a plan -> na). KICS UUIDs:
   # 4bb76f17=CloudTrail Logging Disabled, f83121ea=VPC FlowLogs Disabled,
   # f861041c=S3 Bucket Logging Disabled.
-  - {id: 111, title: "Terraform: CloudTrail logging disabled / single-region", provider: terraform, cicd_sec: [10], severity: high, slug: 111-terraform-cloudtrail-disabled, expected: {checkov: [CKV_AWS_67], kics: [4bb76f17-3d63-4529-bdca-2b454529d774]}}
-  - {id: 112, title: "Terraform: VPC flow logs + S3 access logging off",   provider: terraform, cicd_sec: [10], severity: medium, slug: 112-terraform-no-flow-logs,        expected: {checkov: [CKV_AWS_18], kics: [f83121ea-03da-434f-9277-9cd247ab3047, f861041c-8c9f-4156-acfc-5e6e524f5884]}}
+  - {id: 111, title: "Terraform: CloudTrail logging disabled / single-region", provider: terraform, cicd_sec: [10], severity: high, slug: 111-terraform-cloudtrail-disabled, expected: {checkov: [CKV_AWS_67], kics: [4bb76f17-3d63-4529-bdca-2b454529d774], trivy: [AWS-0014]}}
+  - {id: 112, title: "Terraform: VPC flow logs + S3 access logging off",   provider: terraform, cicd_sec: [10], severity: medium, slug: 112-terraform-no-flow-logs,        expected: {checkov: [CKV_AWS_18], kics: [f83121ea-03da-434f-9277-9cd247ab3047, f861041c-8c9f-4156-acfc-5e6e524f5884], trivy: [AWS-0178]}}
   # 113 GitLab CI_DEBUG_TRACE dumps masked secrets to the job log. No scanner
   # here carries a rule for it -> honest all-miss next-gen target.
   - {id: 113, title: "GitLab: `CI_DEBUG_TRACE` leaks secrets to job log",  provider: gitlab, cicd_sec: [10, 6], severity: medium, slug: 113-gitlab-debug-trace,           expected: {pipeline-check: [], checkov: [], ciguard: []}}
@@ -409,13 +410,18 @@ scenarios:
   #            start empty and are reconciled from the first CI run (Trivy is new;
   #            Checkov/KICS rule IDs aren't reproducible locally).
   # CloudFormation (114-116) — Checkov + KICS + Trivy (pipeline-check CFN -> na).
-  - {id: 114, title: "CloudFormation: security group SSH open to 0.0.0.0/0", provider: cloudformation, cicd_sec: [7], severity: high, slug: 114-cfn-sg-open,            expected: {checkov: [], kics: [], trivy: []}}
-  - {id: 115, title: "CloudFormation: IAM managed policy `*:*` (full admin)", provider: cloudformation, cicd_sec: [2], severity: critical, slug: 115-cfn-iam-admin,       expected: {checkov: [], kics: [], trivy: []}}
-  - {id: 116, title: "CloudFormation: RDS unencrypted + publicly accessible", provider: cloudformation, cicd_sec: [7, 2], severity: high, slug: 116-cfn-rds-unencrypted-public, expected: {checkov: [], kics: [], trivy: []}}
+  # KICS UUIDs: 6e856af2=SG Unrestricted SSH, 022f8938=IAM data exfiltration,
+  # 5beacce3=RDS Storage Not Encrypted, de38e1d5=RDS Publicly Accessible.
+  # Trivy missed the IAM *:* wildcard on 115 (as on TF 100).
+  - {id: 114, title: "CloudFormation: security group SSH open to 0.0.0.0/0", provider: cloudformation, cicd_sec: [7], severity: high, slug: 114-cfn-sg-open,            expected: {checkov: [CKV_AWS_24], kics: [6e856af2-62d7-4ba2-adc1-73b62cef9cc1], trivy: [AWS-0107]}}
+  - {id: 115, title: "CloudFormation: IAM managed policy `*:*` (full admin)", provider: cloudformation, cicd_sec: [2], severity: critical, slug: 115-cfn-iam-admin,       expected: {checkov: [CKV_AWS_109], kics: [022f8938-4b17-420c-aca3-f917f290f322], trivy: []}}
+  - {id: 116, title: "CloudFormation: RDS unencrypted + publicly accessible", provider: cloudformation, cicd_sec: [7, 2], severity: high, slug: 116-cfn-rds-unencrypted-public, expected: {checkov: [CKV_AWS_16, CKV_AWS_17], kics: [5beacce3-4020-4a3d-9e1d-a36f953df630, de38e1d5-54cb-4111-a868-6f7722695007], trivy: [AWS-0080]}}
   # Helm (117-118) — pipeline-check + Checkov + Trivy (Trivy renders the chart;
-  # KICS doesn't score helm -> na).
-  - {id: 117, title: "Helm: container runs as root + privilege escalation",  provider: helm, cicd_sec: [7], severity: high, slug: 117-helm-weak-securitycontext,        expected: {pipeline-check: [], checkov: [], trivy: []}}
-  - {id: 118, title: "Helm: hostPath mount of node root in chart",           provider: helm, cicd_sec: [7], severity: critical, slug: 118-helm-hostpath,                expected: {pipeline-check: [], checkov: [], trivy: []}}
+  # KICS doesn't score helm -> na). KSV-0001=privilege escalation, KSV-0023=hostPath.
+  - {id: 117, title: "Helm: container runs as root + privilege escalation",  provider: helm, cicd_sec: [7], severity: high, slug: 117-helm-weak-securitycontext,        expected: {pipeline-check: [K8S-006, K8S-007], checkov: [CKV_K8S_20], trivy: [KSV-0001]}}
+  - {id: 118, title: "Helm: hostPath mount of node root in chart",           provider: helm, cicd_sec: [7], severity: critical, slug: 118-helm-hostpath,                expected: {pipeline-check: [K8S-014], checkov: [], trivy: [KSV-0023]}}
   # Terraform (119-120) — Checkov + KICS + Trivy (pipeline-check TF -> na).
-  - {id: 119, title: "Terraform: S3 bucket unencrypted + unversioned",       provider: terraform, cicd_sec: [7], severity: high, slug: 119-terraform-s3-unencrypted,      expected: {checkov: [], kics: [], trivy: []}}
-  - {id: 120, title: "Terraform: RDS publicly accessible + unencrypted",     provider: terraform, cicd_sec: [7, 2], severity: high, slug: 120-terraform-rds-public,       expected: {checkov: [], kics: [], trivy: []}}
+  # KICS UUIDs: 568a4d22=S3 Without Versioning, 08bd0760=RDS Storage Not Encrypted,
+  # 35113e6f=RDS Publicly Accessible.
+  - {id: 119, title: "Terraform: S3 bucket unencrypted + unversioned",       provider: terraform, cicd_sec: [7], severity: high, slug: 119-terraform-s3-unencrypted,      expected: {checkov: [CKV_AWS_145], kics: [568a4d22-3517-44a6-a7ad-6a7eed88722c], trivy: [AWS-0132]}}
+  - {id: 120, title: "Terraform: RDS publicly accessible + unencrypted",     provider: terraform, cicd_sec: [7, 2], severity: high, slug: 120-terraform-rds-public,       expected: {checkov: [CKV_AWS_16, CKV_AWS_17], kics: [08bd0760-8752-44e1-9779-7bb369b2b4e4, 35113e6f-2c6b-414d-beec-7a9482d3b2d1], trivy: [AWS-0080]}}

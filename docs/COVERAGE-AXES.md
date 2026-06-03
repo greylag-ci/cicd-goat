@@ -31,18 +31,18 @@ the scanner gets ✅ on, out of how many scenarios fall in the category
 overall (a scenario in two categories counts once in each row).
 
 <!-- AUTOGEN:cicd-sec-coverage -->
-| # | Category | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard |
-| :-: | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| 1 | Insufficient flow control | 9 | 6/9 | 0/5 | 0/5 | 0/5 | 0/8 | 0/5 | 0/5 | 2/3 |
-| 2 | Inadequate IAM | 11 | 7/10 | 0/3 | 0/3 | 1/4 | 3/10 | 0/3 | 0/3 | 2/3 |
-| 3 | Dependency chain abuse | 28 | 24/28 | 3/11 | 4/11 | 3/12 | 3/23 | 0/11 | 0/11 | 4/5 |
-| 4 | Poisoned pipeline execution | 34 | 24/34 | 10/16 | 8/16 | 4/16 | 8/29 | 6/16 | 10/16 | 3/8 |
-| 5 | Insufficient PBAC | 10 | 6/10 | 3/6 | 1/6 | 0/6 | 1/8 | 0/6 | 1/6 | 2/3 |
-| 6 | Insufficient credential hygiene | 17 | 12/15 | 4/5 | 2/5 | 5/8 | 2/17 | 0/5 | 2/5 | 2/3 |
-| 7 | Insecure system configuration | 25 | 20/22 | 0/4 | 1/4 | 6/11 | 9/20 | 0/4 | 1/4 | 2/3 |
-| 8 | Ungoverned 3rd-party services | 4 | 4/4 | 1/3 | 2/3 | 1/3 | 0/4 | 0/3 | 1/3 | 1/1 |
-| 9 | Improper artifact integrity validation | 15 | 13/15 | 3/6 | 1/6 | 1/7 | 3/12 | 0/6 | 1/6 | 2/2 |
-| 10 | Insufficient logging & visibility | 5 | 1/3 | 0/1 | 0/1 | 2/3 | 2/5 | 0/1 | 0/1 | 0/1 |
+| # | Category | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard | Trivy |
+| :-: | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| 1 | Insufficient flow control | 9 | 6/9 | 0/5 | 0/5 | 0/5 | 0/8 | 0/5 | 0/5 | 2/3 | — |
+| 2 | Inadequate IAM | 14 | 7/10 | 0/3 | 0/3 | 4/7 | 6/13 | 0/3 | 0/3 | 2/3 | 2/4 |
+| 3 | Dependency chain abuse | 28 | 24/28 | 3/11 | 4/11 | 3/12 | 3/23 | 0/11 | 0/11 | 4/5 | 1/1 |
+| 4 | Poisoned pipeline execution | 34 | 24/34 | 10/16 | 8/16 | 4/16 | 8/29 | 6/16 | 10/16 | 3/8 | — |
+| 5 | Insufficient PBAC | 10 | 6/10 | 3/6 | 1/6 | 0/6 | 1/8 | 0/6 | 1/6 | 2/3 | — |
+| 6 | Insufficient credential hygiene | 17 | 12/15 | 4/5 | 2/5 | 5/8 | 2/17 | 0/5 | 2/5 | 2/3 | 3/3 |
+| 7 | Insecure system configuration | 31 | 22/24 | 0/4 | 1/4 | 10/15 | 14/26 | 0/4 | 1/4 | 2/3 | 14/14 |
+| 8 | Ungoverned 3rd-party services | 4 | 4/4 | 1/3 | 2/3 | 1/3 | 0/4 | 0/3 | 1/3 | 1/1 | — |
+| 9 | Improper artifact integrity validation | 15 | 13/15 | 3/6 | 1/6 | 1/7 | 3/12 | 0/6 | 1/6 | 2/2 | 1/1 |
+| 10 | Insufficient logging & visibility | 5 | 1/3 | 0/1 | 0/1 | 2/3 | 2/5 | 0/1 | 0/1 | 0/1 | 2/2 |
 <!-- /AUTOGEN:cicd-sec-coverage -->
 
 > Read this table for **shape**, not absolute leaderboard position.
@@ -60,11 +60,11 @@ assign to each scenario in
 [`scenarios.yaml`](../tools/scenarios.yaml).
 
 <!-- AUTOGEN:severity-coverage -->
-| Severity | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard |
-| :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| 🔴 critical | 27 | 23/26 | 3/10 | 3/10 | 2/13 | 4/23 | 0/10 | 3/10 | 1/5 |
-| 🟠 high | 61 | 42/57 | 11/26 | 10/26 | 14/33 | 15/53 | 6/26 | 10/26 | 7/11 |
-| 🟡 medium | 25 | 20/24 | 3/7 | 1/7 | 2/9 | 6/20 | 0/7 | 0/7 | 3/4 |
+| Severity | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard | Trivy |
+| :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| 🔴 critical | 29 | 24/27 | 3/10 | 3/10 | 3/14 | 5/25 | 0/10 | 3/10 | 1/5 | 4/6 |
+| 🟠 high | 66 | 43/58 | 11/26 | 10/26 | 18/37 | 20/58 | 6/26 | 10/26 | 7/11 | 12/12 |
+| 🟡 medium | 25 | 20/24 | 3/7 | 1/7 | 2/9 | 6/20 | 0/7 | 0/7 | 3/4 | 2/2 |
 <!-- /AUTOGEN:severity-coverage -->
 
 > If a scanner's critical-row fraction is meaningfully lower than its
@@ -127,7 +127,6 @@ scenarios from the field tested here.
 | 90 | [Azure: untrusted `resources` template on self-hosted agent](../scenarios/90-azure-untrusted-template-selfhosted/README.md) | **pipeline&#x2011;check** |
 | 91 | [GitLab: `terraform apply` in a merge-request pipeline](../scenarios/91-gitlab-iac-apply-mr/README.md) | **pipeline&#x2011;check** |
 | 93 | [Drone: privileged step mounts host Docker socket](../scenarios/93-drone-host-socket/README.md) | **pipeline&#x2011;check** |
-| 96 | [Dockerfile: hardcoded secret in `ENV`](../scenarios/96-dockerfile-secret-in-env/README.md) | **pipeline&#x2011;check** |
 | 108 | [GHA: deploy job missing environment binding](../scenarios/108-deploy-no-environment/README.md) | **pipeline&#x2011;check** |
 | 109 | [GHA: self-hosted deploy without environment gate](../scenarios/109-selfhosted-deploy-no-gate/README.md) | **pipeline&#x2011;check** |
 
@@ -135,7 +134,7 @@ scenarios from the field tested here.
 
 | Scanner | Solo catches |
 | :-- | :-: |
-| pipeline&#x2011;check | **43** |
+| pipeline&#x2011;check | **42** |
 | ciguard | **2** |
 | Checkov | **1** |
 | zizmor | **0** |
@@ -143,6 +142,7 @@ scenarios from the field tested here.
 | KICS | **0** |
 | actionlint | **0** |
 | octoscan | **0** |
+| Trivy | **0** |
 <!-- /AUTOGEN:unique-catches -->
 
 > Solo-catch count is a different signal from leaderboard rank. A

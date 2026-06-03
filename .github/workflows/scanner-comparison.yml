@@ -476,7 +476,16 @@ jobs:
               --exit-code 0 \
               --skip-version-check \
               --disable-telemetry
-          jq '(.runs[]?.results[]?.locations[]?.physicalLocation.artifactLocation.uri) |= (if . != null and test("scenarios/") then sub("^.*scenarios/"; "scenarios/") else . end)' \
+          # Trivy emits paths relative to the scanned `scenarios` dir, e.g.
+          # `97-k8s-.../deployment.yaml` (no `scenarios/` prefix). Normalise to
+          # the repo-relative `scenarios/NN-.../file` form SCENARIO_RE expects:
+          # strip any prefix when the path already contains `scenarios/`, else
+          # prepend `scenarios/` to a bare `NN-slug/...` path.
+          jq '(.runs[]?.results[]?.locations[]?.physicalLocation.artifactLocation.uri) |= (
+                if . == null then .
+                elif test("scenarios/") then sub("^.*scenarios/"; "scenarios/")
+                elif test("^[0-9]+-") then "scenarios/" + .
+                else . end)' \
             trivy-results/results.sarif > trivy-results/results.fixed.sarif
           mv trivy-results/results.fixed.sarif trivy-results/results.sarif
       - uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba  # v4

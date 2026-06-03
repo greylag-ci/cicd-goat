@@ -21,6 +21,7 @@ reach.
 | Scanner | Detection |
 |---------|-----------|
 | pipeline-check | `DF-002` — container runs as root (missing/root USER) |
+| Trivy | `DS-0002` — running containers with the root user |
 | Checkov | `CKV_DOCKER_3` — a non-root user has been created |
 | KICS | `Missing User Instruction` (`fd54f200-…`) — no `USER` directive |
 

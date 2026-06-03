@@ -28,6 +28,7 @@ and the cluster.
 | Scanner | Detection |
 |---------|-----------|
 | pipeline-check | `K8S-014` — hostPath references a sensitive host directory |
+| Trivy | `KSV-0023` — hostPath volume mounted |
 | Checkov | — (no hostPath-specific canonical fires; many securityContext checks do, as noise) |
 | KICS | `Workload Mounting With Sensitive OS Directory` (`5308a7a8-…`) — hostPath of node root |
 

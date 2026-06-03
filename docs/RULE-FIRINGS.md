@@ -889,6 +889,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | pipeline&#x2011;check | **`DF-002`**, `DF-007`, `DF-016`, `DF-024` | ✅ |
 | KICS | `b03a748a-542d-44f4-bb86-9199ab4fd2d5`, **`fd54f200-402c-4333-a5a4-36ef6709af2f`** | ✅ |
 | Checkov | `CKV_DOCKER_2`, **`CKV_DOCKER_3`** | ✅ |
+| Trivy | **`DS-0002`**, `DS-0026` | ✅ |
 
 ### Scenario 95 — Dockerfile: base image unpinned (`:latest`) (Dockerfile)
 
@@ -897,6 +898,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | pipeline&#x2011;check | **`DF-001`**, `DF-007`, `DF-016` | ✅ |
 | KICS | `b03a748a-542d-44f4-bb86-9199ab4fd2d5`, **`f45ea400-6bbe-4501-9fc7-1c3d75c32067`** | ✅ |
 | Checkov | `CKV_DOCKER_2`, **`CKV_DOCKER_7`** | ✅ |
+| Trivy | **`DS-0001`**, `DS-0026` | ✅ |
 
 ### Scenario 96 — Dockerfile: hardcoded secret in `ENV` (Dockerfile)
 
@@ -905,6 +907,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | pipeline&#x2011;check | **`DF-006`**, `DF-007`, `DF-016` | ✅ |
 | KICS | `b03a748a-542d-44f4-bb86-9199ab4fd2d5` | ❌ |
 | Checkov | `CKV_DOCKER_2` | ❌ |
+| Trivy | `DS-0026`, **`DS-0031`** | ✅ |
 
 ### Scenario 97 — Kubernetes: privileged container (Kubernetes)
 
@@ -913,6 +916,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | pipeline&#x2011;check | **`K8S-005`**, `K8S-006`, `K8S-007`, `K8S-008`, `K8S-009`, `K8S-010`, `K8S-011`, `K8S-012`, `K8S-015`, `K8S-016`, `K8S-019`, `K8S-024`, `K8S-032`, `K8S-033` | ✅ |
 | KICS | `02323c00-cdc3-4fdc-a310-4f2b3e7a1660`, `229588ef-8fde-40c8-8756-f4f2b5825ded`, `268ca686-7fb7-4ae9-b129-955a2a89064e`, `48471392-d4d0-47c0-b135-cdec95eb3eef`, `48a5beba-e4c0-4584-a2aa-e6894e4cf424`, `4a20ebac-1060-4c81-95d1-1f7f620e983b`, `4ac0e2b7-d2d2-4af7-8799-e8de6721ccda`, `5572cc5e-1e4c-4113-92a6-7a8a3bd25e6d`, `611ab018-c4aa-4ba2-b0f6-a448337509a6`, `8b36775e-183d-4d46-b0f7-96a6f34a723f`, `a659f3b5-9bf0-438a-bd9a-7d3a6427f1e3`, `a9c2f49d-0671-4fc9-9ece-f4e261e128d0`, `ade74944-a674-4e00-859e-c6eab5bde441`, `b14d1bc4-a208-45db-92f0-e21f8e2588e9`, `ca469dd4-c736-448f-8ac1-30a642705e0a`, `cf34805e-3872-4c08-bf92-6ff7bb0cfadb`, `dbbc6705-d541-43b0-b166-dd4be8208b54`, `f377b83e-bd07-4f48-a591-60c82b14a78b` | ❌ |
 | Checkov | `CKV2_K8S_6`, `CKV_K8S_10`, `CKV_K8S_11`, `CKV_K8S_12`, `CKV_K8S_13`, **`CKV_K8S_16`**, `CKV_K8S_20`, `CKV_K8S_21`, `CKV_K8S_22`, `CKV_K8S_23`, `CKV_K8S_28`, `CKV_K8S_29`, `CKV_K8S_31`, `CKV_K8S_37`, `CKV_K8S_38`, `CKV_K8S_40`, `CKV_K8S_8`, `CKV_K8S_9` | ✅ |
+| Trivy | `KSV-0001`, `KSV-0003`, `KSV-0004`, `KSV-0011`, `KSV-0012`, `KSV-0014`, `KSV-0015`, `KSV-0016`, **`KSV-0017`**, `KSV-0018`, `KSV-0020`, `KSV-0021`, `KSV-0030`, `KSV-0104`, `KSV-0106`, `KSV-0110`, `KSV-0118` | ✅ |
 
 ### Scenario 98 — Kubernetes: hostPath mount of node root (Kubernetes)
 
@@ -921,6 +925,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | pipeline&#x2011;check | `K8S-006`, `K8S-007`, `K8S-008`, `K8S-009`, `K8S-010`, `K8S-011`, `K8S-012`, `K8S-013`, **`K8S-014`**, `K8S-015`, `K8S-016`, `K8S-019`, `K8S-024`, `K8S-032`, `K8S-033` | ✅ |
 | KICS | `02323c00-cdc3-4fdc-a310-4f2b3e7a1660`, `229588ef-8fde-40c8-8756-f4f2b5825ded`, `268ca686-7fb7-4ae9-b129-955a2a89064e`, `48471392-d4d0-47c0-b135-cdec95eb3eef`, `48a5beba-e4c0-4584-a2aa-e6894e4cf424`, `4a20ebac-1060-4c81-95d1-1f7f620e983b`, `4ac0e2b7-d2d2-4af7-8799-e8de6721ccda`, **`5308a7a8-06f8-45ac-bf10-791fe21de46e`**, `5572cc5e-1e4c-4113-92a6-7a8a3bd25e6d`, `591ade62-d6b0-4580-b1ae-209f80ba1cd9`, `611ab018-c4aa-4ba2-b0f6-a448337509a6`, `8b36775e-183d-4d46-b0f7-96a6f34a723f`, `a659f3b5-9bf0-438a-bd9a-7d3a6427f1e3`, `a97a340a-0063-418e-b3a1-3028941d0995`, `a9c2f49d-0671-4fc9-9ece-f4e261e128d0`, `aa8f7a35-9923-4cad-bd61-a19b7f6aac91`, `ade74944-a674-4e00-859e-c6eab5bde441`, `b14d1bc4-a208-45db-92f0-e21f8e2588e9`, `ca469dd4-c736-448f-8ac1-30a642705e0a`, `cf34805e-3872-4c08-bf92-6ff7bb0cfadb`, `dbbc6705-d541-43b0-b166-dd4be8208b54`, `f377b83e-bd07-4f48-a591-60c82b14a78b` | ✅ |
 | Checkov | `CKV2_K8S_6`, `CKV_K8S_10`, `CKV_K8S_11`, `CKV_K8S_12`, `CKV_K8S_13`, `CKV_K8S_20`, `CKV_K8S_21`, `CKV_K8S_22`, `CKV_K8S_23`, `CKV_K8S_28`, `CKV_K8S_29`, `CKV_K8S_30`, `CKV_K8S_31`, `CKV_K8S_37`, `CKV_K8S_38`, `CKV_K8S_40`, `CKV_K8S_8`, `CKV_K8S_9` | ❌ |
+| Trivy | `KSV-0001`, `KSV-0003`, `KSV-0004`, `KSV-0011`, `KSV-0012`, `KSV-0014`, `KSV-0015`, `KSV-0016`, `KSV-0018`, `KSV-0020`, `KSV-0021`, **`KSV-0023`**, `KSV-0030`, `KSV-0104`, `KSV-0106`, `KSV-0110`, `KSV-0118`, `KSV-0121` | ✅ |
 
 ### Scenario 99 — Kubernetes: root + allowPrivilegeEscalation (Kubernetes)
 
@@ -929,6 +934,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | pipeline&#x2011;check | `K8S-006`, `K8S-007`, `K8S-008`, `K8S-009`, `K8S-010`, `K8S-011`, `K8S-012`, `K8S-015`, `K8S-016`, `K8S-019`, `K8S-024`, `K8S-032`, `K8S-033`, **`K8S-035`** | ✅ |
 | KICS | `02323c00-cdc3-4fdc-a310-4f2b3e7a1660`, `229588ef-8fde-40c8-8756-f4f2b5825ded`, `268ca686-7fb7-4ae9-b129-955a2a89064e`, `48471392-d4d0-47c0-b135-cdec95eb3eef`, `48a5beba-e4c0-4584-a2aa-e6894e4cf424`, `4a20ebac-1060-4c81-95d1-1f7f620e983b`, `4ac0e2b7-d2d2-4af7-8799-e8de6721ccda`, **`5572cc5e-1e4c-4113-92a6-7a8a3bd25e6d`**, `591ade62-d6b0-4580-b1ae-209f80ba1cd9`, `611ab018-c4aa-4ba2-b0f6-a448337509a6`, `8b36775e-183d-4d46-b0f7-96a6f34a723f`, `a659f3b5-9bf0-438a-bd9a-7d3a6427f1e3`, `a97a340a-0063-418e-b3a1-3028941d0995`, `a9c2f49d-0671-4fc9-9ece-f4e261e128d0`, `ade74944-a674-4e00-859e-c6eab5bde441`, `b14d1bc4-a208-45db-92f0-e21f8e2588e9`, `ca469dd4-c736-448f-8ac1-30a642705e0a`, `cf34805e-3872-4c08-bf92-6ff7bb0cfadb`, `dbbc6705-d541-43b0-b166-dd4be8208b54`, `f377b83e-bd07-4f48-a591-60c82b14a78b` | ✅ |
 | Checkov | `CKV2_K8S_6`, `CKV_K8S_10`, `CKV_K8S_11`, `CKV_K8S_12`, `CKV_K8S_13`, **`CKV_K8S_20`**, `CKV_K8S_21`, `CKV_K8S_22`, `CKV_K8S_23`, `CKV_K8S_28`, `CKV_K8S_29`, `CKV_K8S_31`, `CKV_K8S_37`, `CKV_K8S_38`, `CKV_K8S_40`, `CKV_K8S_8`, `CKV_K8S_9` | ✅ |
+| Trivy | **`KSV-0001`**, `KSV-0003`, `KSV-0004`, `KSV-0011`, `KSV-0012`, `KSV-0014`, `KSV-0015`, `KSV-0016`, `KSV-0018`, `KSV-0020`, `KSV-0021`, `KSV-0030`, `KSV-0104`, `KSV-0105`, `KSV-0106`, `KSV-0110`, `KSV-0118` | ✅ |
 
 ### Scenario 100 — Terraform: IAM policy `*:*` (full admin) (Terraform)
 
@@ -936,6 +942,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | :-- | :-- | :-: |
 | KICS | `0ca1017d-3b80-423e-bb9c-6cd5898d34bd`, **`2f37c4a3-58b9-4afe-8a87-d7f1d2286f84`**, `575a2155-6af1-4026-b1af-d5bc8fe2a904`, `ba2ed23b-52d3-45ca-be25-f6c358d45abd`, `e38a8e0a-b88b-4902-b3fe-b0fcb17d5c10`, `e592a0c5-5bdb-414c-9066-5dba7cdea370` | ✅ |
 | Checkov | `CKV2_AWS_40`, `CKV_AWS_286`, `CKV_AWS_287`, `CKV_AWS_288`, `CKV_AWS_289`, `CKV_AWS_290`, `CKV_AWS_355`, **`CKV_AWS_62`**, `CKV_AWS_63` | ✅ |
+| Trivy | _(none)_ | ❌ |
 
 ### Scenario 101 — Terraform: security group SSH open to 0.0.0.0/0 (Terraform)
 
@@ -943,6 +950,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | :-- | :-- | :-: |
 | KICS | `381c3f2a-ef6f-4eff-99f7-b169cda3422c`, `4728cd65-a20c-49da-8b31-9c08b423e4db`, `4849211b-ac39-479e-ae78-5694d506cb24`, **`65905cec-d691-4320-b320-2000436cb696`**, `cb3f5ed6-0d18-40de-a93d-b3538db31e8c`, `e38a8e0a-b88b-4902-b3fe-b0fcb17d5c10`, `e592a0c5-5bdb-414c-9066-5dba7cdea370` | ✅ |
 | Checkov | `CKV2_AWS_5`, `CKV_AWS_23`, **`CKV_AWS_24`** | ✅ |
+| Trivy | `AWS-0099`, **`AWS-0107`** | ✅ |
 
 ### Scenario 102 — Terraform: S3 bucket public-access-block disabled (Terraform)
 
@@ -950,6 +958,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | :-- | :-- | :-: |
 | KICS | `1a4bc881-9f69-4d44-8c9a-d37d08f54c50`, `4fa66806-0dd9-4f8d-9480-3174d39c7c91`, `568a4d22-3517-44a6-a7ad-6a7eed88722c`, **`d0cc8694-fcad-43ff-ac86-32331d7e867f`**, `e38a8e0a-b88b-4902-b3fe-b0fcb17d5c10`, `e592a0c5-5bdb-414c-9066-5dba7cdea370`, `f861041c-8c9f-4156-acfc-5e6e524f5884` | ✅ |
 | Checkov | `CKV2_AWS_6`, `CKV2_AWS_61`, `CKV2_AWS_62`, `CKV_AWS_144`, `CKV_AWS_145`, `CKV_AWS_18`, `CKV_AWS_21`, **`CKV_AWS_53`**, `CKV_AWS_54`, `CKV_AWS_55`, `CKV_AWS_56` | ✅ |
+| Trivy | **`AWS-0086`**, `AWS-0087`, `AWS-0089`, `AWS-0090`, `AWS-0091`, `AWS-0093`, `AWS-0132` | ✅ |
 
 ### Scenario 103 — CloudFormation: S3 bucket public read+write (CloudFormation)
 
@@ -957,6 +966,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | :-- | :-- | :-: |
 | KICS | `350cd468-0e2c-44ef-9d22-cfb73a62523c`, `37fa8188-738b-42c8-bf82-6334ea567738`, `38c64e76-c71e-4d92-a337-60174d1de1c9`, `4552b71f-0a2a-4bc4-92dd-ed7ec1b4674c`, **`48f100d9-f499-4c6d-b2b8-deafe47ffb26`**, `6c8d51af-218d-4bfb-94a9-94eabaa0703a`, `860ba89b-b8de-4e72-af54-d6aee4138a69`, `8d29754a-2a18-460d-a1ba-9509f8d359da`, `a227ec01-f97a-4084-91a4-47b350c1db54`, `b2e8752c-3497-4255-98d2-e4ae5b46bbf5` | ✅ |
 | Checkov | `CKV_AWS_18`, **`CKV_AWS_20`**, `CKV_AWS_21`, `CKV_AWS_53`, `CKV_AWS_54`, `CKV_AWS_55`, `CKV_AWS_56`, **`CKV_AWS_57`** | ✅ |
+| Trivy | **`AWS-0086`**, `AWS-0087`, `AWS-0089`, `AWS-0090`, `AWS-0091`, `AWS-0092`, `AWS-0093`, `AWS-0094`, `AWS-0132` | ✅ |
 
 ### Scenario 104 — Helm: privileged container in chart template (Helm)
 
@@ -964,6 +974,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | :-- | :-- | :-: |
 | pipeline&#x2011;check | `HELM-005`, `HELM-006`, **`K8S-005`**, `K8S-006`, `K8S-007`, `K8S-008`, `K8S-009`, `K8S-010`, `K8S-011`, `K8S-012`, `K8S-015`, `K8S-016`, `K8S-019`, `K8S-024`, `K8S-032`, `K8S-033` | ✅ |
 | Checkov | `CKV2_K8S_6`, `CKV_K8S_10`, `CKV_K8S_11`, `CKV_K8S_12`, `CKV_K8S_13`, **`CKV_K8S_16`**, `CKV_K8S_20`, `CKV_K8S_21`, `CKV_K8S_22`, `CKV_K8S_23`, `CKV_K8S_28`, `CKV_K8S_29`, `CKV_K8S_31`, `CKV_K8S_37`, `CKV_K8S_38`, `CKV_K8S_40`, `CKV_K8S_8`, `CKV_K8S_9` | ✅ |
+| Trivy | `KSV-0001`, `KSV-0003`, `KSV-0004`, `KSV-0011`, `KSV-0012`, `KSV-0014`, `KSV-0015`, `KSV-0016`, **`KSV-0017`**, `KSV-0018`, `KSV-0020`, `KSV-0021`, `KSV-0030`, `KSV-0104`, `KSV-0106`, `KSV-0110`, `KSV-0118` | ✅ |
 
 ### Scenario 105 — GHA: Codecov-style remote uploader piped to shell (GitHub Actions)
 
@@ -1035,6 +1046,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | :-- | :-- | :-: |
 | KICS | `17b30f8f-8dfb-4597-adf6-57600b6cf25e`, `482b7d26-0bdb-4b5f-bf6f-545826c0a3dd`, **`4bb76f17-3d63-4529-bdca-2b454529d774`**, `52ffcfa6-6c70-4ea6-8376-d828d3961669`, `5d9e3164-9265-470c-9a10-57ae454ac0c7`, `8173d5eb-96b5-4aa6-a71b-ecfa153c123d`, `e38a8e0a-b88b-4902-b3fe-b0fcb17d5c10`, `e592a0c5-5bdb-414c-9066-5dba7cdea370` | ✅ |
 | Checkov | `CKV2_AWS_10`, `CKV_AWS_251`, `CKV_AWS_252`, `CKV_AWS_35`, `CKV_AWS_36`, **`CKV_AWS_67`** | ✅ |
+| Trivy | **`AWS-0014`**, `AWS-0015`, `AWS-0016`, `AWS-0162` | ✅ |
 
 ### Scenario 112 — Terraform: VPC flow logs + S3 access logging off (Terraform)
 
@@ -1042,6 +1054,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | :-- | :-- | :-: |
 | KICS | `568a4d22-3517-44a6-a7ad-6a7eed88722c`, `e38a8e0a-b88b-4902-b3fe-b0fcb17d5c10`, `e592a0c5-5bdb-414c-9066-5dba7cdea370`, **`f83121ea-03da-434f-9277-9cd247ab3047`**, **`f861041c-8c9f-4156-acfc-5e6e524f5884`**, `fd632aaf-b8a1-424d-a4d1-0de22fd3247a` | ✅ |
 | Checkov | `CKV2_AWS_11`, `CKV2_AWS_12`, `CKV2_AWS_6`, `CKV2_AWS_61`, `CKV2_AWS_62`, `CKV_AWS_144`, `CKV_AWS_145`, **`CKV_AWS_18`**, `CKV_AWS_21` | ✅ |
+| Trivy | `AWS-0086`, `AWS-0087`, `AWS-0089`, `AWS-0090`, `AWS-0091`, `AWS-0093`, `AWS-0094`, `AWS-0132`, **`AWS-0178`** | ✅ |
 
 ### Scenario 113 — GitLab: `CI_DEBUG_TRACE` leaks secrets to job log (GitLab CI)
 
@@ -1050,4 +1063,60 @@ Same source as the main matrix — auto-rebuilt from the latest
 | pipeline&#x2011;check | `GL-015` | ❌ |
 | Checkov | _(none)_ | ❌ |
 | ciguard | `ART-003`, `SC-003` | ❌ |
+
+### Scenario 114 — CloudFormation: security group SSH open to 0.0.0.0/0 (CloudFormation)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| KICS | `0104165b-02d5-426f-abc9-91fb48189899`, `4a1e6b34-1008-4e61-a5f2-1f7c276f8d14`, `5e6c9c68-8a82-408e-8749-ddad78cbb9c5`, **`6e856af2-62d7-4ba2-adc1-73b62cef9cc1`**, `8d29754a-2a18-460d-a1ba-9509f8d359da`, `cdbb0467-2957-4a77-9992-7b55b29df7b7` | ✅ |
+| Checkov | `CKV_AWS_23`, **`CKV_AWS_24`** | ✅ |
+| Trivy | **`AWS-0107`**, `AWS-0124` | ✅ |
+
+### Scenario 115 — CloudFormation: IAM managed policy `*:*` (full admin) (CloudFormation)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| KICS | **`022f8938-4b17-420c-aca3-f917f290f322`**, `8d29754a-2a18-460d-a1ba-9509f8d359da` | ✅ |
+| Checkov | `CKV_AWS_107`, `CKV_AWS_108`, **`CKV_AWS_109`**, `CKV_AWS_110`, `CKV_AWS_111` | ✅ |
+| Trivy | _(none)_ | ❌ |
+
+### Scenario 116 — CloudFormation: RDS unencrypted + publicly accessible (CloudFormation)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| KICS | `2b1d4935-9acf-48a7-8466-10d18bf51a69`, `2c161e58-cb52-454f-abea-6470c37b5e6e`, **`5beacce3-4020-4a3d-9e1d-a36f953df630`**, `8d29754a-2a18-460d-a1ba-9509f8d359da`, `9c30655c-f9a1-4296-b365-53c0bba80c76`, `9fcd0a0a-9b6f-4670-a215-d94e6bf3f184`, **`de38e1d5-54cb-4111-a868-6f7722695007`**, `e649a218-d099-4550-86a4-1231e1fcb60d`, `f0104061-8bfc-4b45-8a7d-630eb502f281`, `ffee2785-c347-451e-89f3-11aeb08e5c84` | ✅ |
+| Checkov | `CKV_AWS_118`, `CKV_AWS_157`, **`CKV_AWS_16`**, `CKV_AWS_161`, **`CKV_AWS_17`** | ✅ |
+| Trivy | `AWS-0077`, **`AWS-0080`**, `AWS-0133`, `AWS-0176`, `AWS-0177`, `AWS-0180` | ✅ |
+
+### Scenario 117 — Helm: container runs as root + privilege escalation (Helm)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `HELM-005`, `HELM-006`, **`K8S-006`**, **`K8S-007`**, `K8S-008`, `K8S-009`, `K8S-010`, `K8S-011`, `K8S-012`, `K8S-015`, `K8S-016`, `K8S-019`, `K8S-024`, `K8S-032`, `K8S-033` | ✅ |
+| Checkov | `CKV2_K8S_6`, `CKV_K8S_10`, `CKV_K8S_11`, `CKV_K8S_12`, `CKV_K8S_13`, **`CKV_K8S_20`**, `CKV_K8S_21`, `CKV_K8S_22`, `CKV_K8S_23`, `CKV_K8S_28`, `CKV_K8S_29`, `CKV_K8S_31`, `CKV_K8S_37`, `CKV_K8S_38`, `CKV_K8S_40`, `CKV_K8S_8`, `CKV_K8S_9` | ✅ |
+| Trivy | **`KSV-0001`**, `KSV-0003`, `KSV-0004`, `KSV-0011`, `KSV-0012`, `KSV-0014`, `KSV-0015`, `KSV-0016`, `KSV-0018`, `KSV-0020`, `KSV-0021`, `KSV-0030`, `KSV-0104`, `KSV-0106`, `KSV-0110`, `KSV-0118` | ✅ |
+
+### Scenario 118 — Helm: hostPath mount of node root in chart (Helm)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `HELM-005`, `HELM-006`, `K8S-006`, `K8S-007`, `K8S-008`, `K8S-009`, `K8S-010`, `K8S-011`, `K8S-012`, `K8S-013`, **`K8S-014`**, `K8S-015`, `K8S-016`, `K8S-019`, `K8S-024`, `K8S-032`, `K8S-033` | ✅ |
+| Checkov | `CKV2_K8S_6`, `CKV_K8S_10`, `CKV_K8S_11`, `CKV_K8S_12`, `CKV_K8S_13`, `CKV_K8S_20`, `CKV_K8S_21`, `CKV_K8S_22`, `CKV_K8S_23`, `CKV_K8S_28`, `CKV_K8S_29`, `CKV_K8S_30`, `CKV_K8S_31`, `CKV_K8S_37`, `CKV_K8S_38`, `CKV_K8S_40`, `CKV_K8S_8`, `CKV_K8S_9` | ❌ |
+| Trivy | `KSV-0001`, `KSV-0003`, `KSV-0004`, `KSV-0011`, `KSV-0012`, `KSV-0014`, `KSV-0015`, `KSV-0016`, `KSV-0018`, `KSV-0020`, `KSV-0021`, **`KSV-0023`**, `KSV-0030`, `KSV-0104`, `KSV-0106`, `KSV-0110`, `KSV-0118`, `KSV-0121` | ✅ |
+
+### Scenario 119 — Terraform: S3 bucket unencrypted + unversioned (Terraform)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| KICS | **`568a4d22-3517-44a6-a7ad-6a7eed88722c`**, `e38a8e0a-b88b-4902-b3fe-b0fcb17d5c10`, `e592a0c5-5bdb-414c-9066-5dba7cdea370`, `f861041c-8c9f-4156-acfc-5e6e524f5884` | ✅ |
+| Checkov | `CKV2_AWS_6`, `CKV2_AWS_61`, `CKV2_AWS_62`, `CKV_AWS_144`, **`CKV_AWS_145`**, `CKV_AWS_18`, `CKV_AWS_21` | ✅ |
+| Trivy | `AWS-0086`, `AWS-0087`, `AWS-0089`, `AWS-0090`, `AWS-0091`, `AWS-0093`, `AWS-0094`, **`AWS-0132`** | ✅ |
+
+### Scenario 120 — Terraform: RDS publicly accessible + unencrypted (Terraform)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| KICS | **`08bd0760-8752-44e1-9779-7bb369b2b4e4`**, `1dc73fb4-5b51-430c-8c5f-25dcf9090b02`, `2a153952-2544-4687-bcc9-cc8fea814a9b`, **`35113e6f-2c6b-414d-beec-7a9482d3b2d1`**, `6d3dead4-c6b2-4db7-81bd-3a83eae8f255`, `88fd05e0-ac0e-43d2-ba6d-fc0ba60ae1a6`, `8d7f7b8c-6c7c-40f8-baa6-62006c6c7b56`, `e38a8e0a-b88b-4902-b3fe-b0fcb17d5c10`, `e592a0c5-5bdb-414c-9066-5dba7cdea370` | ✅ |
+| Checkov | `CKV2_AWS_30`, `CKV2_AWS_60`, `CKV_AWS_118`, `CKV_AWS_129`, `CKV_AWS_157`, **`CKV_AWS_16`**, `CKV_AWS_161`, **`CKV_AWS_17`**, `CKV_AWS_226`, `CKV_AWS_293`, `CKV_AWS_353` | ✅ |
+| Trivy | `AWS-0077`, **`AWS-0080`**, `AWS-0133`, `AWS-0176`, `AWS-0177`, `AWS-0180` | ✅ |
 <!-- /AUTOGEN:rule-firings -->

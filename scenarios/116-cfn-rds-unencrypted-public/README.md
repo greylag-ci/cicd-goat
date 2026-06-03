@@ -25,9 +25,9 @@ yields plaintext data. Two independent exposure surfaces on one resource.
 
 | Scanner | Detection |
 |---------|-----------|
-| Trivy | reconciled from CI (RDS encryption + public-access misconfig) |
-| Checkov | reconciled from CI |
-| KICS | reconciled from CI |
+| Trivy | `AWS-0080` — RDS encryption should be enabled |
+| Checkov | `CKV_AWS_16` (RDS encrypted at rest) + `CKV_AWS_17` (RDS not public) |
+| KICS | `RDS Storage Not Encrypted` (`5beacce3-…`) + `RDS DB Instance Publicly Accessible` (`de38e1d5-…`) |
 | pipeline-check | — (CloudFormation ruleset thin / non-attributable) |
 
 ## Fix

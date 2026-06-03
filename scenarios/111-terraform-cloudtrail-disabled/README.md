@@ -33,6 +33,7 @@ Insufficient logging is what turns a contained incident into an undetected one.
 |---------|-----------|
 | Checkov | `CKV_AWS_67` — CloudTrail enabled in all regions (also fires `CKV_AWS_35/36` log-validation) |
 | KICS | `CloudTrail Logging Disabled` (`4bb76f17-…`) — also flags multi-region/validation off |
+| Trivy | `AWS-0014` — CloudTrail should cover all regions |
 | pipeline-check | — (its Terraform provider needs a plan JSON) |
 
 ## Fix

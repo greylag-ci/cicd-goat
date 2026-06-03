@@ -26,9 +26,9 @@ versioning) — useful for supply-chain tampering with no rollback.
 
 | Scanner | Detection |
 |---------|-----------|
-| Trivy | reconciled from CI (S3 encryption / versioning misconfig) |
-| Checkov | reconciled from CI |
-| KICS | reconciled from CI |
+| Trivy | `AWS-0132` — S3 bucket encryption with a customer key |
+| Checkov | `CKV_AWS_145` — S3 buckets encrypted with KMS by default |
+| KICS | `S3 Bucket Without Versioning` (`568a4d22-…`) |
 | pipeline-check | — (its Terraform provider needs a plan JSON) |
 
 ## Fix

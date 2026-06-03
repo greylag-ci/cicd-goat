@@ -28,6 +28,7 @@ the evidence needed to notice or investigate one.
 |---------|-----------|
 | Checkov | `CKV_AWS_18` — S3 bucket access logging (also fires `CKV2_AWS_11` VPC flow-log graph check) |
 | KICS | `VPC FlowLogs Disabled` (`f83121ea-…`) + `S3 Bucket Logging Disabled` (`f861041c-…`) |
+| Trivy | `AWS-0178` — VPC Flow Logs not enabled |
 | pipeline-check | — (its Terraform provider needs a plan JSON) |
 
 ## Fix

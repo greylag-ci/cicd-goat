@@ -29,6 +29,7 @@ downstream deploys.
 |---------|-----------|
 | Checkov | `CKV_AWS_53` — S3 bucket block-public-ACLs enabled (and `_54/_55/_56` for the other guards) |
 | KICS | `S3 Bucket Allows Public ACL` (`d0cc8694-…`) — public-access-block guards off |
+| Trivy | `AWS-0086` — S3 bucket should block public ACLs |
 | pipeline-check | — (Terraform needs a plan JSON) |
 
 ## Fix

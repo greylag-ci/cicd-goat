@@ -26,6 +26,7 @@ node — and from there, often the cluster.
 | Scanner | Detection |
 |---------|-----------|
 | pipeline-check | `K8S-005` — container `securityContext.privileged: true` |
+| Trivy | `KSV-0017` — privileged container |
 | Checkov | `CKV_K8S_16` — container should not be privileged |
 | KICS | — (honest miss: its `Container Is Privileged` query fires on the Helm Deployment in scenario 104 but **not** on this plain `Deployment` in the tested KICS version) |
 

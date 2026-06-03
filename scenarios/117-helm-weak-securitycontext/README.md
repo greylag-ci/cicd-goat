@@ -29,9 +29,9 @@ installed.
 
 | Scanner | Detection |
 |---------|-----------|
-| Trivy | reconciled from CI (renders the chart; KSV root / privilege-escalation) |
-| pipeline-check | reconciled from CI (`K8S-*` on the template) |
-| Checkov | reconciled from CI (Kubernetes framework on the template) |
+| Trivy | `KSV-0001` — process can elevate its own privileges (renders the chart) |
+| pipeline-check | `K8S-006` (allowPrivilegeEscalation not false) + `K8S-007` (runAsNonRoot not true) |
+| Checkov | `CKV_K8S_20` — containers should not run with allowPrivilegeEscalation |
 | KICS | — (Helm not in KICS's scored providers here) |
 
 ## Fix

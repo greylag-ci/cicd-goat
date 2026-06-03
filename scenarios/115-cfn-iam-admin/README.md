@@ -26,9 +26,9 @@ backdoor principals, and disable logging — total account compromise.
 
 | Scanner | Detection |
 |---------|-----------|
-| Trivy | reconciled from CI (IAM wildcard misconfig) |
-| Checkov | reconciled from CI |
-| KICS | reconciled from CI |
+| Checkov | `CKV_AWS_109` — IAM policy allows permissions management without constraints (the `*` action) |
+| KICS | `IAM policy allows for data exfiltration` (`022f8938-…`) |
+| Trivy | — (its CFN ruleset doesn't flag the `*:*` wildcard here — honest miss, mirrors Terraform 100) |
 | pipeline-check | — (CloudFormation ruleset thin / non-attributable) |
 
 ## Fix

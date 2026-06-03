@@ -28,9 +28,9 @@ the *configuration* flaws, not a literal credential.
 
 | Scanner | Detection |
 |---------|-----------|
-| Trivy | reconciled from CI (RDS public-access + encryption misconfig) |
-| Checkov | reconciled from CI |
-| KICS | reconciled from CI |
+| Trivy | `AWS-0080` — RDS encryption should be enabled |
+| Checkov | `CKV_AWS_16` (RDS encrypted at rest) + `CKV_AWS_17` (RDS not public) |
+| KICS | `DB Instance Storage Not Encrypted` (`08bd0760-…`) + `RDS DB Instance Publicly Accessible` (`35113e6f-…`) |
 | pipeline-check | — (its Terraform provider needs a plan JSON) |
 
 ## Fix

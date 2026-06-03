@@ -24,6 +24,7 @@ form of the mutable-image class (scenarios 09 / 46 / 58 / 64 / 73 / 78).
 | Scanner | Detection |
 |---------|-----------|
 | pipeline-check | `DF-001` — FROM image not pinned to a sha256 digest |
+| Trivy | `DS-0001` — `FROM` uses a non-specific (`latest`) tag |
 | Checkov | `CKV_DOCKER_7` — base image uses a non-latest version tag |
 | KICS | `Image Version Using 'latest'` (`f45ea400-…`) — mutable base tag |
 

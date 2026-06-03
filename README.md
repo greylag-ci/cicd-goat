@@ -6,9 +6,9 @@
 [![scanner-comparison](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml/badge.svg)](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml)
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-3a3a3a?style=flat-square)](LICENSE)
 [![CICD-SEC top 10](https://img.shields.io/badge/owasp-CICD--SEC_10%2F10-9c2b2b?style=flat-square)](https://owasp.org/www-project-top-10-ci-cd-security-risks/)
-[![scenarios 113](https://img.shields.io/badge/scenarios-113-1f6feb?style=flat-square)](scenarios/README.md)
+[![scenarios 120](https://img.shields.io/badge/scenarios-120-1f6feb?style=flat-square)](scenarios/README.md)
 [![providers 16](https://img.shields.io/badge/providers-16-1f6feb?style=flat-square)](docs/MATRIX.md)
-[![scanners 8](https://img.shields.io/badge/scanners-8-1f6feb?style=flat-square)](docs/MATRIX.md)
+[![scanners 9](https://img.shields.io/badge/scanners-9-1f6feb?style=flat-square)](docs/MATRIX.md)
 <!-- /AUTOGEN:badges -->
 
 ---
@@ -63,9 +63,10 @@ Full catches per provider (`caught/total`; `—` = the scanner can't parse that 
 
 | Scanner | GHA | GitLab | Azure | CircleCI | Bitbucket | Jenkins | Tekton | Argo | Drone | Buildkite | CloudBuild | Docker | K8s | TF | CFN | Helm |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| pipeline&#x2011;check | 37/43 | 11/14 | 4/7 | 5/7 | 3/7 | 4/6 | 3/4 | 4/5 | 3/3 | 2/2 | 2/2 | 3/3 | 3/3 | — | — | 1/1 |
-| Checkov | 10/43 | 0/14 | 0/7 | 1/7 | 1/7 | — | — | 2/5 | — | — | — | 2/3 | 2/3 | 5/5 | 1/1 | 1/1 |
-| KICS | 8/43 | — | — | — | — | — | — | — | — | — | — | 2/3 | 2/3 | 5/5 | 1/1 | — |
+| pipeline&#x2011;check | 37/43 | 11/14 | 4/7 | 5/7 | 3/7 | 4/6 | 3/4 | 4/5 | 3/3 | 2/2 | 2/2 | 3/3 | 3/3 | — | — | 3/3 |
+| Checkov | 10/43 | 0/14 | 0/7 | 1/7 | 1/7 | — | — | 2/5 | — | — | — | 2/3 | 2/3 | 7/7 | 4/4 | 2/3 |
+| KICS | 8/43 | — | — | — | — | — | — | — | — | — | — | 2/3 | 2/3 | 7/7 | 4/4 | — |
+| Trivy | — | — | — | — | — | — | — | — | — | — | — | 3/3 | 3/3 | 6/7 | 3/4 | 3/3 |
 | zizmor | 17/43 | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — |
 | poutine | 14/43 | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — |
 | octoscan | 13/43 | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — |
@@ -159,6 +160,7 @@ Full catches per provider (`caught/total`; `—` = the scanner can't parse that 
 | Scanner | Scenarios caught (of 3) |
 | :--- | :--- |
 | pipeline&#x2011;check | **3 ✅** |
+| Trivy | **3 ✅** |
 | KICS | **2 ✅** |
 | Checkov | **2 ✅** |
 
@@ -167,29 +169,33 @@ Full catches per provider (`caught/total`; `—` = the scanner can't parse that 
 | Scanner | Scenarios caught (of 3) |
 | :--- | :--- |
 | pipeline&#x2011;check | **3 ✅** |
+| Trivy | **3 ✅** |
 | KICS | **2 ✅** |
 | Checkov | **2 ✅** |
 
-#### Terraform — 5 scenarios
+#### Terraform — 7 scenarios
 
-| Scanner | Scenarios caught (of 5) |
+| Scanner | Scenarios caught (of 7) |
 | :--- | :--- |
-| KICS | **5 ✅** |
-| Checkov | **5 ✅** |
+| KICS | **7 ✅** |
+| Checkov | **7 ✅** |
+| Trivy | **6 ✅** |
 
-#### CloudFormation — 1 scenario
+#### CloudFormation — 4 scenarios
 
-| Scanner | Scenarios caught (of 1) |
+| Scanner | Scenarios caught (of 4) |
 | :--- | :--- |
-| KICS | **1 ✅** |
-| Checkov | **1 ✅** |
+| KICS | **4 ✅** |
+| Checkov | **4 ✅** |
+| Trivy | **3 ✅** |
 
-#### Helm — 1 scenario
+#### Helm — 3 scenarios
 
-| Scanner | Scenarios caught (of 1) |
+| Scanner | Scenarios caught (of 3) |
 | :--- | :--- |
-| pipeline&#x2011;check | **1 ✅** |
-| Checkov | **1 ✅** |
+| pipeline&#x2011;check | **3 ✅** |
+| Trivy | **3 ✅** |
+| Checkov | **2 ✅** |
 
 </details>
 <!-- /AUTOGEN:leaderboard -->

@@ -27,9 +27,9 @@ is every node in the cluster, and the bug travels with the chart.
 
 | Scanner | Detection |
 |---------|-----------|
-| Trivy | reconciled from CI (renders the chart; KSV hostPath) |
-| pipeline-check | reconciled from CI (`K8S-014` on the template) |
-| Checkov | reconciled from CI |
+| Trivy | `KSV-0023` — hostPath volume mounted (renders the chart) |
+| pipeline-check | `K8S-014` — hostPath references a sensitive host directory |
+| Checkov | — (no hostPath-specific canonical fires; general securityContext checks are noise) |
 | KICS | — (Helm not in KICS's scored providers here) |
 
 ## Fix
