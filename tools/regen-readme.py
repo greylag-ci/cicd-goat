@@ -85,6 +85,27 @@ PROVIDER_LABELS = {
 }
 PROVIDER_ORDER = list(PROVIDER_LABELS)
 
+# Compact column headers for the at-a-glance grid (full labels are too wide
+# across 16 columns).
+PROVIDER_SHORT = {
+    "github":     "GHA",
+    "gitlab":     "GitLab",
+    "azure":      "Azure",
+    "circleci":   "CircleCI",
+    "bitbucket":  "Bitbucket",
+    "jenkins":    "Jenkins",
+    "tekton":     "Tekton",
+    "argo":       "Argo",
+    "drone":      "Drone",
+    "buildkite":  "Buildkite",
+    "cloudbuild": "CloudBuild",
+    "dockerfile":     "Docker",
+    "kubernetes":     "K8s",
+    "terraform":      "TF",
+    "cloudformation": "CFN",
+    "helm":           "Helm",
+}
+
 
 def scenario_provider(scn: dict) -> str:
     return scn.get("provider", DEFAULT_PROVIDER)
@@ -243,31 +264,69 @@ def _leaderboard_cell(t: dict[str, int]) -> str:
 
 
 def render_leaderboard(data: dict, sarif_data: dict) -> str:
-    """Per-provider leaderboards for the README landing page.
+    """README landing-page leaderboard: an at-a-glance scanner×provider grid,
+    with the full per-provider tables tucked into a collapsed `<details>`.
 
-    One ranked table per provider in use, listing only the scanners that
-    can scan that provider (so GHA-only scanners don't show up under
-    GitLab / Jenkins / …).  Within each table, sorted by full-catch count
-    desc, then partials desc; stable on ties via scanners.yaml order.
-    The denominator is the number of scenarios for that provider.
+    The grid is the headline comparison — one row per scanner, one column per
+    provider, each cell the `caught/total` full-catch count (`—` where the
+    scanner can't parse that provider). Scanners are ranked by total catches
+    across the whole corpus. The per-provider section below repeats the
+    classic ranked tables for anyone who wants the detail without opening
+    docs/MATRIX.md.
     """
+    provs = providers_in_use(data)
+    prov_totals = {p: compute_totals(data, sarif_data, scenarios_for(data, p)) for p in provs}
+    prov_n = {p: len(scenarios_for(data, p)) for p in provs}
+    corpus_totals = compute_totals(data, sarif_data)
+    ranked = sorted(data["scanners"], key=lambda s: -corpus_totals[s["id"]][VERDICT_FULL])
+
+    def short(p: str) -> str:
+        return PROVIDER_SHORT.get(p, provider_label(p))
+
     out: list[str] = []
-    for prov in providers_in_use(data):
-        scns = scenarios_for(data, prov)
-        scanners = scanners_for(data, prov)
-        totals = compute_totals(data, sarif_data, scns)
+    # ── At-a-glance grid ──────────────────────────────────────────────────
+    out.append("### At a glance — scanners × providers")
+    out.append("")
+    out.append(
+        "Full catches per provider (`caught/total`; `—` = the scanner can't "
+        "parse that provider's files). Ranked by total catches across the "
+        "corpus. Expand the section below for the ranked per-provider tables, "
+        "or see the [full per-scenario matrix](docs/MATRIX.md)."
+    )
+    out.append("")
+    out.append("| Scanner | " + " | ".join(short(p) for p in provs) + " |")
+    out.append("| :--- | " + " | ".join(":---:" for _ in provs) + " |")
+    for s in ranked:
+        cells: list[str] = []
+        for p in provs:
+            if not scanner_supports(s, p):
+                cells.append("—")
+                continue
+            t = prov_totals[p][s["id"]]
+            appl = t[VERDICT_FULL] + t[VERDICT_PARTIAL] + t[VERDICT_MISS]
+            cells.append(f"{t[VERDICT_FULL]}/{appl}" if appl else "—")
+        if any(c != "—" for c in cells):  # skip scanners that score nothing
+            out.append(f"| {s['label']} | " + " | ".join(cells) + " |")
+    out.append("")
+    # ── Collapsed per-provider detail ─────────────────────────────────────
+    out.append("<details>")
+    out.append(f"<summary><strong>Per-provider leaderboards</strong> — {len(provs)} ranked tables</summary>")
+    out.append("")
+    for prov in provs:
+        totals = prov_totals[prov]
         order = sorted(
-            scanners,
+            scanners_for(data, prov),
             key=lambda s: (-totals[s["id"]][VERDICT_FULL], -totals[s["id"]][VERDICT_PARTIAL]),
         )
-        n = len(scns)
-        out.append(f"### {provider_label(prov)} — {n} scenario{'s' if n != 1 else ''}")
+        n = prov_n[prov]
+        out.append(f"#### {provider_label(prov)} — {n} scenario{'s' if n != 1 else ''}")
         out.append("")
         out.append(f"| Scanner | Scenarios caught (of {n}) |")
         out.append("| :--- | :--- |")
         for s in order:
             out.append(f"| {s['label']} | {_leaderboard_cell(totals[s['id']])} |")
         out.append("")
+    out.append("</details>")
     return "\n".join(out).rstrip()
 
 
