@@ -36,7 +36,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 ---
 
 <!-- AUTOGEN:rule-firings -->
-### Scenario 01 — `pull_request_target` + fork-head checkout
+### Scenario 01 — `pull_request_target` + fork-head checkout (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -48,11 +48,11 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | **`dangerous-checkout`** | ✅ |
 
-### Scenario 02 — Script injection via issue title
+### Scenario 02 — Script injection via issue title (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | **`GHA-003`**, `GHA-015` | ✅ |
+| pipeline&#x2011;check | **`GHA-003`**, `GHA-004`, `GHA-015` | ✅ |
 | zizmor | **`zizmor/template-injection`** | ✅ |
 | poutine | **`injection`** | ✅ |
 | KICS | **`20f14e1a-a899-4e79-9f09-b6a84cd4649b`** | ✅ |
@@ -60,11 +60,11 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | **`expression`**, `if-cond` | ✅ |
 | octoscan | **`expression-injection`** | ✅ |
 
-### Scenario 03 — Action pinned to mutable ref
+### Scenario 03 — Action pinned to mutable ref (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-005`, `AC-018`, **`GHA-001`**, `GHA-014`, `GHA-015`, `GHA-037` | ✅ |
+| pipeline&#x2011;check | `AC-005`, `AC-018`, **`GHA-001`**, `GHA-014`, `GHA-015`, `GHA-037`, `GHA-098` | ✅ |
 | zizmor | `zizmor/artipacked`, **`zizmor/unpinned-uses`** | ✅ |
 | poutine | **`github_action_from_unverified_creator_used`** | ✅ |
 | KICS | **`555ab8f9-2001-455e-a077-f2d0f41e2fb9`** | ✅ |
@@ -72,7 +72,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 04 — `GITHUB_TOKEN` `write-all`
+### Scenario 04 — `GITHUB_TOKEN` `write-all` (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -84,7 +84,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 05 — Cache poisoning via PR title
+### Scenario 05 — Cache poisoning via PR title (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -96,11 +96,11 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 06 — Reusable workflow `secrets: inherit`
+### Scenario 06 — Reusable workflow `secrets: inherit` (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-005`, `GHA-014`, **`GHA-034`** | ✅ |
+| pipeline&#x2011;check | `AC-005`, `GHA-014`, **`GHA-034`**, `GHA-098` | ✅ |
 | zizmor | **`zizmor/secrets-inherit`** | ✅ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
@@ -108,11 +108,11 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | `local-action` | ❌ |
 
-### Scenario 07 — `workflow_run` artifact RCE
+### Scenario 07 — `workflow_run` artifact RCE (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `GHA-001`, **`GHA-009`**, `GHA-015`, **`GHA-032`** | ✅ |
+| pipeline&#x2011;check | `GHA-001`, `GHA-004`, **`GHA-009`**, `GHA-015`, **`GHA-032`** | ✅ |
 | zizmor | **`zizmor/dangerous-triggers`**, `zizmor/unpinned-uses` | ✅ |
 | poutine | **`known_vulnerability_in_build_component`** | ✅ |
 | KICS | _(none)_ | ❌ |
@@ -120,7 +120,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 08 — Self-hosted runner on public repo
+### Scenario 08 — Self-hosted runner on public repo (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -132,7 +132,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | **`runner-label`** | ✅ |
 
-### Scenario 09 — Container image `:latest`
+### Scenario 09 — Container image `:latest` (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -144,11 +144,11 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 10 — AWS OIDC wildcard `sub`
+### Scenario 10 — AWS OIDC wildcard `sub` (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-005`, `GHA-001`, `GHA-006`, `GHA-007`, `GHA-015`, `GHA-020`, `GHA-024`, `GHA-037`, **`GHA-062`** | ✅ |
+| pipeline&#x2011;check | `AC-005`, `GHA-001`, `GHA-006`, `GHA-007`, `GHA-015`, `GHA-020`, `GHA-024`, `GHA-037`, **`GHA-062`**, `GHA-098` | ✅ |
 | zizmor | `zizmor/artipacked`, `zizmor/unpinned-uses` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | `555ab8f9-2001-455e-a077-f2d0f41e2fb9` | ❌ |
@@ -156,7 +156,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 11 — `pip install` no hashes
+### Scenario 11 — `pip install` no hashes (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -168,7 +168,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 12 — `persist-credentials` leak
+### Scenario 12 — `persist-credentials` leak (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -180,11 +180,11 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 13 — `workflow_dispatch` input injection
+### Scenario 13 — `workflow_dispatch` input injection (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-002`, `AC-005`, `AC-018`, `GHA-001`, **`GHA-003`**, `GHA-014`, `GHA-015`, `GHA-023`, `GHA-037`, `GHA-070` | ✅ |
+| pipeline&#x2011;check | `AC-002`, `AC-005`, `AC-018`, `GHA-001`, **`GHA-003`**, `GHA-014`, `GHA-015`, `GHA-023`, `GHA-037`, `GHA-070`, `GHA-098` | ✅ |
 | zizmor | `zizmor/artipacked`, **`zizmor/template-injection`**, `zizmor/unpinned-uses` | ✅ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
@@ -192,7 +192,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 14 — `$GITHUB_ENV` poisoning
+### Scenario 14 — `$GITHUB_ENV` poisoning (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -204,7 +204,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | **`expression`**, `if-cond` | ✅ |
 | octoscan | **`dangerous-write`**, `expression-injection` | ✅ |
 
-### Scenario 15 — Hardcoded secret in `env:`
+### Scenario 15 — Hardcoded secret in `env:` (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -216,7 +216,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 16 — `curl \| sh` install
+### Scenario 16 — `curl \| sh` install (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -228,7 +228,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 17 — ArtiPACKED — `.git/` in artifact
+### Scenario 17 — ArtiPACKED — `.git/` in artifact (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -240,7 +240,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | **`dangerous-artefact`** | ✅ |
 
-### Scenario 18 — Composite action `${{ inputs.* }}` injection
+### Scenario 18 — Composite action `${{ inputs.* }}` injection (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -252,7 +252,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | **`expression-injection`**, `local-action` | ✅ |
 
-### Scenario 19 — Codecov-style trusted-installer
+### Scenario 19 — Codecov-style trusted-installer (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -264,7 +264,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 20 — Dependency confusion (Birsan)
+### Scenario 20 — Dependency confusion (Birsan) (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -276,7 +276,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 21 — Matrix expansion injection
+### Scenario 21 — Matrix expansion injection (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -288,11 +288,11 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | **`dangerous-write`** | ✅ |
 
-### Scenario 22 — GCP OIDC over-broad WIF
+### Scenario 22 — GCP OIDC over-broad WIF (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-005`, `GHA-001`, `GHA-006`, `GHA-007`, `GHA-015`, `GHA-020`, `GHA-024`, `GHA-037`, **`GHA-062`** | ✅ |
+| pipeline&#x2011;check | `AC-005`, `GHA-001`, `GHA-006`, `GHA-007`, `GHA-015`, `GHA-020`, `GHA-024`, `GHA-037`, **`GHA-062`**, `GHA-098` | ✅ |
 | zizmor | `zizmor/artipacked`, `zizmor/unpinned-uses` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | `555ab8f9-2001-455e-a077-f2d0f41e2fb9` | ❌ |
@@ -300,7 +300,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 23 — `github-actions[bot]` branch-protection bypass
+### Scenario 23 — `github-actions[bot]` branch-protection bypass (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -312,7 +312,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 24 — Third-party webhook exfiltration
+### Scenario 24 — Third-party webhook exfiltration (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -324,11 +324,11 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 25 — Environment branch-pattern bypass
+### Scenario 25 — Environment branch-pattern bypass (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `GHA-001`, `GHA-015`, `GHA-037`, `GHA-069`, **`GHA-086`** | ✅ |
+| pipeline&#x2011;check | `GHA-001`, `GHA-015`, `GHA-037`, `GHA-069`, **`GHA-086`**, `GHA-098` | ✅ |
 | zizmor | `zizmor/artipacked`, `zizmor/unpinned-uses` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
@@ -336,11 +336,11 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 26 — GitHub App token over-scope
+### Scenario 26 — GitHub App token over-scope (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-005`, `AC-018`, `GHA-001`, `GHA-014`, `GHA-015`, `GHA-037`, **`GHA-061`** | ✅ |
+| pipeline&#x2011;check | `AC-005`, `AC-018`, `GHA-001`, `GHA-014`, `GHA-015`, `GHA-037`, **`GHA-061`**, `GHA-098` | ✅ |
 | zizmor | `zizmor/artipacked`, **`zizmor/github-app`**, `zizmor/unpinned-uses` | ✅ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
@@ -348,11 +348,11 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | `expression-injection` | ❌ |
 
-### Scenario 27 — Secret leak in workflow logs
+### Scenario 27 — Secret leak in workflow logs (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-005`, `AC-018`, `GHA-001`, `GHA-014`, `GHA-015`, **`GHA-033`**, `GHA-037` | ✅ |
+| pipeline&#x2011;check | `AC-005`, `AC-018`, `GHA-001`, `GHA-014`, `GHA-015`, **`GHA-033`**, `GHA-037`, `GHA-098` | ✅ |
 | zizmor | `zizmor/artipacked`, `zizmor/unpinned-uses` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
@@ -360,7 +360,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 28 — Reusable workflow `${{ inputs.* }}` injection
+### Scenario 28 — Reusable workflow `${{ inputs.* }}` injection (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -372,7 +372,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | `local-action` | ❌ |
 
-### Scenario 29 — npm lifecycle-script RCE
+### Scenario 29 — npm lifecycle-script RCE (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -384,11 +384,11 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 30 — Script injection via issue body
+### Scenario 30 — Script injection via issue body (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | **`GHA-003`**, `GHA-015` | ✅ |
+| pipeline&#x2011;check | **`GHA-003`**, `GHA-004`, `GHA-015` | ✅ |
 | zizmor | **`zizmor/template-injection`** | ✅ |
 | poutine | **`injection`** | ✅ |
 | KICS | **`20f14e1a-a899-4e79-9f09-b6a84cd4649b`** | ✅ |
@@ -396,7 +396,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | **`expression`**, `if-cond` | ✅ |
 | octoscan | **`expression-injection`** | ✅ |
 
-### Scenario 31 — Script injection via `github.head_ref`
+### Scenario 31 — Script injection via `github.head_ref` (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -408,7 +408,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | **`expression`**, `if-cond` | ✅ |
 | octoscan | **`expression-injection`** | ✅ |
 
-### Scenario 32 — Script injection via commit message
+### Scenario 32 — Script injection via commit message (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -420,11 +420,11 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | **`expression`**, `if-cond` | ✅ |
 | octoscan | **`expression-injection`** | ✅ |
 
-### Scenario 33 — Script injection via comment body
+### Scenario 33 — Script injection via comment body (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | **`GHA-003`**, `GHA-013`, `GHA-015` | ✅ |
+| pipeline&#x2011;check | **`GHA-003`**, `GHA-004`, `GHA-013`, `GHA-015` | ✅ |
 | zizmor | **`zizmor/template-injection`** | ✅ |
 | poutine | **`injection`** | ✅ |
 | KICS | **`20f14e1a-a899-4e79-9f09-b6a84cd4649b`** | ✅ |
@@ -432,7 +432,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | **`expression`**, `if-cond` | ✅ |
 | octoscan | **`expression-injection`** | ✅ |
 
-### Scenario 34 — `ACTIONS_ALLOW_UNSECURE_COMMANDS` re-enabled
+### Scenario 34 — `ACTIONS_ALLOW_UNSECURE_COMMANDS` re-enabled (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -444,11 +444,11 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `deprecated-commands`, `if-cond` | ❌ |
 | octoscan | **`unsecure-commands`** | ✅ |
 
-### Scenario 35 — `cosign verify` without identity binding
+### Scenario 35 — `cosign verify` without identity binding (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-005`, `AC-018`, `GHA-001`, `GHA-014`, `GHA-015`, `GHA-037` | ❌ |
+| pipeline&#x2011;check | `AC-005`, `AC-018`, `AC-032`, `GHA-001`, `GHA-014`, `GHA-015`, `GHA-037`, `GHA-098`, `GHA-100` | ❌ |
 | zizmor | `zizmor/artipacked`, `zizmor/unpinned-uses` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | `555ab8f9-2001-455e-a077-f2d0f41e2fb9` | ❌ |
@@ -456,11 +456,11 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 36 — Environment secret read without consumer binding
+### Scenario 36 — Environment secret read without consumer binding (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-005`, `GHA-014`, `GHA-015`, `GHA-019`, `GHA-033`, `GHA-057` | ❌ |
+| pipeline&#x2011;check | `AC-005`, `AC-033`, `GHA-014`, `GHA-015`, `GHA-019`, `GHA-033`, `GHA-057`, `GHA-098`, `TAINT-009` | ❌ |
 | zizmor | `zizmor/template-injection` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
@@ -468,7 +468,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | `dangerous-write`, `expression-injection` | ❌ |
 
-### Scenario 37 — Confused-deputy auto-merge via bot-identity gate
+### Scenario 37 — Confused-deputy auto-merge via bot-identity gate (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
@@ -480,15 +480,30 @@ Same source as the main matrix — auto-rebuilt from the latest
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
-### Scenario 38 — Recursive submodule checkout from PR
+### Scenario 38 — Recursive submodule checkout from PR (GitHub Actions)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `GHA-001`, `GHA-015`, `GHA-037`, `GHA-059`, `GHA-060` | ❌ |
+| pipeline&#x2011;check | `AC-034`, `GHA-001`, `GHA-015`, `GHA-037`, `GHA-059`, `GHA-060`, `GHA-102` | ❌ |
 | zizmor | `zizmor/artipacked`, `zizmor/unpinned-uses` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
 | Checkov | _(none)_ | ❌ |
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
+
+### Scenario 39 — GitLab CI: script injection via `$CI_*` / MR vars (GitLab CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`GL-002`**, `GL-015` | ✅ |
+| Checkov | _(none)_ | ❌ |
+| ciguard | `ART-003`, `SC-003` | ❌ |
+
+### Scenario 40 — Jenkins: `sh` string-interpolation injection (Jenkins)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`JF-002`**, `JF-003`, `JF-011`, `JF-014`, `JF-015`, `JF-016`, `JF-028` | ✅ |
+| ciguard | _(none)_ | ❌ |
 <!-- /AUTOGEN:rule-firings -->

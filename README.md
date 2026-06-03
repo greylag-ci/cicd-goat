@@ -6,8 +6,9 @@
 [![scanner-comparison](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml/badge.svg)](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml)
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-3a3a3a?style=flat-square)](LICENSE)
 [![CICD-SEC top 10](https://img.shields.io/badge/owasp-CICD--SEC_10%2F10-9c2b2b?style=flat-square)](https://owasp.org/www-project-top-10-ci-cd-security-risks/)
-[![scenarios 38](https://img.shields.io/badge/scenarios-38-1f6feb?style=flat-square)](scenarios/README.md)
-[![scanners 7](https://img.shields.io/badge/scanners-7-1f6feb?style=flat-square)](docs/MATRIX.md)
+[![scenarios 40](https://img.shields.io/badge/scenarios-40-1f6feb?style=flat-square)](scenarios/README.md)
+[![providers 3](https://img.shields.io/badge/providers-3-1f6feb?style=flat-square)](docs/MATRIX.md)
+[![scanners 8](https://img.shields.io/badge/scanners-8-1f6feb?style=flat-square)](docs/MATRIX.md)
 <!-- /AUTOGEN:badges -->
 
 ---
@@ -47,6 +48,8 @@ the latest [`scanner-comparison`](../../actions/workflows/scanner-comparison.yml
 run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 
 <!-- AUTOGEN:leaderboard -->
+### GitHub Actions — 38 scenarios
+
 | Scanner | Scenarios caught (of 38) |
 | :--- | :--- |
 | pipeline&#x2011;check | **31 ✅** |
@@ -56,6 +59,21 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 | Checkov | **9 ✅** |
 | KICS | **7 ✅** |
 | actionlint | **6 ✅** |
+
+### GitLab CI — 1 scenario
+
+| Scanner | Scenarios caught (of 1) |
+| :--- | :--- |
+| pipeline&#x2011;check | **1 ✅** |
+| Checkov | **0 ✅** |
+| ciguard | **0 ✅** |
+
+### Jenkins — 1 scenario
+
+| Scanner | Scenarios caught (of 1) |
+| :--- | :--- |
+| pipeline&#x2011;check | **1 ✅** |
+| ciguard | **0 ✅** |
 <!-- /AUTOGEN:leaderboard -->
 
 → **[Full per-scenario matrix](docs/MATRIX.md)**  ·
@@ -76,9 +94,10 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 
 ## What's in this repo
 
-- **[Scenarios](scenarios/README.md)** — 38 vulnerable workflows, each
-  with its own writeup (exploitation walkthrough, per-scanner coverage,
-  the fix). Indexed by attack class and CICD-SEC category.
+- **[Scenarios](scenarios/README.md)** — 40 vulnerable pipelines (38
+  GitHub Actions + GitLab/Jenkins), each with its own writeup
+  (exploitation walkthrough, per-scanner coverage, the fix). Indexed by
+  attack class and CICD-SEC category.
 - **[Full matrix](docs/MATRIX.md)** — per-(scenario × scanner) verdict
   table, auto-rebuilt from real SARIF.
 - **[Coverage axes](docs/COVERAGE-AXES.md)** — same verdicts sliced
@@ -105,8 +124,8 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
     ┌─────────────────────────────────────────────────────────┐
     │  .github/workflows/scanner-comparison.yml               │
     │                                                         │
-    │   pipeline-check ▸ zizmor ▸ poutine                     │
-    │      ▸ kics ▸ checkov ▸ actionlint ▸ octoscan           │
+    │   pipeline-check ▸ zizmor ▸ poutine ▸ kics ▸ checkov    │
+    │      ▸ actionlint ▸ octoscan ▸ ciguard                  │
     │                        │                                │
     │                        ▼                                │
     │              upload SARIF                               │

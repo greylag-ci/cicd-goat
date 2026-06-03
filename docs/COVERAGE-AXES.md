@@ -31,18 +31,18 @@ the scanner gets ✅ on, out of how many scenarios fall in the category
 overall (a scenario in two categories counts once in each row).
 
 <!-- AUTOGEN:cicd-sec-coverage -->
-| # | Category | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan |
-| :-: | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| 1 | Insufficient flow control | 3 | 2/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 |
-| 2 | Inadequate IAM | 3 | 2/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 |
-| 3 | Dependency chain abuse | 10 | 6/10 | 3/10 | 3/10 | 2/10 | 0/10 | 0/10 | 0/10 |
-| 4 | Poisoned pipeline execution | 15 | 13/15 | 10/15 | 8/15 | 4/15 | 8/15 | 6/15 | 10/15 |
-| 5 | Insufficient PBAC | 6 | 5/6 | 3/6 | 1/6 | 0/6 | 1/6 | 0/6 | 1/6 |
-| 6 | Insufficient credential hygiene | 4 | 4/4 | 3/4 | 1/4 | 2/4 | 0/4 | 0/4 | 1/4 |
-| 7 | Insecure system configuration | 3 | 3/3 | 0/3 | 1/3 | 0/3 | 0/3 | 0/3 | 1/3 |
-| 8 | Ungoverned 3rd-party services | 1 | 1/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 |
-| 9 | Improper artifact integrity validation | 6 | 5/6 | 3/6 | 1/6 | 0/6 | 0/6 | 0/6 | 1/6 |
-| 10 | Insufficient logging & visibility | 1 | 1/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 |
+| # | Category | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard |
+| :-: | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| 1 | Insufficient flow control | 3 | 2/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 | — |
+| 2 | Inadequate IAM | 3 | 2/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 | — |
+| 3 | Dependency chain abuse | 10 | 6/10 | 3/10 | 3/10 | 2/10 | 0/10 | 0/10 | 0/10 | — |
+| 4 | Poisoned pipeline execution | 17 | 15/17 | 10/15 | 8/15 | 4/15 | 8/16 | 6/15 | 10/15 | 0/2 |
+| 5 | Insufficient PBAC | 6 | 5/6 | 3/6 | 1/6 | 0/6 | 1/6 | 0/6 | 1/6 | — |
+| 6 | Insufficient credential hygiene | 4 | 4/4 | 3/4 | 1/4 | 2/4 | 0/4 | 0/4 | 1/4 | — |
+| 7 | Insecure system configuration | 3 | 3/3 | 0/3 | 1/3 | 0/3 | 0/3 | 0/3 | 1/3 | — |
+| 8 | Ungoverned 3rd-party services | 1 | 1/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | — |
+| 9 | Improper artifact integrity validation | 6 | 5/6 | 3/6 | 1/6 | 0/6 | 0/6 | 0/6 | 1/6 | — |
+| 10 | Insufficient logging & visibility | 1 | 1/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | — |
 <!-- /AUTOGEN:cicd-sec-coverage -->
 
 > Read this table for **shape**, not absolute leaderboard position.
@@ -60,11 +60,11 @@ assign to each scenario in
 [`scenarios.yaml`](../tools/scenarios.yaml).
 
 <!-- AUTOGEN:severity-coverage -->
-| Severity | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan |
-| :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| 🔴 critical | 9 | 7/9 | 3/9 | 3/9 | 0/9 | 0/9 | 0/9 | 3/9 |
-| 🟠 high | 23 | 18/23 | 10/23 | 8/23 | 7/23 | 8/23 | 6/23 | 9/23 |
-| 🟡 medium | 6 | 6/6 | 3/6 | 1/6 | 0/6 | 1/6 | 0/6 | 0/6 |
+| Severity | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard |
+| :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| 🔴 critical | 9 | 7/9 | 3/9 | 3/9 | 0/9 | 0/9 | 0/9 | 3/9 | — |
+| 🟠 high | 25 | 20/25 | 10/23 | 8/23 | 7/23 | 8/24 | 6/23 | 9/23 | 0/2 |
+| 🟡 medium | 6 | 6/6 | 3/6 | 1/6 | 0/6 | 1/6 | 0/6 | 0/6 | — |
 <!-- /AUTOGEN:severity-coverage -->
 
 > If a scanner's critical-row fraction is meaningfully lower than its
@@ -94,18 +94,21 @@ scenarios from the field tested here.
 | 25 | [Environment branch-pattern bypass](../scenarios/25-environment-branch-pattern-bypass/README.md) | **pipeline&#x2011;check** |
 | 27 | [Secret leak in workflow logs](../scenarios/27-secret-leak-in-logs/README.md) | **pipeline&#x2011;check** |
 | 28 | [Reusable workflow `${{ inputs.* }}` injection](../scenarios/28-reusable-workflow-input-injection/README.md) | **pipeline&#x2011;check** |
+| 39 | [GitLab CI: script injection via `$CI_*` / MR vars](../scenarios/39-gitlab-ci-script-injection/README.md) | **pipeline&#x2011;check** |
+| 40 | [Jenkins: `sh` string-interpolation injection](../scenarios/40-jenkins-shell-injection/README.md) | **pipeline&#x2011;check** |
 
 **Solo catches per scanner** — scenarios where this is the only ✅ on the row:
 
 | Scanner | Solo catches |
 | :-- | :-: |
-| pipeline&#x2011;check | **10** |
+| pipeline&#x2011;check | **12** |
 | zizmor | **0** |
 | poutine | **0** |
 | KICS | **0** |
 | Checkov | **0** |
 | actionlint | **0** |
 | octoscan | **0** |
+| ciguard | **0** |
 <!-- /AUTOGEN:unique-catches -->
 
 > Solo-catch count is a different signal from leaderboard rank. A
