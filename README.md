@@ -6,8 +6,8 @@
 [![scanner-comparison](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml/badge.svg)](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml)
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-3a3a3a?style=flat-square)](LICENSE)
 [![CICD-SEC top 10](https://img.shields.io/badge/owasp-CICD--SEC_10%2F10-9c2b2b?style=flat-square)](https://owasp.org/www-project-top-10-ci-cd-security-risks/)
-[![scenarios 93](https://img.shields.io/badge/scenarios-93-1f6feb?style=flat-square)](scenarios/README.md)
-[![providers 11](https://img.shields.io/badge/providers-11-1f6feb?style=flat-square)](docs/MATRIX.md)
+[![scenarios 104](https://img.shields.io/badge/scenarios-104-1f6feb?style=flat-square)](scenarios/README.md)
+[![providers 16](https://img.shields.io/badge/providers-16-1f6feb?style=flat-square)](docs/MATRIX.md)
 [![scanners 8](https://img.shields.io/badge/scanners-8-1f6feb?style=flat-square)](docs/MATRIX.md)
 <!-- /AUTOGEN:badges -->
 
@@ -58,7 +58,7 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 
 | Scanner | Scenarios caught (of 39) |
 | :--- | :--- |
-| pipeline&#x2011;check | **31 ✅** |
+| pipeline&#x2011;check | **33 ✅** |
 | zizmor | **16 ✅** |
 | poutine | **12 ✅** |
 | octoscan | **12 ✅** |
@@ -132,6 +132,43 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 | Scanner | Scenarios caught (of 2) |
 | :--- | :--- |
 | pipeline&#x2011;check | **2 ✅** |
+
+### Dockerfile — 3 scenarios
+
+| Scanner | Scenarios caught (of 3) |
+| :--- | :--- |
+| pipeline&#x2011;check | **3 ✅** |
+| KICS | **2 ✅** |
+| Checkov | **2 ✅** |
+
+### Kubernetes — 3 scenarios
+
+| Scanner | Scenarios caught (of 3) |
+| :--- | :--- |
+| pipeline&#x2011;check | **3 ✅** |
+| KICS | **2 ✅** |
+| Checkov | **2 ✅** |
+
+### Terraform — 3 scenarios
+
+| Scanner | Scenarios caught (of 3) |
+| :--- | :--- |
+| KICS | **3 ✅** |
+| Checkov | **3 ✅** |
+
+### CloudFormation — 1 scenario
+
+| Scanner | Scenarios caught (of 1) |
+| :--- | :--- |
+| KICS | **1 ✅** |
+| Checkov | **1 ✅** |
+
+### Helm — 1 scenario
+
+| Scanner | Scenarios caught (of 1) |
+| :--- | :--- |
+| pipeline&#x2011;check | **1 ✅** |
+| Checkov | **1 ✅** |
 <!-- /AUTOGEN:leaderboard -->
 
 → **[Full per-scenario matrix](docs/MATRIX.md)**  ·

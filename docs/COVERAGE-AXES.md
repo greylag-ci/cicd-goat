@@ -34,14 +34,14 @@ overall (a scenario in two categories counts once in each row).
 | # | Category | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard |
 | :-: | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | 1 | Insufficient flow control | 6 | 3/6 | 0/3 | 0/3 | 0/3 | 0/5 | 0/3 | 0/3 | 1/2 |
-| 2 | Inadequate IAM | 10 | 7/10 | 0/3 | 0/3 | 0/3 | 2/9 | 0/3 | 0/3 | 2/3 |
-| 3 | Dependency chain abuse | 25 | 19/25 | 3/10 | 3/10 | 2/10 | 2/20 | 0/10 | 0/10 | 3/4 |
+| 2 | Inadequate IAM | 11 | 7/10 | 0/3 | 0/3 | 1/4 | 3/10 | 0/3 | 0/3 | 2/3 |
+| 3 | Dependency chain abuse | 26 | 22/26 | 3/10 | 3/10 | 3/11 | 3/21 | 0/10 | 0/10 | 3/4 |
 | 4 | Poisoned pipeline execution | 34 | 24/34 | 10/16 | 8/16 | 4/16 | 8/29 | 6/16 | 10/16 | 3/8 |
 | 5 | Insufficient PBAC | 10 | 6/10 | 3/6 | 1/6 | 0/6 | 1/8 | 0/6 | 1/6 | 2/3 |
-| 6 | Insufficient credential hygiene | 12 | 10/12 | 3/4 | 1/4 | 2/4 | 0/12 | 0/4 | 1/4 | 2/2 |
-| 7 | Insecure system configuration | 16 | 14/16 | 0/3 | 1/3 | 0/3 | 2/11 | 0/3 | 1/3 | 2/3 |
+| 6 | Insufficient credential hygiene | 15 | 11/13 | 3/4 | 1/4 | 4/7 | 2/15 | 0/4 | 1/4 | 2/2 |
+| 7 | Insecure system configuration | 24 | 19/21 | 0/3 | 1/3 | 6/10 | 9/19 | 0/3 | 1/3 | 2/3 |
 | 8 | Ungoverned 3rd-party services | 1 | 1/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | — |
-| 9 | Improper artifact integrity validation | 14 | 12/14 | 3/6 | 1/6 | 0/6 | 2/11 | 0/6 | 1/6 | 2/2 |
+| 9 | Improper artifact integrity validation | 15 | 13/15 | 3/6 | 1/6 | 1/7 | 3/12 | 0/6 | 1/6 | 2/2 |
 | 10 | Insufficient logging & visibility | 2 | 1/2 | 0/1 | 0/1 | 0/1 | 0/2 | 0/1 | 0/1 | — |
 <!-- /AUTOGEN:cicd-sec-coverage -->
 
@@ -62,9 +62,9 @@ assign to each scenario in
 <!-- AUTOGEN:severity-coverage -->
 | Severity | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard |
 | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| 🔴 critical | 23 | 18/23 | 3/10 | 3/10 | 0/10 | 1/19 | 0/10 | 3/10 | 1/5 |
-| 🟠 high | 50 | 35/50 | 10/23 | 8/23 | 7/23 | 9/42 | 6/23 | 9/23 | 6/10 |
-| 🟡 medium | 20 | 17/20 | 3/6 | 1/6 | 0/6 | 4/15 | 0/6 | 0/6 | 2/2 |
+| 🔴 critical | 27 | 23/26 | 3/10 | 3/10 | 2/13 | 4/23 | 0/10 | 3/10 | 1/5 |
+| 🟠 high | 56 | 38/53 | 10/23 | 8/23 | 12/29 | 14/48 | 6/23 | 9/23 | 6/10 |
+| 🟡 medium | 21 | 18/21 | 3/6 | 1/6 | 1/7 | 5/16 | 0/6 | 0/6 | 2/2 |
 <!-- /AUTOGEN:severity-coverage -->
 
 > If a scanner's critical-row fraction is meaningfully lower than its
@@ -88,11 +88,13 @@ scenarios from the field tested here.
 | 10 | [AWS OIDC wildcard `sub`](../scenarios/10-oidc-aws-wildcard-sub/README.md) | **pipeline&#x2011;check** |
 | 11 | [`pip install` no hashes](../scenarios/11-pip-install-no-hashes/README.md) | **pipeline&#x2011;check** |
 | 19 | [Codecov-style trusted-installer](../scenarios/19-codecov-style-installer/README.md) | **pipeline&#x2011;check** |
+| 20 | [Dependency confusion (Birsan)](../scenarios/20-dependency-confusion/README.md) | **pipeline&#x2011;check** |
 | 23 | [`github-actions[bot]` branch-protection bypass](../scenarios/23-actions-bot-branch-protection-bypass/README.md) | **pipeline&#x2011;check** |
 | 24 | [Third-party webhook exfiltration](../scenarios/24-third-party-webhook-exfil/README.md) | **pipeline&#x2011;check** |
 | 25 | [Environment branch-pattern bypass](../scenarios/25-environment-branch-pattern-bypass/README.md) | **pipeline&#x2011;check** |
 | 27 | [Secret leak in workflow logs](../scenarios/27-secret-leak-in-logs/README.md) | **pipeline&#x2011;check** |
 | 28 | [Reusable workflow `${{ inputs.* }}` injection](../scenarios/28-reusable-workflow-input-injection/README.md) | **pipeline&#x2011;check** |
+| 29 | [npm lifecycle-script RCE](../scenarios/29-npm-lifecycle-script-rce/README.md) | **pipeline&#x2011;check** |
 | 39 | [GitLab CI: script injection via `$CI_*` / MR vars](../scenarios/39-gitlab-ci-script-injection/README.md) | **pipeline&#x2011;check** |
 | 40 | [Jenkins: `sh` string-interpolation injection](../scenarios/40-jenkins-shell-injection/README.md) | **pipeline&#x2011;check** |
 | 41 | [GitLab: `CI_JOB_TOKEN` cross-project access](../scenarios/41-gitlab-ci-job-token-cross-project/README.md) | **ciguard** |
@@ -125,12 +127,13 @@ scenarios from the field tested here.
 | 90 | [Azure: untrusted `resources` template on self-hosted agent](../scenarios/90-azure-untrusted-template-selfhosted/README.md) | **pipeline&#x2011;check** |
 | 91 | [GitLab: `terraform apply` in a merge-request pipeline](../scenarios/91-gitlab-iac-apply-mr/README.md) | **pipeline&#x2011;check** |
 | 93 | [Drone: privileged step mounts host Docker socket](../scenarios/93-drone-host-socket/README.md) | **pipeline&#x2011;check** |
+| 96 | [Dockerfile: hardcoded secret in `ENV`](../scenarios/96-dockerfile-secret-in-env/README.md) | **pipeline&#x2011;check** |
 
 **Solo catches per scanner** — scenarios where this is the only ✅ on the row:
 
 | Scanner | Solo catches |
 | :-- | :-: |
-| pipeline&#x2011;check | **38** |
+| pipeline&#x2011;check | **41** |
 | ciguard | **2** |
 | Checkov | **1** |
 | zizmor | **0** |
