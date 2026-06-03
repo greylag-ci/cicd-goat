@@ -296,7 +296,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | zizmor | `zizmor/artipacked`, `zizmor/unpinned-uses` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | `555ab8f9-2001-455e-a077-f2d0f41e2fb9` | ❌ |
-| Checkov | `CKV_GCP_125` | ❌ |
+| Checkov | **`CKV_GCP_125`** | ✅ |
 | actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
@@ -799,4 +799,46 @@ Same source as the main matrix — auto-rebuilt from the latest
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
 | pipeline&#x2011;check | **`GCB-002`**, `GCB-005`, `GCB-008`, `GCB-021`, `GCB-025` | ✅ |
+
+### Scenario 83 — Tekton: privileged step + hostPath node escape (Tekton)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `TKN-002`, **`TKN-004`**, `TKN-012` | ✅ |
+
+### Scenario 84 — Argo: hostPath mount → node filesystem escape (Argo Workflows)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`ARGO-004`**, `ARGO-007`, `ARGO-012` | ✅ |
+| Checkov | `CKV_ARGO_2` | ❌ |
+
+### Scenario 85 — GitLab: fork MR pipeline mints cloud OIDC token (GitLab CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, `GL-004`, `GL-015`, **`GL-031`** | ✅ |
+| Checkov | _(none)_ | ❌ |
+| ciguard | `ART-003`, **`PIPE-004`**, `RUN-003`, `SC-003` | ✅ |
+
+### Scenario 86 — Jenkins: builds untrusted fork PRs with creds (PPE) (Jenkins)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `JF-011`, `JF-014`, `JF-015`, `JF-028` | ❌ |
+| ciguard | _(none)_ | ❌ |
+
+### Scenario 87 — CircleCI: secrets passed to forked PRs (CircleCI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, `CC-009`, `CC-011`, `CC-013`, `CC-014`, `CC-015`, **`CC-030`** | ✅ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 88 — Bitbucket: fork PR pipeline exposes secrets (Bitbucket Pipelines)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, **`BB-004`**, `BB-005` | ✅ |
+| Checkov | _(none)_ | ❌ |
 <!-- /AUTOGEN:rule-firings -->

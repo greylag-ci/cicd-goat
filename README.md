@@ -6,7 +6,7 @@
 [![scanner-comparison](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml/badge.svg)](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml)
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-3a3a3a?style=flat-square)](LICENSE)
 [![CICD-SEC top 10](https://img.shields.io/badge/owasp-CICD--SEC_10%2F10-9c2b2b?style=flat-square)](https://owasp.org/www-project-top-10-ci-cd-security-risks/)
-[![scenarios 82](https://img.shields.io/badge/scenarios-82-1f6feb?style=flat-square)](scenarios/README.md)
+[![scenarios 88](https://img.shields.io/badge/scenarios-88-1f6feb?style=flat-square)](scenarios/README.md)
 [![providers 11](https://img.shields.io/badge/providers-11-1f6feb?style=flat-square)](docs/MATRIX.md)
 [![scanners 8](https://img.shields.io/badge/scanners-8-1f6feb?style=flat-square)](docs/MATRIX.md)
 <!-- /AUTOGEN:badges -->
@@ -58,16 +58,16 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 | zizmor | **16 ✅** |
 | poutine | **12 ✅** |
 | octoscan | **12 ✅** |
-| Checkov | **9 ✅** |
+| Checkov | **10 ✅** |
 | KICS | **7 ✅** |
 | actionlint | **6 ✅** |
 
-### GitLab CI — 9 scenarios
+### GitLab CI — 10 scenarios
 
-| Scanner | Scenarios caught (of 9) |
+| Scanner | Scenarios caught (of 10) |
 | :--- | :--- |
-| pipeline&#x2011;check | **7 ✅** |
-| ciguard | **7 ✅** |
+| pipeline&#x2011;check | **8 ✅** |
+| ciguard | **8 ✅** |
 | Checkov | **0 ✅** |
 
 ### Azure Pipelines — 6 scenarios
@@ -77,38 +77,38 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 | pipeline&#x2011;check | **3 ✅** |
 | Checkov | **0 ✅** |
 
-### CircleCI — 6 scenarios
+### CircleCI — 7 scenarios
 
-| Scanner | Scenarios caught (of 6) |
+| Scanner | Scenarios caught (of 7) |
 | :--- | :--- |
-| pipeline&#x2011;check | **4 ✅** |
+| pipeline&#x2011;check | **5 ✅** |
 | Checkov | **1 ✅** |
 
-### Bitbucket Pipelines — 6 scenarios
+### Bitbucket Pipelines — 7 scenarios
 
-| Scanner | Scenarios caught (of 6) |
+| Scanner | Scenarios caught (of 7) |
 | :--- | :--- |
-| pipeline&#x2011;check | **2 ✅** |
+| pipeline&#x2011;check | **3 ✅** |
 | Checkov | **1 ✅** |
 
-### Jenkins — 5 scenarios
+### Jenkins — 6 scenarios
 
-| Scanner | Scenarios caught (of 5) |
+| Scanner | Scenarios caught (of 6) |
 | :--- | :--- |
 | pipeline&#x2011;check | **4 ✅** |
 | ciguard | **1 ✅** |
 
-### Tekton — 3 scenarios
+### Tekton — 4 scenarios
 
-| Scanner | Scenarios caught (of 3) |
-| :--- | :--- |
-| pipeline&#x2011;check | **2 ✅** |
-
-### Argo Workflows — 3 scenarios
-
-| Scanner | Scenarios caught (of 3) |
+| Scanner | Scenarios caught (of 4) |
 | :--- | :--- |
 | pipeline&#x2011;check | **3 ✅** |
+
+### Argo Workflows — 4 scenarios
+
+| Scanner | Scenarios caught (of 4) |
+| :--- | :--- |
+| pipeline&#x2011;check | **4 ✅** |
 | Checkov | **2 ✅** |
 
 ### Drone CI — 2 scenarios

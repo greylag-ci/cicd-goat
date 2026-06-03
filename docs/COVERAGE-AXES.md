@@ -34,12 +34,12 @@ overall (a scenario in two categories counts once in each row).
 | # | Category | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard |
 | :-: | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | 1 | Insufficient flow control | 6 | 3/6 | 0/3 | 0/3 | 0/3 | 0/5 | 0/3 | 0/3 | 1/2 |
-| 2 | Inadequate IAM | 8 | 6/8 | 0/3 | 0/3 | 0/3 | 1/7 | 0/3 | 0/3 | 1/2 |
+| 2 | Inadequate IAM | 9 | 7/9 | 0/3 | 0/3 | 0/3 | 2/8 | 0/3 | 0/3 | 2/3 |
 | 3 | Dependency chain abuse | 24 | 18/24 | 3/10 | 3/10 | 2/10 | 2/19 | 0/10 | 0/10 | 3/4 |
-| 4 | Poisoned pipeline execution | 28 | 20/28 | 10/15 | 8/15 | 4/15 | 8/24 | 6/15 | 10/15 | 2/5 |
+| 4 | Poisoned pipeline execution | 32 | 23/32 | 10/15 | 8/15 | 4/15 | 8/27 | 6/15 | 10/15 | 3/7 |
 | 5 | Insufficient PBAC | 9 | 6/9 | 3/6 | 1/6 | 0/6 | 1/7 | 0/6 | 1/6 | 2/3 |
-| 6 | Insufficient credential hygiene | 10 | 8/10 | 3/4 | 1/4 | 2/4 | 0/10 | 0/4 | 1/4 | 2/2 |
-| 7 | Insecure system configuration | 12 | 10/12 | 0/3 | 1/3 | 0/3 | 1/9 | 0/3 | 1/3 | 2/3 |
+| 6 | Insufficient credential hygiene | 12 | 10/12 | 3/4 | 1/4 | 2/4 | 0/12 | 0/4 | 1/4 | 2/2 |
+| 7 | Insecure system configuration | 14 | 12/14 | 0/3 | 1/3 | 0/3 | 2/10 | 0/3 | 1/3 | 2/3 |
 | 8 | Ungoverned 3rd-party services | 1 | 1/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | — |
 | 9 | Improper artifact integrity validation | 14 | 12/14 | 3/6 | 1/6 | 0/6 | 2/11 | 0/6 | 1/6 | 2/2 |
 | 10 | Insufficient logging & visibility | 2 | 1/2 | 0/1 | 0/1 | 0/1 | 0/2 | 0/1 | 0/1 | — |
@@ -62,7 +62,7 @@ assign to each scenario in
 <!-- AUTOGEN:severity-coverage -->
 | Severity | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard |
 | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| 🔴 critical | 12 | 10/12 | 3/9 | 3/9 | 0/9 | 0/11 | 0/9 | 3/9 | 0/2 |
+| 🔴 critical | 18 | 15/18 | 3/9 | 3/9 | 0/9 | 1/15 | 0/9 | 3/9 | 1/4 |
 | 🟠 high | 50 | 35/50 | 10/23 | 8/23 | 7/23 | 9/42 | 6/23 | 9/23 | 6/10 |
 | 🟡 medium | 20 | 17/20 | 3/6 | 1/6 | 0/6 | 4/15 | 0/6 | 0/6 | 2/2 |
 <!-- /AUTOGEN:severity-coverage -->
@@ -88,7 +88,6 @@ scenarios from the field tested here.
 | 10 | [AWS OIDC wildcard `sub`](../scenarios/10-oidc-aws-wildcard-sub/README.md) | **pipeline&#x2011;check** |
 | 11 | [`pip install` no hashes](../scenarios/11-pip-install-no-hashes/README.md) | **pipeline&#x2011;check** |
 | 19 | [Codecov-style trusted-installer](../scenarios/19-codecov-style-installer/README.md) | **pipeline&#x2011;check** |
-| 22 | [GCP OIDC over-broad WIF](../scenarios/22-gcp-oidc-broad-wif/README.md) | **pipeline&#x2011;check** |
 | 23 | [`github-actions[bot]` branch-protection bypass](../scenarios/23-actions-bot-branch-protection-bypass/README.md) | **pipeline&#x2011;check** |
 | 24 | [Third-party webhook exfiltration](../scenarios/24-third-party-webhook-exfil/README.md) | **pipeline&#x2011;check** |
 | 25 | [Environment branch-pattern bypass](../scenarios/25-environment-branch-pattern-bypass/README.md) | **pipeline&#x2011;check** |
@@ -119,12 +118,16 @@ scenarios from the field tested here.
 | 80 | [Buildkite: plugin pinned to a mutable ref](../scenarios/80-buildkite-plugin-unpinned/README.md) | **pipeline&#x2011;check** |
 | 81 | [Cloud Build: step image not pinned by digest](../scenarios/81-cloudbuild-image-unpinned/README.md) | **pipeline&#x2011;check** |
 | 82 | [Cloud Build: runs as default service account](../scenarios/82-cloudbuild-default-serviceaccount/README.md) | **pipeline&#x2011;check** |
+| 83 | [Tekton: privileged step + hostPath node escape](../scenarios/83-tekton-hostpath-escape/README.md) | **pipeline&#x2011;check** |
+| 84 | [Argo: hostPath mount → node filesystem escape](../scenarios/84-argo-hostpath-escape/README.md) | **pipeline&#x2011;check** |
+| 87 | [CircleCI: secrets passed to forked PRs](../scenarios/87-circleci-forked-pr-secrets/README.md) | **pipeline&#x2011;check** |
+| 88 | [Bitbucket: fork PR pipeline exposes secrets](../scenarios/88-bitbucket-forked-pr-secrets/README.md) | **pipeline&#x2011;check** |
 
 **Solo catches per scanner** — scenarios where this is the only ✅ on the row:
 
 | Scanner | Solo catches |
 | :-- | :-: |
-| pipeline&#x2011;check | **32** |
+| pipeline&#x2011;check | **35** |
 | ciguard | **2** |
 | Checkov | **1** |
 | zizmor | **0** |

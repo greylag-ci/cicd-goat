@@ -41,7 +41,7 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 19 | Codecov-style trusted-installer | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 20 | Dependency confusion (Birsan) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 21 | Matrix expansion injection | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
-| 22 | GCP OIDC over-broad WIF | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 22 | GCP OIDC over-broad WIF | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 | 23 | `github-actions[bot]` branch-protection bypass | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 24 | Third-party webhook exfiltration | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 25 | Environment branch-pattern bypass | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
@@ -58,7 +58,7 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 36 | Environment secret read without consumer binding | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 37 | Confused-deputy auto-merge via bot-identity gate | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 38 | Recursive submodule checkout from PR | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-|    | **canonical bugs caught** | **31 ✅** | **16 ✅** | **12 ✅** | **7 ✅** | **9 ✅** | **6 ✅** | **12 ✅** |
+|    | **canonical bugs caught** | **31 ✅** | **16 ✅** | **12 ✅** | **7 ✅** | **10 ✅** | **6 ✅** | **12 ✅** |
 
 ### GitLab CI
 
@@ -73,7 +73,8 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 46 | GitLab: job `image:` mutable tag | ✅ | ❌ | ✅ |
 | 47 | GitLab: OIDC `id_tokens` over-broad aud/sub | ✅ | ❌ | ❌ |
 | 48 | GitLab: untagged shared-runner + privileged dind | ❌ | ❌ | ✅ |
-|    | **canonical bugs caught** | **7 ✅** | **0 ✅** | **7 ✅** |
+| 85 | GitLab: fork MR pipeline mints cloud OIDC token | ✅ | ❌ | ✅ |
+|    | **canonical bugs caught** | **8 ✅** | **0 ✅** | **8 ✅** |
 
 ### Azure Pipelines
 
@@ -97,7 +98,8 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 58 | CircleCI: docker image mutable tag | ✅ | ✅ |
 | 59 | CircleCI: hardcoded secret in `environment:` | ✅ | ❌ |
 | 60 | CircleCI: uncertified third-party orb | ❌ | ❌ |
-|    | **canonical bugs caught** | **4 ✅** | **1 ✅** |
+| 87 | CircleCI: secrets passed to forked PRs | ✅ | ❌ |
+|    | **canonical bugs caught** | **5 ✅** | **1 ✅** |
 
 ### Bitbucket Pipelines
 
@@ -109,7 +111,8 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 64 | Bitbucket: `image:` mutable tag | ❌ | ✅ |
 | 65 | Bitbucket: `clone: skip-ssl-verify: true` | ❌ | ❌ |
 | 66 | Bitbucket: custom-pipeline variable injection | ❌ | ❌ |
-|    | **canonical bugs caught** | **2 ✅** | **1 ✅** |
+| 88 | Bitbucket: fork PR pipeline exposes secrets | ✅ | ❌ |
+|    | **canonical bugs caught** | **3 ✅** | **1 ✅** |
 
 ### Jenkins
 
@@ -120,6 +123,7 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 68 | Jenkins: `input` step without `submitter` | ❌ | ❌ |
 | 69 | Jenkins: shared library on a mutable `@master` ref | ✅ | ❌ |
 | 70 | Jenkins: `agent any` (controller exposure) | ✅ | ✅ |
+| 86 | Jenkins: builds untrusted fork PRs with creds (PPE) | ❌ | ❌ |
 |    | **canonical bugs caught** | **4 ✅** | **1 ✅** |
 
 ### Tekton
@@ -129,7 +133,8 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 71 | Tekton: `$(params.*)` injected into step script | ❌ |
 | 72 | Tekton: privileged / root step | ✅ |
 | 73 | Tekton: step `image:` not pinned to a digest | ✅ |
-|    | **canonical bugs caught** | **2 ✅** |
+| 83 | Tekton: privileged step + hostPath node escape | ✅ |
+|    | **canonical bugs caught** | **3 ✅** |
 
 ### Argo Workflows
 
@@ -138,7 +143,8 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 74 | Argo: `{{inputs.parameters}}` injected into args | ✅ | ❌ |
 | 75 | Argo: privileged / root container | ✅ | ✅ |
 | 76 | Argo: default ServiceAccount + token automount | ✅ | ✅ |
-|    | **canonical bugs caught** | **3 ✅** | **2 ✅** |
+| 84 | Argo: hostPath mount → node filesystem escape | ✅ | ❌ |
+|    | **canonical bugs caught** | **4 ✅** | **2 ✅** |
 
 ### Drone CI
 
@@ -264,6 +270,12 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 80 | [Buildkite: plugin pinned to a mutable ref](../scenarios/80-buildkite-plugin-unpinned/README.md) | Buildkite | 3 | 🟡 medium |
 | 81 | [Cloud Build: step image not pinned by digest](../scenarios/81-cloudbuild-image-unpinned/README.md) | Cloud Build | 3 · 9 | 🟡 medium |
 | 82 | [Cloud Build: runs as default service account](../scenarios/82-cloudbuild-default-serviceaccount/README.md) | Cloud Build | 2 | 🟡 medium |
+| 83 | [Tekton: privileged step + hostPath node escape](../scenarios/83-tekton-hostpath-escape/README.md) | Tekton | 7 | 🔴 critical |
+| 84 | [Argo: hostPath mount → node filesystem escape](../scenarios/84-argo-hostpath-escape/README.md) | Argo Workflows | 7 | 🔴 critical |
+| 85 | [GitLab: fork MR pipeline mints cloud OIDC token](../scenarios/85-gitlab-fork-pipeline-oidc/README.md) | GitLab CI | 4 · 2 | 🔴 critical |
+| 86 | [Jenkins: builds untrusted fork PRs with creds (PPE)](../scenarios/86-jenkins-untrusted-pr-build/README.md) | Jenkins | 4 | 🔴 critical |
+| 87 | [CircleCI: secrets passed to forked PRs](../scenarios/87-circleci-forked-pr-secrets/README.md) | CircleCI | 6 · 4 | 🔴 critical |
+| 88 | [Bitbucket: fork PR pipeline exposes secrets](../scenarios/88-bitbucket-forked-pr-secrets/README.md) | Bitbucket Pipelines | 6 · 4 | 🔴 critical |
 <!-- /AUTOGEN:scenarios-index -->
 
 > [!NOTE]
