@@ -34,12 +34,12 @@ overall (a scenario in two categories counts once in each row).
 | # | Category | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard |
 | :-: | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | 1 | Insufficient flow control | 6 | 3/6 | 0/3 | 0/3 | 0/3 | 0/5 | 0/3 | 0/3 | 1/2 |
-| 2 | Inadequate IAM | 9 | 7/9 | 0/3 | 0/3 | 0/3 | 2/8 | 0/3 | 0/3 | 2/3 |
-| 3 | Dependency chain abuse | 24 | 18/24 | 3/10 | 3/10 | 2/10 | 2/19 | 0/10 | 0/10 | 3/4 |
-| 4 | Poisoned pipeline execution | 32 | 23/32 | 10/15 | 8/15 | 4/15 | 8/27 | 6/15 | 10/15 | 3/7 |
-| 5 | Insufficient PBAC | 9 | 6/9 | 3/6 | 1/6 | 0/6 | 1/7 | 0/6 | 1/6 | 2/3 |
+| 2 | Inadequate IAM | 10 | 7/10 | 0/3 | 0/3 | 0/3 | 2/9 | 0/3 | 0/3 | 2/3 |
+| 3 | Dependency chain abuse | 25 | 19/25 | 3/10 | 3/10 | 2/10 | 2/20 | 0/10 | 0/10 | 3/4 |
+| 4 | Poisoned pipeline execution | 34 | 24/34 | 10/16 | 8/16 | 4/16 | 8/29 | 6/16 | 10/16 | 3/8 |
+| 5 | Insufficient PBAC | 10 | 6/10 | 3/6 | 1/6 | 0/6 | 1/8 | 0/6 | 1/6 | 2/3 |
 | 6 | Insufficient credential hygiene | 12 | 10/12 | 3/4 | 1/4 | 2/4 | 0/12 | 0/4 | 1/4 | 2/2 |
-| 7 | Insecure system configuration | 14 | 12/14 | 0/3 | 1/3 | 0/3 | 2/10 | 0/3 | 1/3 | 2/3 |
+| 7 | Insecure system configuration | 16 | 14/16 | 0/3 | 1/3 | 0/3 | 2/11 | 0/3 | 1/3 | 2/3 |
 | 8 | Ungoverned 3rd-party services | 1 | 1/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | — |
 | 9 | Improper artifact integrity validation | 14 | 12/14 | 3/6 | 1/6 | 0/6 | 2/11 | 0/6 | 1/6 | 2/2 |
 | 10 | Insufficient logging & visibility | 2 | 1/2 | 0/1 | 0/1 | 0/1 | 0/2 | 0/1 | 0/1 | — |
@@ -62,7 +62,7 @@ assign to each scenario in
 <!-- AUTOGEN:severity-coverage -->
 | Severity | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard |
 | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| 🔴 critical | 18 | 15/18 | 3/9 | 3/9 | 0/9 | 1/15 | 0/9 | 3/9 | 1/4 |
+| 🔴 critical | 23 | 18/23 | 3/10 | 3/10 | 0/10 | 1/19 | 0/10 | 3/10 | 1/5 |
 | 🟠 high | 50 | 35/50 | 10/23 | 8/23 | 7/23 | 9/42 | 6/23 | 9/23 | 6/10 |
 | 🟡 medium | 20 | 17/20 | 3/6 | 1/6 | 0/6 | 4/15 | 0/6 | 0/6 | 2/2 |
 <!-- /AUTOGEN:severity-coverage -->
@@ -122,12 +122,15 @@ scenarios from the field tested here.
 | 84 | [Argo: hostPath mount → node filesystem escape](../scenarios/84-argo-hostpath-escape/README.md) | **pipeline&#x2011;check** |
 | 87 | [CircleCI: secrets passed to forked PRs](../scenarios/87-circleci-forked-pr-secrets/README.md) | **pipeline&#x2011;check** |
 | 88 | [Bitbucket: fork PR pipeline exposes secrets](../scenarios/88-bitbucket-forked-pr-secrets/README.md) | **pipeline&#x2011;check** |
+| 90 | [Azure: untrusted `resources` template on self-hosted agent](../scenarios/90-azure-untrusted-template-selfhosted/README.md) | **pipeline&#x2011;check** |
+| 91 | [GitLab: `terraform apply` in a merge-request pipeline](../scenarios/91-gitlab-iac-apply-mr/README.md) | **pipeline&#x2011;check** |
+| 93 | [Drone: privileged step mounts host Docker socket](../scenarios/93-drone-host-socket/README.md) | **pipeline&#x2011;check** |
 
 **Solo catches per scanner** — scenarios where this is the only ✅ on the row:
 
 | Scanner | Solo catches |
 | :-- | :-: |
-| pipeline&#x2011;check | **35** |
+| pipeline&#x2011;check | **38** |
 | ciguard | **2** |
 | Checkov | **1** |
 | zizmor | **0** |

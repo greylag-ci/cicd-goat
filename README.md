@@ -6,7 +6,7 @@
 [![scanner-comparison](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml/badge.svg)](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml)
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-3a3a3a?style=flat-square)](LICENSE)
 [![CICD-SEC top 10](https://img.shields.io/badge/owasp-CICD--SEC_10%2F10-9c2b2b?style=flat-square)](https://owasp.org/www-project-top-10-ci-cd-security-risks/)
-[![scenarios 88](https://img.shields.io/badge/scenarios-88-1f6feb?style=flat-square)](scenarios/README.md)
+[![scenarios 93](https://img.shields.io/badge/scenarios-93-1f6feb?style=flat-square)](scenarios/README.md)
 [![providers 11](https://img.shields.io/badge/providers-11-1f6feb?style=flat-square)](docs/MATRIX.md)
 [![scanners 8](https://img.shields.io/badge/scanners-8-1f6feb?style=flat-square)](docs/MATRIX.md)
 <!-- /AUTOGEN:badges -->
@@ -30,8 +30,9 @@ confused-deputy auto-merge, and recursive submodule checkout from PR. Every
 GHA job is gated with `if: false` so the workflows show up in run history but
 never spawn a runner.
 
-**Scenarios 39+ extend the range to ten other providers** — the same one-bug,
-one-writeup model on the platforms where most pipelines actually live: GitLab CI,
+**Scenarios 39+ extend the range to ten other providers** (with a couple of
+later GitHub Actions additions, e.g. 89) — the same one-bug, one-writeup model
+on the platforms where most pipelines actually live: GitLab CI,
 Jenkins, Azure Pipelines, CircleCI, Bitbucket Pipelines, Tekton, Argo Workflows,
 Drone CI, Buildkite, and Google Cloud Build. These ship as static fixtures
 nested under `scenarios/NN-*/` (never at a provider's auto-run path), so they're
@@ -50,9 +51,9 @@ the latest [`scanner-comparison`](../../actions/workflows/scanner-comparison.yml
 run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 
 <!-- AUTOGEN:leaderboard -->
-### GitHub Actions — 38 scenarios
+### GitHub Actions — 39 scenarios
 
-| Scanner | Scenarios caught (of 38) |
+| Scanner | Scenarios caught (of 39) |
 | :--- | :--- |
 | pipeline&#x2011;check | **31 ✅** |
 | zizmor | **16 ✅** |
@@ -62,19 +63,19 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 | KICS | **7 ✅** |
 | actionlint | **6 ✅** |
 
-### GitLab CI — 10 scenarios
+### GitLab CI — 11 scenarios
 
-| Scanner | Scenarios caught (of 10) |
+| Scanner | Scenarios caught (of 11) |
 | :--- | :--- |
-| pipeline&#x2011;check | **8 ✅** |
+| pipeline&#x2011;check | **9 ✅** |
 | ciguard | **8 ✅** |
 | Checkov | **0 ✅** |
 
-### Azure Pipelines — 6 scenarios
+### Azure Pipelines — 7 scenarios
 
-| Scanner | Scenarios caught (of 6) |
+| Scanner | Scenarios caught (of 7) |
 | :--- | :--- |
-| pipeline&#x2011;check | **3 ✅** |
+| pipeline&#x2011;check | **4 ✅** |
 | Checkov | **0 ✅** |
 
 ### CircleCI — 7 scenarios
@@ -104,18 +105,18 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 | :--- | :--- |
 | pipeline&#x2011;check | **3 ✅** |
 
-### Argo Workflows — 4 scenarios
+### Argo Workflows — 5 scenarios
 
-| Scanner | Scenarios caught (of 4) |
+| Scanner | Scenarios caught (of 5) |
 | :--- | :--- |
 | pipeline&#x2011;check | **4 ✅** |
 | Checkov | **2 ✅** |
 
-### Drone CI — 2 scenarios
+### Drone CI — 3 scenarios
 
-| Scanner | Scenarios caught (of 2) |
+| Scanner | Scenarios caught (of 3) |
 | :--- | :--- |
-| pipeline&#x2011;check | **2 ✅** |
+| pipeline&#x2011;check | **3 ✅** |
 
 ### Buildkite — 2 scenarios
 
@@ -136,7 +137,7 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 **[Walkthroughs of five hand-picked scenarios](docs/FIELD-TEST.md)**
 
 > [!NOTE]
-> **Corpus scope.** Scenarios 01–38 are GitHub Actions; 39+ are the
+> **Corpus scope.** Scenarios 01–38 (and 89) are GitHub Actions; 39+ are the
 > multi-provider expansion (GitLab CI, Jenkins, Azure Pipelines, CircleCI,
 > Bitbucket Pipelines, Tekton, Argo, Drone, Buildkite, Cloud Build). Each scenario
 > is scored only by the scanners that actually parse its provider — a

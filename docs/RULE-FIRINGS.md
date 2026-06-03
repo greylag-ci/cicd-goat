@@ -841,4 +841,44 @@ Same source as the main matrix — auto-rebuilt from the latest
 | :-- | :-- | :-: |
 | pipeline&#x2011;check | `AC-005`, **`BB-004`**, `BB-005` | ✅ |
 | Checkov | _(none)_ | ❌ |
+
+### Scenario 89 — GHA: `terraform apply` on untrusted PR (IaC RCE) (GitHub Actions)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, `GHA-006`, `GHA-007`, `GHA-014`, `GHA-015`, `GHA-020`, `GHA-024`, `GHA-037`, `GHA-069`, `GHA-098` | ❌ |
+| zizmor | `zizmor/artipacked` | ❌ |
+| poutine | _(none)_ | ❌ |
+| KICS | _(none)_ | ❌ |
+| Checkov | _(none)_ | ❌ |
+| actionlint | `if-cond` | ❌ |
+| octoscan | _(none)_ | ❌ |
+
+### Scenario 90 — Azure: untrusted `resources` template on self-hosted agent (Azure Pipelines)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `ADO-013`, `ADO-015`, **`ADO-025`** | ✅ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 91 — GitLab: `terraform apply` in a merge-request pipeline (GitLab CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, **`GL-004`**, `GL-006`, `GL-007`, `GL-015`, `GL-019`, `GL-024` | ✅ |
+| Checkov | _(none)_ | ❌ |
+| ciguard | `ART-003`, `SC-003` | ❌ |
+
+### Scenario 92 — Argo: cluster-admin ServiceAccount → cluster takeover (Argo Workflows)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `ARGO-007`, `ARGO-009`, `ARGO-010`, `ARGO-011`, `ARGO-012`, `ARGO-013` | ❌ |
+| Checkov | `CKV_ARGO_2` | ❌ |
+
+### Scenario 93 — Drone: privileged step mounts host Docker socket (Drone CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `DR-002`, **`DR-007`** | ✅ |
 <!-- /AUTOGEN:rule-firings -->
