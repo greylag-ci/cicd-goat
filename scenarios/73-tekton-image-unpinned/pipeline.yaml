@@ -1,0 +1,23 @@
+# scenarios/73-tekton-image-unpinned
+# CICD-SEC-3 (Dependency Chain Abuse) · CICD-SEC-9 (Improper Artifact Integrity)
+#
+# Pattern: a Tekton Task step `image:` pinned to a mutable tag instead of a
+# digest. The step runs inside whatever the tag resolves to at run time; whoever
+# moves the tag controls the build environment. Tekton analogue of scenarios
+# 09 / 46 / 58 / 64.
+#
+# SAFETY: static fixture, nested under scenarios/ — Tekton resources only run
+# when applied to a cluster; this file is never applied. Non-privileged so the
+# ONLY intended bug is the mutable image tag. See README.md.
+
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: test
+spec:
+  steps:
+    - name: test
+      # DANGER — mutable tag. The fix is a digest pin: node@sha256:<...>.
+      image: node:20
+      script: |
+        npm ci && npm test

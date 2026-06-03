@@ -1,0 +1,20 @@
+# scenarios/80-buildkite-plugin-unpinned
+# CICD-SEC-3 (Dependency Chain Abuse) — Buildkite
+#
+# Pattern: a Buildkite plugin pinned to a mutable ref (`#latest` / no version).
+# A plugin runs hooks in the agent's context with the build's environment in
+# scope; a mutable ref overwritten upstream (or an untrusted plugin) executes
+# attacker code with those secrets. Analogue of the mutable-action/pipe class
+# (scenarios 03 / 63).
+#
+# SAFETY: static fixture, nested under scenarios/ — Buildkite only runs the
+# pipeline a connected agent uploads, never a nested file. See README.md.
+
+steps:
+  - label: ":docker: build"
+    command: build.sh
+    plugins:
+      # DANGER — plugin pinned to a mutable ref. Pin an exact version, e.g.
+      # docker-compose#v4.16.0.
+      - docker-compose#latest:
+          run: app

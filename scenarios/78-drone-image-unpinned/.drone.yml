@@ -1,0 +1,22 @@
+# scenarios/78-drone-image-unpinned
+# CICD-SEC-3 (Dependency Chain Abuse) · CICD-SEC-9 (Improper Artifact Integrity)
+#
+# Pattern: a Drone step `image:` pinned to a mutable tag instead of a digest.
+# The step runs inside whatever the tag resolves to; whoever moves the tag
+# controls the step environment. Drone analogue of scenarios 09 / 46 / 58 / 73.
+#
+# SAFETY: static fixture, nested under scenarios/ — Drone only runs the
+# `.drone.yml` at the REPOSITORY ROOT, never a nested one. Non-privileged so the
+# ONLY intended bug is the mutable image tag. See README.md.
+
+kind: pipeline
+type: docker
+name: test
+
+steps:
+  - name: test
+    # DANGER — mutable tag. The fix is a digest pin: node@sha256:<...>.
+    image: node:20
+    commands:
+      - npm ci
+      - npm test

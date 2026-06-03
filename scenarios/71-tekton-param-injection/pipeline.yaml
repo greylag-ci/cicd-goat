@@ -1,0 +1,28 @@
+# scenarios/71-tekton-param-injection
+# CICD-SEC-4 (Poisoned Pipeline Execution) — Tekton
+#
+# Pattern: a Tekton Task `step` interpolates a `$(params.*)` value directly into
+# its `script:`. Task params can carry attacker-controlled values (a branch
+# name, a PR title passed through a Pipelines-as-Code trigger), so the param
+# becomes shell syntax. Tekton analogue of the expression-injection family
+# (scenarios 02 / 56 / 62).
+#
+# SAFETY: static fixture, nested under scenarios/ — Tekton resources only run
+# when applied to a cluster; this file is never applied. The image is digest-
+# pinned and the step is non-privileged so the ONLY intended bug is the
+# param injection. See README.md.
+
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: build
+spec:
+  params:
+    - name: branch
+      type: string
+  steps:
+    - name: build
+      image: cgr.dev/chainguard/bash@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+      # DANGER — param interpolated straight into the shell script.
+      script: |
+        echo "building $(params.branch)"

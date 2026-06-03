@@ -1,0 +1,26 @@
+// scenarios/70-jenkins-agent-any
+// CICD-SEC-7 (Insecure System Configuration) · CICD-SEC-5 — Jenkins
+//
+// Pattern: `agent any` (or `agent { label 'built-in' }`) for a job that runs
+// untrusted code. Building untrusted PR code on `any` agent — especially the
+// controller / built-in node — gives attacker code access to the controller
+// filesystem, `init.groovy.d`, the credential store, and other jobs'
+// workspaces: full compromise. Jenkins analogue of scenario 08
+// (self-hosted runner on a public repo).
+//
+// SAFETY: static fixture, nested under scenarios/ (Jenkins runs only a
+// configured Jenkinsfile). See README.md.
+
+pipeline {
+    // DANGER — unconstrained agent; may schedule onto the controller/built-in
+    // node. Use dedicated, ephemeral agents for untrusted builds and set the
+    // built-in node executor count to 0.
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                sh 'make build'
+            }
+        }
+    }
+}

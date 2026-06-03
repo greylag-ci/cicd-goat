@@ -1,0 +1,23 @@
+# scenarios/77-drone-privileged-step
+# CICD-SEC-7 (Insecure System Configuration) — Drone CI
+#
+# Pattern: a Drone pipeline step with `privileged: true`. A privileged step
+# gets full access to the host Docker daemon / kernel — container escape and
+# host compromise, especially on shared runners.
+#
+# SAFETY: static fixture, nested under scenarios/ — Drone only runs the
+# `.drone.yml` at the REPOSITORY ROOT, never a nested one. The image is digest-
+# pinned so the ONLY intended bug is the privileged step. See README.md.
+
+kind: pipeline
+type: docker
+name: build
+
+steps:
+  - name: build-image
+    image: plugins/docker@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+    # DANGER — privileged step reaches the host Docker daemon. Use a rootless
+    # builder / dedicated isolated runner instead.
+    privileged: true
+    settings:
+      repo: example/app

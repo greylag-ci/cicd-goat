@@ -16,7 +16,7 @@
 > Every CI/CD scanner has blind spots. The only honest way to measure them
 > is on a target where the bugs are catalogued in advance. This is that target.
 
-Sixty-six vulnerable pipelines, each demonstrating one specific attack pattern
+Eighty-two vulnerable pipelines, each demonstrating one specific attack pattern
 drawn from named incident disclosures (tj-actions 2025, ArtiPACKED 2024,
 Codecov 2021, Birsan dependency confusion 2021,
 event-stream/ua-parser-js/node-ipc/Shai-Hulud npm lifecycle abuse,
@@ -30,14 +30,14 @@ confused-deputy auto-merge, and recursive submodule checkout from PR. Every
 GHA job is gated with `if: false` so the workflows show up in run history but
 never spawn a runner.
 
-**Scenarios 39+ extend the range to other providers** — the same one-bug,
+**Scenarios 39+ extend the range to ten other providers** — the same one-bug,
 one-writeup model on the platforms where most pipelines actually live: GitLab CI,
-Jenkins, Azure Pipelines, CircleCI, and Bitbucket Pipelines. These ship as
-static fixtures nested under `scenarios/NN-*/` (never at a provider's auto-run
-path), so they're readable by scanners but inert on every platform. Only the
-scanners that parse a given provider score those rows — and several
-Azure/CircleCI/Bitbucket rows are all-miss *next-gen targets* no scanner here
-catches yet. See the per-provider leaderboards below.
+Jenkins, Azure Pipelines, CircleCI, Bitbucket Pipelines, Tekton, Argo Workflows,
+Drone CI, Buildkite, and Google Cloud Build. These ship as static fixtures
+nested under `scenarios/NN-*/` (never at a provider's auto-run path), so they're
+readable by scanners but inert on every platform. Only the scanners that parse a
+given provider score those rows — and several are all-miss *next-gen targets* no
+scanner here catches yet. See the per-provider leaderboards below.
 
 ## Leaderboard
 
@@ -107,7 +107,7 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 > [!NOTE]
 > **Corpus scope.** Scenarios 01–38 are GitHub Actions; 39+ are the
 > multi-provider expansion (GitLab CI, Jenkins, Azure Pipelines, CircleCI,
-> Bitbucket Pipelines). Each scenario
+> Bitbucket Pipelines, Tekton, Argo, Drone, Buildkite, Cloud Build). Each scenario
 > is scored only by the scanners that actually parse its provider — a
 > GHA-only scanner (zizmor, KICS, actionlint, octoscan) shows `—`
 > (not-applicable), never a miss, on a GitLab or Jenkins row it was never
@@ -118,9 +118,10 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 
 ## What's in this repo
 
-- **[Scenarios](scenarios/README.md)** — 66 vulnerable pipelines (38
-  GitHub Actions + 9 GitLab CI + 6 Azure + 6 CircleCI + 6 Bitbucket +
-  1 Jenkins), each with its own writeup
+- **[Scenarios](scenarios/README.md)** — 82 vulnerable pipelines across 11
+  providers (38 GitHub Actions + 9 GitLab CI + 6 Azure + 6 CircleCI +
+  6 Bitbucket + 5 Jenkins + 3 Tekton + 3 Argo + 2 Drone + 2 Buildkite +
+  2 Cloud Build), each with its own writeup
   (exploitation walkthrough, per-scanner coverage, the fix). Indexed by
   attack class and CICD-SEC category.
 - **[Full matrix](docs/MATRIX.md)** — per-(scenario × scanner) verdict
