@@ -27,8 +27,8 @@ has delegated pipeline definition to a service it doesn't govern or version.
 | Scanner | Detection |
 |---------|-----------|
 | pipeline-check | `GL-005` — `include:` pulls remote/project config without a pinned ref |
-| ciguard | reconciled from CI |
-| Checkov | reconciled from CI (its GitLab ruleset is thin) |
+| ciguard | `PIPE-002` — UnsafeRemoteInclude |
+| Checkov | — (GitLab ruleset has no remote-include check) |
 
 ## Fix
 

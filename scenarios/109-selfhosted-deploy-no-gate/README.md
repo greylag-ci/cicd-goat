@@ -32,8 +32,8 @@ will.
 
 | Scanner | Detection |
 |---------|-----------|
-| pipeline-check | `GHA-112` — self-hosted deploy job not gated by a protected environment (also fires `GHA-014`) |
-| zizmor / poutine / KICS / Checkov / actionlint / octoscan | reconciled from CI |
+| pipeline-check | `GHA-014` (deploy missing environment) + `GHA-012` (self-hosted runner without ephemeral marker) — names both facets. (Newer pipeline-check also has the dedicated `GHA-112` for this combination.) |
+| zizmor / poutine / KICS / Checkov / actionlint / octoscan | — (miss) |
 
 ## Fix
 

@@ -26,8 +26,8 @@ the evidence needed to notice or investigate one.
 
 | Scanner | Detection |
 |---------|-----------|
-| Checkov | `CKV_AWS_18` — ensure S3 bucket has access logging (and VPC flow-log graph check) |
-| KICS | reconciled from CI (flow-logs / bucket-logging queries) |
+| Checkov | `CKV_AWS_18` — S3 bucket access logging (also fires `CKV2_AWS_11` VPC flow-log graph check) |
+| KICS | `VPC FlowLogs Disabled` (`f83121ea-…`) + `S3 Bucket Logging Disabled` (`f861041c-…`) |
 | pipeline-check | — (its Terraform provider needs a plan JSON) |
 
 ## Fix

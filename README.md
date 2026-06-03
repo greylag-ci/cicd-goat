@@ -6,7 +6,7 @@
 [![scanner-comparison](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml/badge.svg)](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml)
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-3a3a3a?style=flat-square)](LICENSE)
 [![CICD-SEC top 10](https://img.shields.io/badge/owasp-CICD--SEC_10%2F10-9c2b2b?style=flat-square)](https://owasp.org/www-project-top-10-ci-cd-security-risks/)
-[![scenarios 104](https://img.shields.io/badge/scenarios-104-1f6feb?style=flat-square)](scenarios/README.md)
+[![scenarios 113](https://img.shields.io/badge/scenarios-113-1f6feb?style=flat-square)](scenarios/README.md)
 [![providers 16](https://img.shields.io/badge/providers-16-1f6feb?style=flat-square)](docs/MATRIX.md)
 [![scanners 8](https://img.shields.io/badge/scanners-8-1f6feb?style=flat-square)](docs/MATRIX.md)
 <!-- /AUTOGEN:badges -->
@@ -58,24 +58,24 @@ the latest [`scanner-comparison`](../../actions/workflows/scanner-comparison.yml
 run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 
 <!-- AUTOGEN:leaderboard -->
-### GitHub Actions — 39 scenarios
+### GitHub Actions — 43 scenarios
 
-| Scanner | Scenarios caught (of 39) |
+| Scanner | Scenarios caught (of 43) |
 | :--- | :--- |
-| pipeline&#x2011;check | **33 ✅** |
-| zizmor | **16 ✅** |
-| poutine | **12 ✅** |
-| octoscan | **12 ✅** |
+| pipeline&#x2011;check | **37 ✅** |
+| zizmor | **17 ✅** |
+| poutine | **14 ✅** |
+| octoscan | **13 ✅** |
 | Checkov | **10 ✅** |
-| KICS | **7 ✅** |
+| KICS | **8 ✅** |
 | actionlint | **6 ✅** |
 
-### GitLab CI — 11 scenarios
+### GitLab CI — 14 scenarios
 
-| Scanner | Scenarios caught (of 11) |
+| Scanner | Scenarios caught (of 14) |
 | :--- | :--- |
-| pipeline&#x2011;check | **9 ✅** |
-| ciguard | **8 ✅** |
+| pipeline&#x2011;check | **11 ✅** |
+| ciguard | **10 ✅** |
 | Checkov | **0 ✅** |
 
 ### Azure Pipelines — 7 scenarios
@@ -153,12 +153,12 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 | KICS | **2 ✅** |
 | Checkov | **2 ✅** |
 
-### Terraform — 3 scenarios
+### Terraform — 5 scenarios
 
-| Scanner | Scenarios caught (of 3) |
+| Scanner | Scenarios caught (of 5) |
 | :--- | :--- |
-| KICS | **3 ✅** |
-| Checkov | **3 ✅** |
+| KICS | **5 ✅** |
+| Checkov | **5 ✅** |
 
 ### CloudFormation — 1 scenario
 

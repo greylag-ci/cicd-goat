@@ -59,7 +59,11 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 37 | Confused-deputy auto-merge via bot-identity gate | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 38 | Recursive submodule checkout from PR | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 89 | GHA: `terraform apply` on untrusted PR (IaC RCE) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-|    | **canonical bugs caught** | **33 ✅** | **16 ✅** | **12 ✅** | **7 ✅** | **10 ✅** | **6 ✅** | **12 ✅** |
+| 105 | GHA: Codecov-style remote uploader piped to shell | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| 107 | GHA: org secret handed to unpinned 3rd-party action | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ |
+| 108 | GHA: deploy job missing environment binding | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 109 | GHA: self-hosted deploy without environment gate | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+|    | **canonical bugs caught** | **37 ✅** | **17 ✅** | **14 ✅** | **8 ✅** | **10 ✅** | **6 ✅** | **13 ✅** |
 
 ### GitLab CI
 
@@ -76,7 +80,10 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 48 | GitLab: untagged shared-runner + privileged dind | ❌ | ❌ | ✅ |
 | 85 | GitLab: fork MR pipeline mints cloud OIDC token | ✅ | ❌ | ✅ |
 | 91 | GitLab: `terraform apply` in a merge-request pipeline | ✅ | ❌ | ❌ |
-|    | **canonical bugs caught** | **9 ✅** | **0 ✅** | **8 ✅** |
+| 106 | GitLab: `include: remote:` unpinned 3rd-party template | ✅ | ❌ | ✅ |
+| 110 | GitLab: manual deploy defaults to allow_failure | ✅ | ❌ | ✅ |
+| 113 | GitLab: `CI_DEBUG_TRACE` leaks secrets to job log | ❌ | ❌ | ❌ |
+|    | **canonical bugs caught** | **11 ✅** | **0 ✅** | **10 ✅** |
 
 ### Azure Pipelines
 
@@ -200,7 +207,9 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 100 | Terraform: IAM policy `*:*` (full admin) | ✅ | ✅ |
 | 101 | Terraform: security group SSH open to 0.0.0.0/0 | ✅ | ✅ |
 | 102 | Terraform: S3 bucket public-access-block disabled | ✅ | ✅ |
-|    | **canonical bugs caught** | **3 ✅** | **3 ✅** |
+| 111 | Terraform: CloudTrail logging disabled / single-region | ✅ | ✅ |
+| 112 | Terraform: VPC flow logs + S3 access logging off | ✅ | ✅ |
+|    | **canonical bugs caught** | **5 ✅** | **5 ✅** |
 
 ### CloudFormation
 
@@ -338,6 +347,15 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 102 | [Terraform: S3 bucket public-access-block disabled](../scenarios/102-terraform-s3-public/README.md) | Terraform | 7 · 6 | 🟠 high |
 | 103 | [CloudFormation: S3 bucket public read+write](../scenarios/103-cloudformation-s3-public/README.md) | CloudFormation | 7 · 6 | 🟠 high |
 | 104 | [Helm: privileged container in chart template](../scenarios/104-helm-privileged-pod/README.md) | Helm | 7 | 🔴 critical |
+| 105 | [GHA: Codecov-style remote uploader piped to shell](../scenarios/105-codecov-bash-uploader/README.md) | GitHub Actions | 8 · 3 | 🟠 high |
+| 106 | [GitLab: `include: remote:` unpinned 3rd-party template](../scenarios/106-gitlab-include-remote/README.md) | GitLab CI | 8 · 3 | 🟠 high |
+| 107 | [GHA: org secret handed to unpinned 3rd-party action](../scenarios/107-thirdparty-action-broad-secret/README.md) | GitHub Actions | 8 · 6 | 🟠 high |
+| 108 | [GHA: deploy job missing environment binding](../scenarios/108-deploy-no-environment/README.md) | GitHub Actions | 1 | 🟡 medium |
+| 109 | [GHA: self-hosted deploy without environment gate](../scenarios/109-selfhosted-deploy-no-gate/README.md) | GitHub Actions | 1 · 7 | 🟠 high |
+| 110 | [GitLab: manual deploy defaults to allow_failure](../scenarios/110-gitlab-manual-allow-failure/README.md) | GitLab CI | 1 | 🟡 medium |
+| 111 | [Terraform: CloudTrail logging disabled / single-region](../scenarios/111-terraform-cloudtrail-disabled/README.md) | Terraform | 10 | 🟠 high |
+| 112 | [Terraform: VPC flow logs + S3 access logging off](../scenarios/112-terraform-no-flow-logs/README.md) | Terraform | 10 | 🟡 medium |
+| 113 | [GitLab: `CI_DEBUG_TRACE` leaks secrets to job log](../scenarios/113-gitlab-debug-trace/README.md) | GitLab CI | 10 · 6 | 🟡 medium |
 <!-- /AUTOGEN:scenarios-index -->
 
 > [!NOTE]

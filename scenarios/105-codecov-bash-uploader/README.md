@@ -28,7 +28,8 @@ your runner.
 | Scanner | Detection |
 |---------|-----------|
 | pipeline-check | `GHA-016` — remote script piped to a shell interpreter (curl-pipe / Codecov shape) |
-| zizmor / poutine / KICS / Checkov / actionlint / octoscan | reconciled from CI |
+| poutine | `unverified_script_exec` — remote script executed unverified |
+| zizmor / KICS / Checkov / actionlint / octoscan | — (miss) |
 
 ## Fix
 

@@ -31,8 +31,8 @@ between merge and production.
 | Scanner | Detection |
 |---------|-----------|
 | pipeline-check | `GL-029` — manual deploy job defaults to `allow_failure: true` |
-| ciguard | reconciled from CI |
-| Checkov | reconciled from CI (thin GitLab ruleset) |
+| ciguard | `PIPE-004` — UnprotectedDeployJob (the deploy isn't gated) |
+| Checkov | — (thin GitLab ruleset) |
 
 ## Fix
 

@@ -35,7 +35,15 @@ workflow-scope `env:` leaks it everywhere.
 | Scanner | Detection |
 |---------|-----------|
 | pipeline-check | `GHA-072` — secret in `env:` at a wider scope than its consumer (also fires `GHA-001` for the unpinned action) |
-| zizmor / poutine / KICS / Checkov / actionlint / octoscan | reconciled from CI |
+| zizmor | `unpinned-uses` — third-party action not pinned to a digest |
+| poutine | `github_action_from_unverified_creator_used` |
+| KICS | unpinned-action query (`555ab8f9-…`) |
+| octoscan | `repo-jacking` — unpinned action is repo-jackable |
+| Checkov / actionlint | — (miss) |
+
+> The corpus's richest 3rd-party row: pipeline-check names the over-scoped
+> secret while four other scanners independently flag the unpinned/unverified
+> action it's handed to.
 
 ## Fix
 
