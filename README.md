@@ -49,16 +49,33 @@ below.
 
 ## Leaderboard
 
-How many scenarios each scanner catches, **ranked separately per provider** —
-because most scanners only read one provider's files. A scanner scores ✅ on a
-scenario only when it fires a rule that names that scenario's *specific
-intended bug* — not just any finding on the file; it doesn't appear in a
-provider's table at all if it can't parse that provider. Auto-generated from
-the latest [`scanner-comparison`](../../actions/workflows/scanner-comparison.yml)
-run on `main`. [How scoring works →](docs/FIELD-TEST.md)
+Which scanner catches what, **per provider** — because most scanners only read
+one provider's files. A scanner scores a catch only when it fires a rule naming
+a scenario's *specific intended bug*, not just any finding on the file; `—`
+means it can't parse that provider at all. Auto-generated from the latest
+[`scanner-comparison`](../../actions/workflows/scanner-comparison.yml) run on
+`main`. [How scoring works →](docs/FIELD-TEST.md)
 
 <!-- AUTOGEN:leaderboard -->
-### GitHub Actions — 43 scenarios
+### At a glance — scanners × providers
+
+Full catches per provider (`caught/total`; `—` = the scanner can't parse that provider's files). Ranked by total catches across the corpus. Expand the section below for the ranked per-provider tables, or see the [full per-scenario matrix](docs/MATRIX.md).
+
+| Scanner | GHA | GitLab | Azure | CircleCI | Bitbucket | Jenkins | Tekton | Argo | Drone | Buildkite | CloudBuild | Docker | K8s | TF | CFN | Helm |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| pipeline&#x2011;check | 37/43 | 11/14 | 4/7 | 5/7 | 3/7 | 4/6 | 3/4 | 4/5 | 3/3 | 2/2 | 2/2 | 3/3 | 3/3 | — | — | 1/1 |
+| Checkov | 10/43 | 0/14 | 0/7 | 1/7 | 1/7 | — | — | 2/5 | — | — | — | 2/3 | 2/3 | 5/5 | 1/1 | 1/1 |
+| KICS | 8/43 | — | — | — | — | — | — | — | — | — | — | 2/3 | 2/3 | 5/5 | 1/1 | — |
+| zizmor | 17/43 | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — |
+| poutine | 14/43 | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — |
+| octoscan | 13/43 | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — |
+| ciguard | — | 10/14 | — | — | — | 1/6 | — | — | — | — | — | — | — | — | — | — |
+| actionlint | 6/43 | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — |
+
+<details>
+<summary><strong>Per-provider leaderboards</strong> — 16 ranked tables</summary>
+
+#### GitHub Actions — 43 scenarios
 
 | Scanner | Scenarios caught (of 43) |
 | :--- | :--- |
@@ -70,7 +87,7 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 | KICS | **8 ✅** |
 | actionlint | **6 ✅** |
 
-### GitLab CI — 14 scenarios
+#### GitLab CI — 14 scenarios
 
 | Scanner | Scenarios caught (of 14) |
 | :--- | :--- |
@@ -78,66 +95,66 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 | ciguard | **10 ✅** |
 | Checkov | **0 ✅** |
 
-### Azure Pipelines — 7 scenarios
+#### Azure Pipelines — 7 scenarios
 
 | Scanner | Scenarios caught (of 7) |
 | :--- | :--- |
 | pipeline&#x2011;check | **4 ✅** |
 | Checkov | **0 ✅** |
 
-### CircleCI — 7 scenarios
+#### CircleCI — 7 scenarios
 
 | Scanner | Scenarios caught (of 7) |
 | :--- | :--- |
 | pipeline&#x2011;check | **5 ✅** |
 | Checkov | **1 ✅** |
 
-### Bitbucket Pipelines — 7 scenarios
+#### Bitbucket Pipelines — 7 scenarios
 
 | Scanner | Scenarios caught (of 7) |
 | :--- | :--- |
 | pipeline&#x2011;check | **3 ✅** |
 | Checkov | **1 ✅** |
 
-### Jenkins — 6 scenarios
+#### Jenkins — 6 scenarios
 
 | Scanner | Scenarios caught (of 6) |
 | :--- | :--- |
 | pipeline&#x2011;check | **4 ✅** |
 | ciguard | **1 ✅** |
 
-### Tekton — 4 scenarios
+#### Tekton — 4 scenarios
 
 | Scanner | Scenarios caught (of 4) |
 | :--- | :--- |
 | pipeline&#x2011;check | **3 ✅** |
 
-### Argo Workflows — 5 scenarios
+#### Argo Workflows — 5 scenarios
 
 | Scanner | Scenarios caught (of 5) |
 | :--- | :--- |
 | pipeline&#x2011;check | **4 ✅** |
 | Checkov | **2 ✅** |
 
-### Drone CI — 3 scenarios
+#### Drone CI — 3 scenarios
 
 | Scanner | Scenarios caught (of 3) |
 | :--- | :--- |
 | pipeline&#x2011;check | **3 ✅** |
 
-### Buildkite — 2 scenarios
+#### Buildkite — 2 scenarios
 
 | Scanner | Scenarios caught (of 2) |
 | :--- | :--- |
 | pipeline&#x2011;check | **2 ✅** |
 
-### Cloud Build — 2 scenarios
+#### Cloud Build — 2 scenarios
 
 | Scanner | Scenarios caught (of 2) |
 | :--- | :--- |
 | pipeline&#x2011;check | **2 ✅** |
 
-### Dockerfile — 3 scenarios
+#### Dockerfile — 3 scenarios
 
 | Scanner | Scenarios caught (of 3) |
 | :--- | :--- |
@@ -145,7 +162,7 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 | KICS | **2 ✅** |
 | Checkov | **2 ✅** |
 
-### Kubernetes — 3 scenarios
+#### Kubernetes — 3 scenarios
 
 | Scanner | Scenarios caught (of 3) |
 | :--- | :--- |
@@ -153,26 +170,28 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 | KICS | **2 ✅** |
 | Checkov | **2 ✅** |
 
-### Terraform — 5 scenarios
+#### Terraform — 5 scenarios
 
 | Scanner | Scenarios caught (of 5) |
 | :--- | :--- |
 | KICS | **5 ✅** |
 | Checkov | **5 ✅** |
 
-### CloudFormation — 1 scenario
+#### CloudFormation — 1 scenario
 
 | Scanner | Scenarios caught (of 1) |
 | :--- | :--- |
 | KICS | **1 ✅** |
 | Checkov | **1 ✅** |
 
-### Helm — 1 scenario
+#### Helm — 1 scenario
 
 | Scanner | Scenarios caught (of 1) |
 | :--- | :--- |
 | pipeline&#x2011;check | **1 ✅** |
 | Checkov | **1 ✅** |
+
+</details>
 <!-- /AUTOGEN:leaderboard -->
 
 → **[Full per-scenario matrix](docs/MATRIX.md)**  ·
