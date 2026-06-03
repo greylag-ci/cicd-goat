@@ -33,15 +33,15 @@ overall (a scenario in two categories counts once in each row).
 <!-- AUTOGEN:cicd-sec-coverage -->
 | # | Category | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard |
 | :-: | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| 1 | Insufficient flow control | 5 | 3/5 | 0/3 | 0/3 | 0/3 | 0/5 | 0/3 | 0/3 | 1/1 |
-| 2 | Inadequate IAM | 6 | 4/6 | 0/3 | 0/3 | 0/3 | 0/6 | 0/3 | 0/3 | 1/2 |
-| 3 | Dependency chain abuse | 19 | 13/19 | 3/10 | 3/10 | 2/10 | 2/19 | 0/10 | 0/10 | 3/3 |
-| 4 | Poisoned pipeline execution | 24 | 17/24 | 10/15 | 8/15 | 4/15 | 8/23 | 6/15 | 10/15 | 2/4 |
-| 5 | Insufficient PBAC | 7 | 5/7 | 3/6 | 1/6 | 0/6 | 1/7 | 0/6 | 1/6 | 1/1 |
+| 1 | Insufficient flow control | 6 | 3/6 | 0/3 | 0/3 | 0/3 | 0/5 | 0/3 | 0/3 | 1/2 |
+| 2 | Inadequate IAM | 8 | 6/8 | 0/3 | 0/3 | 0/3 | 1/7 | 0/3 | 0/3 | 1/2 |
+| 3 | Dependency chain abuse | 24 | 18/24 | 3/10 | 3/10 | 2/10 | 2/19 | 0/10 | 0/10 | 3/4 |
+| 4 | Poisoned pipeline execution | 28 | 20/28 | 10/15 | 8/15 | 4/15 | 8/24 | 6/15 | 10/15 | 2/5 |
+| 5 | Insufficient PBAC | 9 | 6/9 | 3/6 | 1/6 | 0/6 | 1/7 | 0/6 | 1/6 | 2/3 |
 | 6 | Insufficient credential hygiene | 10 | 8/10 | 3/4 | 1/4 | 2/4 | 0/10 | 0/4 | 1/4 | 2/2 |
-| 7 | Insecure system configuration | 8 | 6/8 | 0/3 | 1/3 | 0/3 | 0/8 | 0/3 | 1/3 | 1/2 |
+| 7 | Insecure system configuration | 12 | 10/12 | 0/3 | 1/3 | 0/3 | 1/9 | 0/3 | 1/3 | 2/3 |
 | 8 | Ungoverned 3rd-party services | 1 | 1/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | — |
-| 9 | Improper artifact integrity validation | 11 | 9/11 | 3/6 | 1/6 | 0/6 | 2/11 | 0/6 | 1/6 | 2/2 |
+| 9 | Improper artifact integrity validation | 14 | 12/14 | 3/6 | 1/6 | 0/6 | 2/11 | 0/6 | 1/6 | 2/2 |
 | 10 | Insufficient logging & visibility | 2 | 1/2 | 0/1 | 0/1 | 0/1 | 0/2 | 0/1 | 0/1 | — |
 <!-- /AUTOGEN:cicd-sec-coverage -->
 
@@ -62,9 +62,9 @@ assign to each scenario in
 <!-- AUTOGEN:severity-coverage -->
 | Severity | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard |
 | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| 🔴 critical | 11 | 9/11 | 3/9 | 3/9 | 0/9 | 0/11 | 0/9 | 3/9 | 0/1 |
-| 🟠 high | 41 | 28/41 | 10/23 | 8/23 | 7/23 | 8/40 | 6/23 | 9/23 | 5/7 |
-| 🟡 medium | 14 | 11/14 | 3/6 | 1/6 | 0/6 | 3/14 | 0/6 | 0/6 | 2/2 |
+| 🔴 critical | 12 | 10/12 | 3/9 | 3/9 | 0/9 | 0/11 | 0/9 | 3/9 | 0/2 |
+| 🟠 high | 50 | 35/50 | 10/23 | 8/23 | 7/23 | 9/42 | 6/23 | 9/23 | 6/10 |
+| 🟡 medium | 20 | 17/20 | 3/6 | 1/6 | 0/6 | 4/15 | 0/6 | 0/6 | 2/2 |
 <!-- /AUTOGEN:severity-coverage -->
 
 > If a scanner's critical-row fraction is meaningfully lower than its
@@ -108,12 +108,23 @@ scenarios from the field tested here.
 | 62 | [Bitbucket: `$BITBUCKET_*` script injection](../scenarios/62-bitbucket-var-injection/README.md) | **pipeline&#x2011;check** |
 | 63 | [Bitbucket: `pipe:` mutable tag](../scenarios/63-bitbucket-pipe-mutable-tag/README.md) | **pipeline&#x2011;check** |
 | 64 | [Bitbucket: `image:` mutable tag](../scenarios/64-bitbucket-image-mutable-tag/README.md) | **Checkov** |
+| 67 | [Jenkins: `@Grab` sandbox-bypass (CVE-2019-1003000)](../scenarios/67-jenkins-grab-sandbox-bypass/README.md) | **pipeline&#x2011;check** |
+| 69 | [Jenkins: shared library on a mutable `@master` ref](../scenarios/69-jenkins-library-mutable-ref/README.md) | **pipeline&#x2011;check** |
+| 72 | [Tekton: privileged / root step](../scenarios/72-tekton-privileged-step/README.md) | **pipeline&#x2011;check** |
+| 73 | [Tekton: step `image:` not pinned to a digest](../scenarios/73-tekton-image-unpinned/README.md) | **pipeline&#x2011;check** |
+| 74 | [Argo: `{{inputs.parameters}}` injected into args](../scenarios/74-argo-param-injection/README.md) | **pipeline&#x2011;check** |
+| 77 | [Drone: `privileged: true` step](../scenarios/77-drone-privileged-step/README.md) | **pipeline&#x2011;check** |
+| 78 | [Drone: step `image:` mutable tag](../scenarios/78-drone-image-unpinned/README.md) | **pipeline&#x2011;check** |
+| 79 | [Buildkite: `$BUILDKITE_*` command injection](../scenarios/79-buildkite-var-injection/README.md) | **pipeline&#x2011;check** |
+| 80 | [Buildkite: plugin pinned to a mutable ref](../scenarios/80-buildkite-plugin-unpinned/README.md) | **pipeline&#x2011;check** |
+| 81 | [Cloud Build: step image not pinned by digest](../scenarios/81-cloudbuild-image-unpinned/README.md) | **pipeline&#x2011;check** |
+| 82 | [Cloud Build: runs as default service account](../scenarios/82-cloudbuild-default-serviceaccount/README.md) | **pipeline&#x2011;check** |
 
 **Solo catches per scanner** — scenarios where this is the only ✅ on the row:
 
 | Scanner | Solo catches |
 | :-- | :-: |
-| pipeline&#x2011;check | **21** |
+| pipeline&#x2011;check | **32** |
 | ciguard | **2** |
 | Checkov | **1** |
 | zizmor | **0** |

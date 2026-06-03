@@ -233,7 +233,12 @@ scenarios:
   # Checkov adds Argo (CKV_ARGO_*). Rule IDs grounded against pipeline-check
   # 1.0.4 / Checkov 3.2.532 / ciguard 0.11.2, reconciled to CI 1.5.0 SARIF.
   # NOTE: pipeline-check's tekton/argo discovery is single-manifest per path, so
-  # scanner-comparison.yml invokes it PER scenario dir for those two providers.
+  # scanner-comparison.yml routes those two providers through
+  # tools/pipeline-check-resource-scan.py.
+  # NOTE: scenario 71 (Tekton param injection) is an all-miss next-gen target:
+  # pipeline-check 1.5.0's TKN-003 fired on the quoted-echo `$(params.*)` shape
+  # in 1.0.4 but no longer does in 1.5.0 (a quoting carve-out, like GHA-003) —
+  # a completeness probe, same spirit as the GHA injection-context variants.
   #
   # Jenkins (67-70)
   - {id: 67, title: "Jenkins: `@Grab` sandbox-bypass (CVE-2019-1003000)",  provider: jenkins, cicd_sec: [4],    severity: critical, slug: 67-jenkins-grab-sandbox-bypass,    expected: {pipeline-check: [JF-019], ciguard: []}}
@@ -241,7 +246,7 @@ scenarios:
   - {id: 69, title: "Jenkins: shared library on a mutable `@master` ref",  provider: jenkins, cicd_sec: [3],    severity: high,     slug: 69-jenkins-library-mutable-ref,   expected: {pipeline-check: [JF-001], ciguard: []}}
   - {id: 70, title: "Jenkins: `agent any` (controller exposure)",         provider: jenkins, cicd_sec: [7, 5], severity: high,     slug: 70-jenkins-agent-any,             expected: {pipeline-check: [JF-003], ciguard: [JKN-RUN-001]}}
   # Tekton (71-73) — pipeline-check only
-  - {id: 71, title: "Tekton: `$(params.*)` injected into step script",    provider: tekton,  cicd_sec: [4],    severity: high,     slug: 71-tekton-param-injection,        expected: {pipeline-check: [TKN-003]}}
+  - {id: 71, title: "Tekton: `$(params.*)` injected into step script",    provider: tekton,  cicd_sec: [4],    severity: high,     slug: 71-tekton-param-injection,        expected: {pipeline-check: []}}
   - {id: 72, title: "Tekton: privileged / root step",                     provider: tekton,  cicd_sec: [7],    severity: high,     slug: 72-tekton-privileged-step,        expected: {pipeline-check: [TKN-002]}}
   - {id: 73, title: "Tekton: step `image:` not pinned to a digest",       provider: tekton,  cicd_sec: [3, 9], severity: medium,   slug: 73-tekton-image-unpinned,         expected: {pipeline-check: [TKN-001]}}
   # Argo Workflows (74-76) — pipeline-check + Checkov

@@ -27,9 +27,13 @@ command in the step. Tekton analogue of the expression-injection family
 
 | Scanner | Detection |
 |---------|-----------|
-| pipeline-check | `TKN-003` — Tekton param interpolated unsafely in step script |
+| pipeline-check | — (its `TKN-003` rule has a quoting carve-out and doesn't fire on the quoted-echo shape here) |
 
-> Tekton is scored by pipeline-check only in this comparison.
+> **All-miss — a completeness probe.** Tekton is scored by pipeline-check only,
+> and its `TKN-003` rule fired on this `"…$(params.*)…"` shape in an older
+> version but no longer does (a defensive-quoting carve-out, like the GitHub
+> Actions GHA-003 behavior). The injection is still real — Tekton substitutes
+> the param before the shell runs — so this row probes that completeness gap.
 
 ## Fix
 

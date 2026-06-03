@@ -696,4 +696,107 @@ Same source as the main matrix — auto-rebuilt from the latest
 | :-- | :-- | :-: |
 | pipeline&#x2011;check | `AC-005`, `BB-004`, `BB-005` | ❌ |
 | Checkov | _(none)_ | ❌ |
+
+### Scenario 67 — Jenkins: `@Grab` sandbox-bypass (CVE-2019-1003000) (Jenkins)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `JF-011`, `JF-014`, `JF-015`, **`JF-019`** | ✅ |
+| ciguard | _(none)_ | ❌ |
+
+### Scenario 68 — Jenkins: `input` step without `submitter` (Jenkins)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `JF-011`, `JF-014`, `JF-015`, `JF-024`, `JF-028` | ❌ |
+| ciguard | _(none)_ | ❌ |
+
+### Scenario 69 — Jenkins: shared library on a mutable `@master` ref (Jenkins)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`JF-001`**, `JF-011`, `JF-014`, `JF-015` | ✅ |
+| ciguard | _(none)_ | ❌ |
+
+### Scenario 70 — Jenkins: `agent any` (controller exposure) (Jenkins)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`JF-003`**, `JF-011`, `JF-014`, `JF-015` | ✅ |
+| ciguard | **`JKN-RUN-001`** | ✅ |
+
+### Scenario 71 — Tekton: `$(params.*)` injected into step script (Tekton)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `TKN-002`, `TKN-012` | ❌ |
+
+### Scenario 72 — Tekton: privileged / root step (Tekton)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`TKN-002`**, `TKN-012` | ✅ |
+
+### Scenario 73 — Tekton: step `image:` not pinned to a digest (Tekton)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`TKN-001`**, `TKN-002`, `TKN-012` | ✅ |
+
+### Scenario 74 — Argo: `{{inputs.parameters}}` injected into args (Argo Workflows)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`ARGO-005`**, `ARGO-007`, `ARGO-012` | ✅ |
+| Checkov | `CKV_ARGO_2` | ❌ |
+
+### Scenario 75 — Argo: privileged / root container (Argo Workflows)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`ARGO-002`**, `ARGO-007`, `ARGO-012` | ✅ |
+| Checkov | **`CKV_ARGO_2`** | ✅ |
+
+### Scenario 76 — Argo: default ServiceAccount + token automount (Argo Workflows)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`ARGO-003`**, `ARGO-007`, `ARGO-009`, `ARGO-010`, `ARGO-011`, `ARGO-012`, `ARGO-013` | ✅ |
+| Checkov | **`CKV_ARGO_1`**, `CKV_ARGO_2` | ✅ |
+
+### Scenario 77 — Drone: `privileged: true` step (Drone CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`DR-002`** | ✅ |
+
+### Scenario 78 — Drone: step `image:` mutable tag (Drone CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`DR-001`** | ✅ |
+
+### Scenario 79 — Buildkite: `$BUILDKITE_*` command injection (Buildkite)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`BK-003`**, `BK-006`, `BK-012` | ✅ |
+
+### Scenario 80 — Buildkite: plugin pinned to a mutable ref (Buildkite)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`BK-001`**, `BK-006`, `BK-012` | ✅ |
+
+### Scenario 81 — Cloud Build: step image not pinned by digest (Cloud Build)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`GCB-001`**, `GCB-002`, `GCB-005`, `GCB-008`, `GCB-017`, `GCB-021`, `GCB-025` | ✅ |
+
+### Scenario 82 — Cloud Build: runs as default service account (Cloud Build)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`GCB-002`**, `GCB-005`, `GCB-008`, `GCB-021`, `GCB-025` | ✅ |
 <!-- /AUTOGEN:rule-firings -->
