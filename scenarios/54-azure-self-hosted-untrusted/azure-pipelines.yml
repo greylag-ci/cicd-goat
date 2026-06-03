@@ -1,0 +1,28 @@
+# scenarios/54-azure-self-hosted-untrusted
+# CICD-SEC-7 (Insecure System Configuration) · CICD-SEC-4 — Azure Pipelines
+#
+# Pattern: a persistent self-hosted agent pool is used by a pipeline that builds
+# untrusted code (public / fork PRs). The agent state survives between jobs, so
+# untrusted job code can plant a backdoor / poisoned compiler that steals the
+# NEXT pipeline's source and secrets. Azure analogue of the self-hosted-runner-
+# on-public-repo bug (scenario 08); documented in Microsoft's "Let's Hack a
+# Pipeline: Shared Infrastructure".
+#
+# SAFETY: this fixture relies on NESTING for safety (Azure never runs a nested
+# YAML unless a pipeline is configured to point at it, which nothing here does).
+# The `pr:` trigger is part of the scenario, so no `pr: none` gate is added.
+# See README.md.
+
+pr:
+  branches:
+    include:
+      - '*'        # builds every PR, including forks
+
+pool:
+  # DANGER — persistent self-hosted pool building untrusted PR code. Use
+  # Microsoft-hosted or one-time scale-set (ephemeral) agents instead.
+  name: 'Self-Hosted-Linux'
+
+steps:
+  - checkout: self
+  - script: ./build.sh

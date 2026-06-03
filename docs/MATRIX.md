@@ -75,6 +75,42 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 48 | GitLab: untagged shared-runner + privileged dind | ❌ | ❌ | ✅ |
 |    | **canonical bugs caught** | **7 ✅** | **0 ✅** | **7 ✅** |
 
+### Azure Pipelines
+
+| #  | Scenario | pipeline&#x2011;check | Checkov |
+| :-:| :--- | :-: | :-: |
+| 49 | Azure: macro `$(...)` injection into Bash@3 | ❌ | ❌ |
+| 50 | Azure: `${{ parameters }}` template injection | ❌ | ❌ |
+| 51 | Azure: `checkout persistCredentials: true` | ❌ | ❌ |
+| 52 | Azure: `addSpnToEnvironment` SP-secret exposure | ✅ | ❌ |
+| 53 | Azure: `resources: repositories` untrusted ref | ✅ | ❌ |
+| 54 | Azure: self-hosted pool for untrusted builds | ✅ | ❌ |
+|    | **canonical bugs caught** | **3 ✅** | **0 ✅** |
+
+### CircleCI
+
+| #  | Scenario | pipeline&#x2011;check | Checkov |
+| :-:| :--- | :-: | :-: |
+| 55 | CircleCI: orb pinned to `@volatile` | ✅ | ❌ |
+| 56 | CircleCI: `run:` injection via `<< pipeline.* >>` | ❌ | ❌ |
+| 57 | CircleCI: `machine: true` privileged executor | ✅ | ❌ |
+| 58 | CircleCI: docker image mutable tag | ✅ | ✅ |
+| 59 | CircleCI: hardcoded secret in `environment:` | ✅ | ❌ |
+| 60 | CircleCI: uncertified third-party orb | ❌ | ❌ |
+|    | **canonical bugs caught** | **4 ✅** | **1 ✅** |
+
+### Bitbucket Pipelines
+
+| #  | Scenario | pipeline&#x2011;check | Checkov |
+| :-:| :--- | :-: | :-: |
+| 61 | Bitbucket: secret dumped to `artifacts:` (Mandiant) | ❌ | ❌ |
+| 62 | Bitbucket: `$BITBUCKET_*` script injection | ✅ | ❌ |
+| 63 | Bitbucket: `pipe:` mutable tag | ✅ | ❌ |
+| 64 | Bitbucket: `image:` mutable tag | ❌ | ✅ |
+| 65 | Bitbucket: `clone: skip-ssl-verify: true` | ❌ | ❌ |
+| 66 | Bitbucket: custom-pipeline variable injection | ❌ | ❌ |
+|    | **canonical bugs caught** | **2 ✅** | **1 ✅** |
+
 ### Jenkins
 
 | #  | Scenario | pipeline&#x2011;check | ciguard |
@@ -148,6 +184,24 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 46 | [GitLab: job `image:` mutable tag](../scenarios/46-gitlab-image-latest/README.md) | GitLab CI | 3 · 9 | 🟡 medium |
 | 47 | [GitLab: OIDC `id_tokens` over-broad aud/sub](../scenarios/47-gitlab-oidc-broad-aud-sub/README.md) | GitLab CI | 2 · 7 | 🔴 critical |
 | 48 | [GitLab: untagged shared-runner + privileged dind](../scenarios/48-gitlab-shared-runner-privileged/README.md) | GitLab CI | 7 · 4 | 🟠 high |
+| 49 | [Azure: macro `$(...)` injection into Bash@3](../scenarios/49-azure-macro-injection/README.md) | Azure Pipelines | 4 | 🟠 high |
+| 50 | [Azure: `${{ parameters }}` template injection](../scenarios/50-azure-template-parameter-injection/README.md) | Azure Pipelines | 4 | 🟠 high |
+| 51 | [Azure: `checkout persistCredentials: true`](../scenarios/51-azure-persist-credentials/README.md) | Azure Pipelines | 6 | 🟠 high |
+| 52 | [Azure: `addSpnToEnvironment` SP-secret exposure](../scenarios/52-azure-spn-to-environment/README.md) | Azure Pipelines | 2 · 6 | 🟠 high |
+| 53 | [Azure: `resources: repositories` untrusted ref](../scenarios/53-azure-resources-untrusted-repo/README.md) | Azure Pipelines | 3 · 9 | 🟠 high |
+| 54 | [Azure: self-hosted pool for untrusted builds](../scenarios/54-azure-self-hosted-untrusted/README.md) | Azure Pipelines | 7 | 🔴 critical |
+| 55 | [CircleCI: orb pinned to `@volatile`](../scenarios/55-circleci-orb-volatile/README.md) | CircleCI | 3 | 🟠 high |
+| 56 | [CircleCI: `run:` injection via `<< pipeline.* >>`](../scenarios/56-circleci-run-injection/README.md) | CircleCI | 4 | 🟠 high |
+| 57 | [CircleCI: `machine: true` privileged executor](../scenarios/57-circleci-machine-privileged/README.md) | CircleCI | 7 | 🟡 medium |
+| 58 | [CircleCI: docker image mutable tag](../scenarios/58-circleci-image-mutable-tag/README.md) | CircleCI | 3 · 9 | 🟡 medium |
+| 59 | [CircleCI: hardcoded secret in `environment:`](../scenarios/59-circleci-secret-in-environment/README.md) | CircleCI | 6 | 🟠 high |
+| 60 | [CircleCI: uncertified third-party orb](../scenarios/60-circleci-uncertified-orb/README.md) | CircleCI | 3 | 🟡 medium |
+| 61 | [Bitbucket: secret dumped to `artifacts:` (Mandiant)](../scenarios/61-bitbucket-secret-to-artifact/README.md) | Bitbucket Pipelines | 6 · 10 | 🟠 high |
+| 62 | [Bitbucket: `$BITBUCKET_*` script injection](../scenarios/62-bitbucket-var-injection/README.md) | Bitbucket Pipelines | 4 | 🟠 high |
+| 63 | [Bitbucket: `pipe:` mutable tag](../scenarios/63-bitbucket-pipe-mutable-tag/README.md) | Bitbucket Pipelines | 3 | 🟡 medium |
+| 64 | [Bitbucket: `image:` mutable tag](../scenarios/64-bitbucket-image-mutable-tag/README.md) | Bitbucket Pipelines | 3 · 9 | 🟡 medium |
+| 65 | [Bitbucket: `clone: skip-ssl-verify: true`](../scenarios/65-bitbucket-clone-skip-ssl-verify/README.md) | Bitbucket Pipelines | 7 | 🟡 medium |
+| 66 | [Bitbucket: custom-pipeline variable injection](../scenarios/66-bitbucket-custom-pipeline-injection/README.md) | Bitbucket Pipelines | 4 · 1 | 🟠 high |
 <!-- /AUTOGEN:scenarios-index -->
 
 > [!NOTE]

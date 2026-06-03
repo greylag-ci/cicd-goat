@@ -1,0 +1,24 @@
+# scenarios/60-circleci-uncertified-orb
+# CICD-SEC-3 (Dependency Chain Abuse) — CircleCI
+#
+# Pattern: an orb from an UNCERTIFIED (non-`circleci/*`) namespace. Only orbs in
+# the `circleci/*` namespace are CircleCI-certified; a third-party orb is
+# arbitrary remote config that runs inline in your pipeline with your context
+# secrets in scope. Distinct from scenario 55 (which is about a *volatile
+# version* of a certified orb) — here the publisher itself is untrusted.
+#
+# SAFETY: static fixture, nested under scenarios/ (CircleCI runs only the root
+# config.yml). See README.md.
+
+version: 2.1
+
+orbs:
+  # DANGER — uncertified third-party orb pulled into the pipeline.
+  deploy-tool: random-vendor/deploy-tool@1.2.3
+
+workflows:
+  deploy:
+    jobs:
+      - deploy-tool/release
+
+jobs: {}

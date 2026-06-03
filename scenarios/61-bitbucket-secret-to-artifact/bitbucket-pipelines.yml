@@ -1,0 +1,24 @@
+# scenarios/61-bitbucket-secret-to-artifact
+# CICD-SEC-6 (Credential Hygiene) · CICD-SEC-10 (masking bypass) — Bitbucket Pipelines
+#
+# Pattern: a step dumps the environment (`printenv`/`env`) to a file and the
+# `artifacts:` clause captures it. Bitbucket masks SECURED variables only in log
+# OUTPUT — masking does NOT apply to files written to artifacts. Mandiant
+# documented real AWS keys (stored as "secured" Bitbucket variables) dumped to a
+# .txt artifact during troubleshooting, then downloaded and used by attackers.
+#
+# SAFETY: static fixture, nested under scenarios/ — Bitbucket only runs the
+# `bitbucket-pipelines.yml` at the REPOSITORY ROOT, never a nested one. See README.md.
+
+image: atlassian/default-image@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+
+pipelines:
+  default:
+    - step:
+        name: debug
+        script:
+          # DANGER — secured variables land in vars.txt unmasked...
+          - printenv > vars.txt
+        artifacts:
+          # DANGER — ...and the artifact is downloadable by anyone with access.
+          - vars.txt

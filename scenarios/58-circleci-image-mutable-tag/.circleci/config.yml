@@ -1,0 +1,27 @@
+# scenarios/58-circleci-image-mutable-tag
+# CICD-SEC-3 (Dependency Chain Abuse) · CICD-SEC-9 (Improper Artifact Integrity)
+#
+# Pattern: a `docker:` executor image pinned to a MUTABLE tag (`:latest`)
+# instead of a digest. The next build pulls whatever the tag resolves to;
+# whoever overwrites the tag (an accidental push, or stolen registry creds)
+# serves attacker-controlled image content with no integrity check. CircleCI
+# docs warn a mutable tag may even return a stale cached image. Analogue of #09.
+#
+# SAFETY: static fixture, nested under scenarios/ (CircleCI runs only the root
+# config.yml). See README.md.
+
+version: 2.1
+
+workflows:
+  build:
+    jobs:
+      - build
+
+jobs:
+  build:
+    docker:
+      # DANGER — mutable tag. The fix is a digest pin: cimg/node@sha256:<...>.
+      - image: cimg/node:latest
+    steps:
+      - checkout
+      - run: npm run build

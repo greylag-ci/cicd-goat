@@ -193,3 +193,37 @@ scenarios:
   # Untagged (shared-runner) job spinning privileged docker:dind with TLS
   # off. ciguard RUN-002 names it; pipeline-check has no equivalent rule.
   - {id: 48, title: "GitLab: untagged shared-runner + privileged dind", provider: gitlab, cicd_sec: [7, 4], severity: high,     slug: 48-gitlab-shared-runner-privileged,   expected: {pipeline-check: [], checkov: [], ciguard: [RUN-002]}}
+
+  # ── Wave 2: Azure Pipelines / CircleCI / Bitbucket (49-66) ───────────
+  # Applicable scanners for these providers: pipeline-check + Checkov only
+  # (ciguard/poutine/etc. auto-resolve to —). Rule IDs grounded against
+  # pipeline-check 1.0.4 + Checkov 3.2.532, reconciled to CI 1.5.0 SARIF.
+  # Several rows are all-miss "next-gen targets": pipeline-check has no
+  # Azure/CircleCI injection rule, no persist-credentials / addSpn / secret-
+  # to-artifact / skip-ssl-verify / custom-pipeline-injection rule, and no
+  # uncertified-orb-publisher rule; Checkov's per-provider rulesets are thin.
+  #
+  # Azure Pipelines (49-54)
+  - {id: 49, title: "Azure: macro `$(...)` injection into Bash@3",        provider: azure,     cicd_sec: [4],    severity: high,     slug: 49-azure-macro-injection,             expected: {pipeline-check: [], checkov: []}}
+  - {id: 50, title: "Azure: `${{ parameters }}` template injection",      provider: azure,     cicd_sec: [4],    severity: high,     slug: 50-azure-template-parameter-injection, expected: {pipeline-check: [], checkov: []}}
+  - {id: 51, title: "Azure: `checkout persistCredentials: true`",         provider: azure,     cicd_sec: [6],    severity: high,     slug: 51-azure-persist-credentials,         expected: {pipeline-check: [], checkov: []}}
+  # ADO-029 flags the ungated service-connection job that addSpnToEnvironment makes worse.
+  - {id: 52, title: "Azure: `addSpnToEnvironment` SP-secret exposure",    provider: azure,     cicd_sec: [2, 6], severity: high,     slug: 52-azure-spn-to-environment,          expected: {pipeline-check: [ADO-029], checkov: []}}
+  - {id: 53, title: "Azure: `resources: repositories` untrusted ref",     provider: azure,     cicd_sec: [3, 9], severity: high,     slug: 53-azure-resources-untrusted-repo,    expected: {pipeline-check: [ADO-025], checkov: []}}
+  - {id: 54, title: "Azure: self-hosted pool for untrusted builds",       provider: azure,     cicd_sec: [7],    severity: critical, slug: 54-azure-self-hosted-untrusted,       expected: {pipeline-check: [ADO-013], checkov: []}}
+  # CircleCI (55-60)
+  - {id: 55, title: "CircleCI: orb pinned to `@volatile`",                provider: circleci,  cicd_sec: [3],    severity: high,     slug: 55-circleci-orb-volatile,             expected: {pipeline-check: [CC-001], checkov: []}}
+  - {id: 56, title: "CircleCI: `run:` injection via `<< pipeline.* >>`",  provider: circleci,  cicd_sec: [4],    severity: high,     slug: 56-circleci-run-injection,            expected: {pipeline-check: [], checkov: []}}
+  # CC-029 fires specifically on the machine: true executor.
+  - {id: 57, title: "CircleCI: `machine: true` privileged executor",      provider: circleci,  cicd_sec: [7],    severity: medium,   slug: 57-circleci-machine-privileged,       expected: {pipeline-check: [CC-029], checkov: []}}
+  - {id: 58, title: "CircleCI: docker image mutable tag",                 provider: circleci,  cicd_sec: [3, 9], severity: medium,   slug: 58-circleci-image-mutable-tag,        expected: {pipeline-check: [CC-003], checkov: [CKV_CIRCLECIPIPELINES_1]}}
+  - {id: 59, title: "CircleCI: hardcoded secret in `environment:`",       provider: circleci,  cicd_sec: [6],    severity: high,     slug: 59-circleci-secret-in-environment,    expected: {pipeline-check: [CC-004], checkov: []}}
+  - {id: 60, title: "CircleCI: uncertified third-party orb",              provider: circleci,  cicd_sec: [3],    severity: medium,   slug: 60-circleci-uncertified-orb,          expected: {pipeline-check: [], checkov: []}}
+  # Bitbucket Pipelines (61-66)
+  - {id: 61, title: "Bitbucket: secret dumped to `artifacts:` (Mandiant)", provider: bitbucket, cicd_sec: [6, 10], severity: high,   slug: 61-bitbucket-secret-to-artifact,      expected: {pipeline-check: [], checkov: []}}
+  - {id: 62, title: "Bitbucket: `$BITBUCKET_*` script injection",         provider: bitbucket, cicd_sec: [4],    severity: high,     slug: 62-bitbucket-var-injection,           expected: {pipeline-check: [BB-002], checkov: []}}
+  - {id: 63, title: "Bitbucket: `pipe:` mutable tag",                     provider: bitbucket, cicd_sec: [3],    severity: medium,   slug: 63-bitbucket-pipe-mutable-tag,        expected: {pipeline-check: [BB-001], checkov: []}}
+  # Checkov solo catch — pipeline-check has no Bitbucket image-tag rule.
+  - {id: 64, title: "Bitbucket: `image:` mutable tag",                    provider: bitbucket, cicd_sec: [3, 9], severity: medium,   slug: 64-bitbucket-image-mutable-tag,       expected: {pipeline-check: [], checkov: [CKV_BITBUCKETPIPELINES_1]}}
+  - {id: 65, title: "Bitbucket: `clone: skip-ssl-verify: true`",          provider: bitbucket, cicd_sec: [7],    severity: medium,   slug: 65-bitbucket-clone-skip-ssl-verify,   expected: {pipeline-check: [], checkov: []}}
+  - {id: 66, title: "Bitbucket: custom-pipeline variable injection",      provider: bitbucket, cicd_sec: [4, 1], severity: high,     slug: 66-bitbucket-custom-pipeline-injection, expected: {pipeline-check: [], checkov: []}}

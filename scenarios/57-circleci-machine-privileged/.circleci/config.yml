@@ -1,0 +1,27 @@
+# scenarios/57-circleci-machine-privileged
+# CICD-SEC-7 (Insecure System Configuration) — CircleCI
+#
+# Pattern: the `machine: true` executor gives a full VM with root and direct
+# Docker daemon access, where the `docker` executor (which restricts daemon
+# control for isolation) would suffice. Combined with any injection it
+# escalates from in-container to host-level — container escape, daemon abuse,
+# host-path mounts. CircleCI analogue of scenario 08's runner-trust problem.
+#
+# SAFETY: static fixture, nested under scenarios/ (CircleCI runs only the root
+# config.yml). See README.md.
+
+version: 2.1
+
+workflows:
+  build:
+    jobs:
+      - build
+
+jobs:
+  build:
+    # DANGER — full-VM/root executor. Prefer the `docker` executor, or
+    # `setup_remote_docker` for image builds.
+    machine: true
+    steps:
+      - checkout
+      - run: docker build -t app .

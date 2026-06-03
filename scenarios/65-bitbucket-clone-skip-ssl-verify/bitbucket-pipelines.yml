@@ -1,0 +1,22 @@
+# scenarios/65-bitbucket-clone-skip-ssl-verify
+# CICD-SEC-7 (Insecure System Configuration) — Bitbucket Pipelines
+#
+# Pattern: `clone: { skip-ssl-verify: true }` disables TLS certificate
+# verification on the repository clone. A man-in-the-middle can then serve
+# malicious source into the build, which runs with the pipeline's privileges.
+#
+# SAFETY: static fixture, nested under scenarios/ (Bitbucket runs only the root
+# bitbucket-pipelines.yml). See README.md.
+
+image: atlassian/default-image@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+
+clone:
+  # DANGER — TLS verification disabled on the clone; MITM can inject source.
+  skip-ssl-verify: true
+
+pipelines:
+  default:
+    - step:
+        name: build
+        script:
+          - make build

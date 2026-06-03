@@ -1,0 +1,29 @@
+# scenarios/55-circleci-orb-volatile
+# CICD-SEC-3 (Dependency Chain Abuse) — CircleCI
+#
+# Pattern: an orb pinned to `@volatile` (or a floating major). An orb is a
+# remote package of config (commands/jobs/executors) that executes inline in
+# your pipeline; `@volatile` means "latest, even across breaking major bumps",
+# so an upstream push — malicious or compromised — runs in your build on the
+# next trigger. Exact analogue of the tj-actions tag-move class (scenario 03).
+#
+# SAFETY: static fixture, nested under scenarios/ — CircleCI only runs the
+# `.circleci/config.yml` at the REPOSITORY ROOT, never a nested one. See README.md.
+
+version: 2.1
+
+orbs:
+  # DANGER — volatile resolves to whatever the publisher last pushed.
+  aws-cli: circleci/aws-cli@volatile
+
+workflows:
+  build:
+    jobs:
+      - hello
+
+jobs:
+  hello:
+    docker:
+      - image: cimg/base@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+    steps:
+      - run: echo "uses the volatile orb above"
