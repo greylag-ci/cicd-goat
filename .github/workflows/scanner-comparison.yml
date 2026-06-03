@@ -474,7 +474,8 @@ jobs:
               --output /results/results.sarif \
               --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL \
               --exit-code 0 \
-              --no-progress
+              --skip-version-check \
+              --disable-telemetry
           jq '(.runs[]?.results[]?.locations[]?.physicalLocation.artifactLocation.uri) |= (if . != null and test("scenarios/") then sub("^.*scenarios/"; "scenarios/") else . end)' \
             trivy-results/results.sarif > trivy-results/results.fixed.sarif
           mv trivy-results/results.fixed.sarif trivy-results/results.sarif
