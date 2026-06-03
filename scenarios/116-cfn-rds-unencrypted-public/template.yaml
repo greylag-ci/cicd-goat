@@ -1,0 +1,22 @@
+# scenarios/116-cfn-rds-unencrypted-public
+# CICD-SEC-7 (Insecure System Configuration) · CICD-SEC-2 — CloudFormation
+# An RDS instance with encryption-at-rest off and public accessibility on:
+# the database is internet-reachable and its storage is unprotected.
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ci-goat fixture — do not deploy
+Parameters:
+  DbPassword:
+    Type: String
+    NoEcho: true
+Resources:
+  Db:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      Engine: postgres
+      DBInstanceClass: db.t3.micro
+      AllocatedStorage: '20'
+      MasterUsername: admin
+      MasterUserPassword: !Ref DbPassword
+      # DANGER — no encryption at rest, and reachable from the internet.
+      StorageEncrypted: false
+      PubliclyAccessible: true

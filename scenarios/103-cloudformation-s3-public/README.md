@@ -28,6 +28,7 @@ Anyone on the internet lists/reads the bucket (data exposure) and writes to it
 |---------|-----------|
 | Checkov | `CKV_AWS_20` (public READ) + `CKV_AWS_57` (public WRITE) — both fire on the `PublicReadWrite` ACL |
 | KICS | `S3 Bucket Allows Public ACL` (`48f100d9-…`) |
+| Trivy | `AWS-0086` — S3 bucket should block public ACLs |
 | pipeline-check | — (its CloudFormation ruleset is thin / non-attributable) |
 
 > Two-scanner agreement: Checkov's CloudFormation framework and KICS both parse

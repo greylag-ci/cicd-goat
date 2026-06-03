@@ -1,6 +1,6 @@
 # Scenarios
 
-One hundred and thirteen deliberately-vulnerable pipelines and IaC manifests, each
+One hundred and twenty deliberately-vulnerable pipelines and IaC manifests, each
 demonstrating one canonical attack pattern from the modern threat landscape.
 **Scenarios 01–38 (and 89) are GitHub Actions** workflows; scenarios 30–33 are
 **variants** of scenario 02
@@ -47,6 +47,15 @@ ungated deploy 109, GitLab manual job that silently `allow_failure`s 110), and
 **CICD-SEC-10** insufficient logging/visibility (Terraform CloudTrail-off 111
 and no-flow-logs 112, GitLab `CI_DEBUG_TRACE` secret-to-log leak 113 — an
 all-miss next-gen target).
+
+**Scenarios 114–120 grow the thinnest IaC formats** alongside a 9th scanner,
+**Trivy** (the dedicated IaC/container misconfiguration scanner — it renders
+Helm charts and parses Dockerfile/Kubernetes/Terraform/CloudFormation): more
+**CloudFormation** (SG-open 114, IAM admin 115, RDS unencrypted+public 116),
+**Helm** (weak securityContext 117, hostPath 118), and **Terraform** (S3
+unencrypted 119, RDS public+unencrypted 120). These IaC rows are now scored by
+**four** tools — Trivy + Checkov + KICS + pipeline-check — the corpus's richest
+cross-scanner comparison.
 
 See the per-provider leaderboards in the [README](../README.md) and the
 sectioned [matrix](../docs/MATRIX.md).
@@ -179,18 +188,25 @@ sectioned [matrix](../docs/MATRIX.md).
 | 111 | [Terraform — CloudTrail logging disabled / single-region](111-terraform-cloudtrail-disabled/README.md) | 10 | **Terraform** — blind audit trail |
 | 112 | [Terraform — VPC flow logs + S3 access logging off](112-terraform-no-flow-logs/README.md) | 10 | **Terraform** — unobservable infra |
 | 113 | [GitLab — `CI_DEBUG_TRACE` leaks secrets to job log](113-gitlab-debug-trace/README.md) | 10, 6 | **GitLab** — secrets in the audit log |
+| 114 | [CloudFormation — security group SSH open to world](114-cfn-sg-open/README.md) | 7 | **CloudFormation** — 0.0.0.0/0 ingress |
+| 115 | [CloudFormation — IAM managed policy `*:*`](115-cfn-iam-admin/README.md) | 2 | **CloudFormation** 🔴 — admin IAM policy |
+| 116 | [CloudFormation — RDS unencrypted + public](116-cfn-rds-unencrypted-public/README.md) | 7, 2 | **CloudFormation** — exposed/unencrypted DB |
+| 117 | [Helm — container runs as root + privilege escalation](117-helm-weak-securitycontext/README.md) | 7 | **Helm** — weak pod securityContext |
+| 118 | [Helm — hostPath mount of node root in chart](118-helm-hostpath/README.md) | 7 | **Helm** 🔴 — node escape in chart |
+| 119 | [Terraform — S3 bucket unencrypted + unversioned](119-terraform-s3-unencrypted/README.md) | 7 | **Terraform** — unencrypted bucket |
+| 120 | [Terraform — RDS publicly accessible + unencrypted](120-terraform-rds-public/README.md) | 7, 2 | **Terraform** — exposed/unencrypted DB |
 
 ## OWASP CICD-SEC top 10 — full coverage
 
 | Risk | Coverage | Scenarios |
 |:---|:---|:---|
 | CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25, 37, 43, 66, 68, 108, 109, 110 |
-| CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22, 36, 41, 47, 52, 76, 82, 85, 92, 100 |
+| CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22, 36, 41, 47, 52, 76, 82, 85, 92, 100, 115, 116, 120 |
 | CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29, 35, 38, 42, 45, 46, 53, 55, 58, 60, 63, 64, 69, 73, 78, 80, 81, 90, 95, 105, 106 |
 | CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33, 34, 38, 39, 40, 45, 48, 49, 50, 56, 62, 66, 67, 71, 74, 79, 85, 86, 87, 88, 89, 91 |
 | CICD-SEC-5: Insufficient Pipeline-Based Access Controls       | ✅ | 1, 4, 6, 25, 26, 36, 41, 68, 70, 92 |
 | CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17, 43, 44, 51, 52, 59, 61, 87, 88, 96, 102, 103, 107, 113 |
-| CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22, 47, 48, 54, 57, 65, 70, 72, 75, 77, 83, 84, 90, 93, 94, 97, 98, 99, 101, 102, 103, 104, 109 |
+| CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22, 47, 48, 54, 57, 65, 70, 72, 75, 77, 83, 84, 90, 93, 94, 97, 98, 99, 101, 102, 103, 104, 109, 114, 116, 117, 118, 119, 120 |
 | CICD-SEC-8: Ungoverned Usage of Third-Party Services          | ✅ | 24, 105, 106, 107 |
 | CICD-SEC-9: Improper Artifact Integrity Validation            | ✅ | 5, 7, 9, 17, 19, 35, 42, 46, 53, 58, 64, 73, 78, 81, 95 |
 | CICD-SEC-10: Insufficient Logging and Visibility              | ✅ | 27, 61, 111, 112, 113 |

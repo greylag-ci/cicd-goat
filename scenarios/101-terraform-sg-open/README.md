@@ -24,6 +24,7 @@ exposure; one weak/leaked key or vuln = shell on the instance.
 |---------|-----------|
 | Checkov | `CKV_AWS_24` — no security group allows ingress from `0.0.0.0/0` to port 22 |
 | KICS | `Security Group With Unrestricted Access To SSH` (`65905cec-…`) |
+| Trivy | `AWS-0107` — security group ingress from public internet |
 | pipeline-check | — (Terraform needs a plan JSON) |
 
 ## Fix

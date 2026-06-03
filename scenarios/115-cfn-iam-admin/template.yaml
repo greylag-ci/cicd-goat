@@ -1,0 +1,17 @@
+# scenarios/115-cfn-iam-admin
+# CICD-SEC-2 (Inadequate IAM) — CloudFormation
+# A managed IAM policy granting every action on every resource. A pipeline
+# that creates and attaches this makes any compromise a full-account takeover.
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ci-goat fixture — do not deploy
+Resources:
+  AdminPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          # DANGER — full administrative privileges (*:*).
+          - Effect: Allow
+            Action: '*'
+            Resource: '*'

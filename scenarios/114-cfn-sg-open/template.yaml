@@ -1,0 +1,17 @@
+# scenarios/114-cfn-sg-open
+# CICD-SEC-7 (Insecure System Configuration) — CloudFormation
+# A security group opens SSH (22) to the whole internet. A pipeline that
+# deploys this stack puts the instance's SSH on 0.0.0.0/0.
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ci-goat fixture — do not deploy
+Resources:
+  RunnerSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: build runner security group
+      SecurityGroupIngress:
+        # DANGER — SSH open to the entire internet.
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0

@@ -1,0 +1,26 @@
+# scenarios/118-helm-hostpath
+# CICD-SEC-7 — Helm. The chart mounts the node's root filesystem via hostPath;
+# installing it gives the pod node-level read/write (the manifest twin of
+# scenario 98, shipped as a chart).
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ .Release.Name }}-agent
+spec:
+  selector:
+    matchLabels: { app: agent }
+  template:
+    metadata:
+      labels: { app: agent }
+    spec:
+      volumes:
+        # DANGER — node root filesystem mounted into the pod.
+        - name: host-root
+          hostPath:
+            path: /
+      containers:
+        - name: agent
+          image: alpine@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+          volumeMounts:
+            - name: host-root
+              mountPath: /host
