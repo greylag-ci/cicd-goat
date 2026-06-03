@@ -1,0 +1,6 @@
+apiVersion: v2
+name: ci-goat-app
+description: ci-goat fixture — do not install
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

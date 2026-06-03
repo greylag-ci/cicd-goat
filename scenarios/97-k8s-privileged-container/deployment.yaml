@@ -1,0 +1,29 @@
+# scenarios/97-k8s-privileged-container
+# CICD-SEC-7 (Insecure System Configuration) — Kubernetes — CRITICAL
+#
+# Pattern: a Deployment's container runs `privileged: true`. A privileged
+# container shares the node kernel and devices and can trivially escape to the
+# host — read other pods' secrets, take over the node. This is the manifest a
+# CI/CD pipeline applies to the cluster, so it's a deploy-time critical.
+#
+# SAFETY: static fixture nested under scenarios/; never applied to a cluster.
+# See README.md.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: build
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: build }
+  template:
+    metadata:
+      labels: { app: build }
+    spec:
+      containers:
+        - name: build
+          image: alpine@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+          securityContext:
+            # DANGER — privileged container = effectively root on the node.
+            privileged: true

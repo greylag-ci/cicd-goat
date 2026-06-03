@@ -1,8 +1,9 @@
 # Scenarios
 
-Ninety-three deliberately-vulnerable pipelines, each demonstrating one canonical
-attack pattern from the modern threat landscape. **Scenarios 01–38 (and 89) are
-GitHub Actions** workflows; scenarios 30–33 are **variants** of scenario 02
+One hundred and four deliberately-vulnerable pipelines and IaC manifests, each
+demonstrating one canonical attack pattern from the modern threat landscape.
+**Scenarios 01–38 (and 89) are GitHub Actions** workflows; scenarios 30–33 are
+**variants** of scenario 02
 that probe each scanner's untrusted-input list across four different
 `github.event.*` contexts (issue body, head_ref, commit message, comment
 body) — they share scenario 02's `expected:` rules so a scanner that scopes
@@ -29,8 +30,16 @@ node takeover, Tekton/Argo 83/84; host Docker socket, Drone 93), fork-PR RCE /
 secret-theft (the "pwn request" class, GitLab/Jenkins/CircleCI/Bitbucket 85–88),
 **IaC plan/apply RCE** (`terraform apply` on untrusted PR/MR — GHA 89, GitLab 91),
 an untrusted external template on a self-hosted agent (Azure 90), and K8s RBAC
-takeover (Argo cluster-admin SA 92). See the per-provider leaderboards in the
-[README](../README.md) and the sectioned [matrix](../docs/MATRIX.md).
+takeover (Argo cluster-admin SA 92).
+
+**Scenarios 94–104 extend coverage to IaC / manifest types** — the artifacts
+pipelines build and deploy: **Dockerfile** (94–96), **Kubernetes** (97–99),
+**Terraform** (100–102), **CloudFormation** (103), and **Helm** (104). These are
+the corpus's richest multi-scanner rows: Checkov + KICS (the IaC specialists)
+score them alongside pipeline-check's Dockerfile/Kubernetes/Helm rules.
+
+See the per-provider leaderboards in the [README](../README.md) and the
+sectioned [matrix](../docs/MATRIX.md).
 
 **Safety — two placement rules keep every pattern inert:**
 
@@ -140,20 +149,31 @@ takeover (Argo cluster-admin SA 92). See the per-provider leaderboards in the
 | 91 | [GitLab — `terraform apply` in MR pipeline](91-gitlab-iac-apply-mr/README.md) | 4 | **GitLab** 🔴 — IaC plan/apply RCE |
 | 92 | [Argo — cluster-admin ServiceAccount](92-argo-cluster-admin-sa/README.md) | 2, 5 | **Argo** 🔴 — K8s RBAC cluster takeover |
 | 93 | [Drone — privileged step mounts host Docker socket](93-drone-host-socket/README.md) | 7 | **Drone** 🔴 — host-socket escape |
+| 94 | [Dockerfile — container runs as root (no USER)](94-dockerfile-root-user/README.md) | 7 | **Dockerfile** — root container |
+| 95 | [Dockerfile — base image unpinned (`:latest`)](95-dockerfile-unpinned-base/README.md) | 3, 9 | **Dockerfile** — mutable base image |
+| 96 | [Dockerfile — hardcoded secret in `ENV`](96-dockerfile-secret-in-env/README.md) | 6 | **Dockerfile** — secret in image layer |
+| 97 | [Kubernetes — privileged container](97-k8s-privileged-container/README.md) | 7 | **Kubernetes** 🔴 — privileged pod |
+| 98 | [Kubernetes — hostPath mount of node root](98-k8s-hostpath-mount/README.md) | 7 | **Kubernetes** 🔴 — node escape |
+| 99 | [Kubernetes — root + allowPrivilegeEscalation](99-k8s-allow-priv-escalation/README.md) | 7 | **Kubernetes** — weak pod securityContext |
+| 100 | [Terraform — IAM policy `*:*` (full admin)](100-terraform-iam-admin/README.md) | 2 | **Terraform** 🔴 — admin IAM policy |
+| 101 | [Terraform — security group SSH open to world](101-terraform-sg-open/README.md) | 7 | **Terraform** — 0.0.0.0/0 ingress |
+| 102 | [Terraform — S3 public-access-block disabled](102-terraform-s3-public/README.md) | 7, 6 | **Terraform** — public bucket |
+| 103 | [CloudFormation — S3 bucket public read+write](103-cloudformation-s3-public/README.md) | 7, 6 | **CloudFormation** — public bucket |
+| 104 | [Helm — privileged container in chart template](104-helm-privileged-pod/README.md) | 7 | **Helm** 🔴 — privileged pod in chart |
 
 ## OWASP CICD-SEC top 10 — full coverage
 
 | Risk | Coverage | Scenarios |
 |:---|:---|:---|
 | CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25, 37, 43, 66, 68 |
-| CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22, 36, 41, 47, 52, 76, 82, 85, 92 |
-| CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29, 35, 38, 42, 45, 46, 53, 55, 58, 60, 63, 64, 69, 73, 78, 80, 81, 90 |
+| CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22, 36, 41, 47, 52, 76, 82, 85, 92, 100 |
+| CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29, 35, 38, 42, 45, 46, 53, 55, 58, 60, 63, 64, 69, 73, 78, 80, 81, 90, 95 |
 | CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33, 34, 38, 39, 40, 45, 48, 49, 50, 56, 62, 66, 67, 71, 74, 79, 85, 86, 87, 88, 89, 91 |
 | CICD-SEC-5: Insufficient Pipeline-Based Access Controls       | ✅ | 1, 4, 6, 25, 26, 36, 41, 68, 70, 92 |
-| CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17, 43, 44, 51, 52, 59, 61, 87, 88 |
-| CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22, 47, 48, 54, 57, 65, 70, 72, 75, 77, 83, 84, 90, 93 |
+| CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17, 43, 44, 51, 52, 59, 61, 87, 88, 96, 102, 103 |
+| CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22, 47, 48, 54, 57, 65, 70, 72, 75, 77, 83, 84, 90, 93, 94, 97, 98, 99, 101, 102, 103, 104 |
 | CICD-SEC-8: Ungoverned Usage of Third-Party Services          | ✅ | 24 |
-| CICD-SEC-9: Improper Artifact Integrity Validation            | ✅ | 5, 7, 9, 17, 19, 35, 42, 46, 53, 58, 64, 73, 78, 81 |
+| CICD-SEC-9: Improper Artifact Integrity Validation            | ✅ | 5, 7, 9, 17, 19, 35, 42, 46, 53, 58, 64, 73, 78, 81, 95 |
 | CICD-SEC-10: Insufficient Logging and Visibility              | ✅ | 27, 61 |
 
 Every risk in the top 10 has at least one scenario. See the

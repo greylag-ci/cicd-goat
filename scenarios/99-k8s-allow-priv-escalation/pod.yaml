@@ -1,0 +1,23 @@
+# scenarios/99-k8s-allow-priv-escalation
+# CICD-SEC-7 (Insecure System Configuration) — Kubernetes
+#
+# Pattern: a Pod container runs as root (`runAsUser: 0`) and allows privilege
+# escalation (`allowPrivilegeEscalation: true`, the default). A process can
+# then gain more privileges than its parent (setuid/file-capabilities), easing
+# container breakout. The hardening baseline (runAsNonRoot, allowPrivilege-
+# Escalation: false, drop ALL caps, seccomp) is absent.
+#
+# SAFETY: static fixture nested under scenarios/; never applied. See README.md.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: build
+spec:
+  containers:
+    - name: build
+      image: alpine@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+      securityContext:
+        # DANGER — runs as root and permits privilege escalation.
+        runAsUser: 0
+        allowPrivilegeEscalation: true

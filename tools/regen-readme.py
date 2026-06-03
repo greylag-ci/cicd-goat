@@ -76,6 +76,12 @@ PROVIDER_LABELS = {
     "drone":      "Drone CI",
     "buildkite":  "Buildkite",
     "cloudbuild": "Cloud Build",
+    # IaC / manifest types (the artifacts pipelines build and deploy)
+    "dockerfile":     "Dockerfile",
+    "kubernetes":     "Kubernetes",
+    "terraform":      "Terraform",
+    "cloudformation": "CloudFormation",
+    "helm":           "Helm",
 }
 PROVIDER_ORDER = list(PROVIDER_LABELS)
 

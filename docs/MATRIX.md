@@ -39,7 +39,7 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 17 | ArtiPACKED — `.git/` in artifact | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | 18 | Composite action `${{ inputs.* }}` injection | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | 19 | Codecov-style trusted-installer | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| 20 | Dependency confusion (Birsan) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 20 | Dependency confusion (Birsan) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 21 | Matrix expansion injection | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
 | 22 | GCP OIDC over-broad WIF | ✅ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 | 23 | `github-actions[bot]` branch-protection bypass | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
@@ -48,7 +48,7 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 26 | GitHub App token over-scope | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 27 | Secret leak in workflow logs | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 28 | Reusable workflow `${{ inputs.* }}` injection | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| 29 | npm lifecycle-script RCE | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 29 | npm lifecycle-script RCE | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 30 | Script injection via issue body | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | 31 | Script injection via `github.head_ref` | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
 | 32 | Script injection via commit message | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
@@ -59,7 +59,7 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 37 | Confused-deputy auto-merge via bot-identity gate | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 38 | Recursive submodule checkout from PR | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 89 | GHA: `terraform apply` on untrusted PR (IaC RCE) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-|    | **canonical bugs caught** | **31 ✅** | **16 ✅** | **12 ✅** | **7 ✅** | **10 ✅** | **6 ✅** | **12 ✅** |
+|    | **canonical bugs caught** | **33 ✅** | **16 ✅** | **12 ✅** | **7 ✅** | **10 ✅** | **6 ✅** | **12 ✅** |
 
 ### GitLab CI
 
@@ -174,6 +174,47 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 81 | Cloud Build: step image not pinned by digest | ✅ |
 | 82 | Cloud Build: runs as default service account | ✅ |
 |    | **canonical bugs caught** | **2 ✅** |
+
+### Dockerfile
+
+| #  | Scenario | pipeline&#x2011;check | KICS | Checkov |
+| :-:| :--- | :-: | :-: | :-: |
+| 94 | Dockerfile: container runs as root (no USER) | ✅ | ✅ | ✅ |
+| 95 | Dockerfile: base image unpinned (`:latest`) | ✅ | ✅ | ✅ |
+| 96 | Dockerfile: hardcoded secret in `ENV` | ✅ | ❌ | ❌ |
+|    | **canonical bugs caught** | **3 ✅** | **2 ✅** | **2 ✅** |
+
+### Kubernetes
+
+| #  | Scenario | pipeline&#x2011;check | KICS | Checkov |
+| :-:| :--- | :-: | :-: | :-: |
+| 97 | Kubernetes: privileged container | ✅ | ❌ | ✅ |
+| 98 | Kubernetes: hostPath mount of node root | ✅ | ✅ | ❌ |
+| 99 | Kubernetes: root + allowPrivilegeEscalation | ✅ | ✅ | ✅ |
+|    | **canonical bugs caught** | **3 ✅** | **2 ✅** | **2 ✅** |
+
+### Terraform
+
+| #  | Scenario | KICS | Checkov |
+| :-:| :--- | :-: | :-: |
+| 100 | Terraform: IAM policy `*:*` (full admin) | ✅ | ✅ |
+| 101 | Terraform: security group SSH open to 0.0.0.0/0 | ✅ | ✅ |
+| 102 | Terraform: S3 bucket public-access-block disabled | ✅ | ✅ |
+|    | **canonical bugs caught** | **3 ✅** | **3 ✅** |
+
+### CloudFormation
+
+| #  | Scenario | KICS | Checkov |
+| :-:| :--- | :-: | :-: |
+| 103 | CloudFormation: S3 bucket public read+write | ✅ | ✅ |
+|    | **canonical bugs caught** | **1 ✅** | **1 ✅** |
+
+### Helm
+
+| #  | Scenario | pipeline&#x2011;check | Checkov |
+| :-:| :--- | :-: | :-: |
+| 104 | Helm: privileged container in chart template | ✅ | ✅ |
+|    | **canonical bugs caught** | **1 ✅** | **1 ✅** |
 <!-- /AUTOGEN:matrix -->
 
 > [!IMPORTANT]
@@ -286,6 +327,17 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 91 | [GitLab: `terraform apply` in a merge-request pipeline](../scenarios/91-gitlab-iac-apply-mr/README.md) | GitLab CI | 4 | 🔴 critical |
 | 92 | [Argo: cluster-admin ServiceAccount → cluster takeover](../scenarios/92-argo-cluster-admin-sa/README.md) | Argo Workflows | 2 · 5 | 🔴 critical |
 | 93 | [Drone: privileged step mounts host Docker socket](../scenarios/93-drone-host-socket/README.md) | Drone CI | 7 | 🔴 critical |
+| 94 | [Dockerfile: container runs as root (no USER)](../scenarios/94-dockerfile-root-user/README.md) | Dockerfile | 7 | 🟠 high |
+| 95 | [Dockerfile: base image unpinned (`:latest`)](../scenarios/95-dockerfile-unpinned-base/README.md) | Dockerfile | 3 · 9 | 🟡 medium |
+| 96 | [Dockerfile: hardcoded secret in `ENV`](../scenarios/96-dockerfile-secret-in-env/README.md) | Dockerfile | 6 | 🟠 high |
+| 97 | [Kubernetes: privileged container](../scenarios/97-k8s-privileged-container/README.md) | Kubernetes | 7 | 🔴 critical |
+| 98 | [Kubernetes: hostPath mount of node root](../scenarios/98-k8s-hostpath-mount/README.md) | Kubernetes | 7 | 🔴 critical |
+| 99 | [Kubernetes: root + allowPrivilegeEscalation](../scenarios/99-k8s-allow-priv-escalation/README.md) | Kubernetes | 7 | 🟠 high |
+| 100 | [Terraform: IAM policy `*:*` (full admin)](../scenarios/100-terraform-iam-admin/README.md) | Terraform | 2 | 🔴 critical |
+| 101 | [Terraform: security group SSH open to 0.0.0.0/0](../scenarios/101-terraform-sg-open/README.md) | Terraform | 7 | 🟠 high |
+| 102 | [Terraform: S3 bucket public-access-block disabled](../scenarios/102-terraform-s3-public/README.md) | Terraform | 7 · 6 | 🟠 high |
+| 103 | [CloudFormation: S3 bucket public read+write](../scenarios/103-cloudformation-s3-public/README.md) | CloudFormation | 7 · 6 | 🟠 high |
+| 104 | [Helm: privileged container in chart template](../scenarios/104-helm-privileged-pod/README.md) | Helm | 7 | 🔴 critical |
 <!-- /AUTOGEN:scenarios-index -->
 
 > [!NOTE]

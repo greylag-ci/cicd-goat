@@ -1,0 +1,26 @@
+# scenarios/98-k8s-hostpath-mount
+# CICD-SEC-7 (Insecure System Configuration) — Kubernetes — CRITICAL
+#
+# Pattern: a Pod mounts the node's root filesystem via a `hostPath` volume. The
+# container reads/writes the node's `/` — other pods' secrets, the kubelet
+# config, container runtime socket — and takes over the node. The manifest
+# twin of the Tekton/Argo hostPath escapes (scenarios 83 / 84).
+#
+# SAFETY: static fixture nested under scenarios/; never applied. See README.md.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: build
+spec:
+  volumes:
+    # DANGER — the node's entire root filesystem mounted into the pod.
+    - name: host-root
+      hostPath:
+        path: /
+  containers:
+    - name: build
+      image: alpine@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+      volumeMounts:
+        - name: host-root
+          mountPath: /host
