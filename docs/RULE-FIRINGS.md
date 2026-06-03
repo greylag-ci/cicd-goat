@@ -570,4 +570,130 @@ Same source as the main matrix — auto-rebuilt from the latest
 | pipeline&#x2011;check | `AC-005`, `GL-004`, `GL-006`, `GL-007`, `GL-015`, `GL-019`, `GL-024` | ❌ |
 | Checkov | _(none)_ | ❌ |
 | ciguard | `ART-003`, **`RUN-002`**, `SC-003` | ✅ |
+
+### Scenario 49 — Azure: macro `$(...)` injection into Bash@3 (Azure Pipelines)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `ADO-001`, `ADO-015` | ❌ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 50 — Azure: `${{ parameters }}` template injection (Azure Pipelines)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `ADO-015` | ❌ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 51 — Azure: `checkout persistCredentials: true` (Azure Pipelines)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `ADO-015` | ❌ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 52 — Azure: `addSpnToEnvironment` SP-secret exposure (Azure Pipelines)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `ADO-001`, `ADO-015`, **`ADO-029`** | ✅ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 53 — Azure: `resources: repositories` untrusted ref (Azure Pipelines)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `ADO-015`, **`ADO-025`** | ✅ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 54 — Azure: self-hosted pool for untrusted builds (Azure Pipelines)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`ADO-013`**, `ADO-015` | ✅ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 55 — CircleCI: orb pinned to `@volatile` (CircleCI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`CC-001`**, `CC-011`, `CC-014`, `CC-015` | ✅ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 56 — CircleCI: `run:` injection via `<< pipeline.* >>` (CircleCI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `CC-011`, `CC-014`, `CC-015` | ❌ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 57 — CircleCI: `machine: true` privileged executor (CircleCI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, `CC-006`, `CC-007`, `CC-011`, `CC-014`, `CC-015`, `CC-020`, `CC-024`, **`CC-029`** | ✅ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 58 — CircleCI: docker image mutable tag (CircleCI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`CC-003`**, `CC-011`, `CC-014`, `CC-015` | ✅ |
+| Checkov | **`CKV_CIRCLECIPIPELINES_1`** | ✅ |
+
+### Scenario 59 — CircleCI: hardcoded secret in `environment:` (CircleCI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, **`CC-004`**, `CC-008`, `CC-009`, `CC-011`, `CC-013`, `CC-014`, `CC-015` | ✅ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 60 — CircleCI: uncertified third-party orb (CircleCI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, `CC-009`, `CC-011`, `CC-013`, `CC-015` | ❌ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 61 — Bitbucket: secret dumped to `artifacts:` (Mandiant) (Bitbucket Pipelines)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `BB-005` | ❌ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 62 — Bitbucket: `$BITBUCKET_*` script injection (Bitbucket Pipelines)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`BB-002`**, `BB-005` | ✅ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 63 — Bitbucket: `pipe:` mutable tag (Bitbucket Pipelines)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, **`BB-001`**, `BB-004`, `BB-005`, `BB-006`, `BB-007`, `BB-009`, `BB-015`, `BB-024` | ✅ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 64 — Bitbucket: `image:` mutable tag (Bitbucket Pipelines)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `BB-005`, `BB-030` | ❌ |
+| Checkov | **`CKV_BITBUCKETPIPELINES_1`** | ✅ |
+
+### Scenario 65 — Bitbucket: `clone: skip-ssl-verify: true` (Bitbucket Pipelines)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `BB-005` | ❌ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 66 — Bitbucket: custom-pipeline variable injection (Bitbucket Pipelines)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, `BB-004`, `BB-005` | ❌ |
+| Checkov | _(none)_ | ❌ |
 <!-- /AUTOGEN:rule-firings -->

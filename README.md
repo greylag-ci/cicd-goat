@@ -6,8 +6,8 @@
 [![scanner-comparison](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml/badge.svg)](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml)
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-3a3a3a?style=flat-square)](LICENSE)
 [![CICD-SEC top 10](https://img.shields.io/badge/owasp-CICD--SEC_10%2F10-9c2b2b?style=flat-square)](https://owasp.org/www-project-top-10-ci-cd-security-risks/)
-[![scenarios 48](https://img.shields.io/badge/scenarios-48-1f6feb?style=flat-square)](scenarios/README.md)
-[![providers 3](https://img.shields.io/badge/providers-3-1f6feb?style=flat-square)](docs/MATRIX.md)
+[![scenarios 66](https://img.shields.io/badge/scenarios-66-1f6feb?style=flat-square)](scenarios/README.md)
+[![providers 6](https://img.shields.io/badge/providers-6-1f6feb?style=flat-square)](docs/MATRIX.md)
 [![scanners 8](https://img.shields.io/badge/scanners-8-1f6feb?style=flat-square)](docs/MATRIX.md)
 <!-- /AUTOGEN:badges -->
 
@@ -70,6 +70,27 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 | ciguard | **7 ✅** |
 | Checkov | **0 ✅** |
 
+### Azure Pipelines — 6 scenarios
+
+| Scanner | Scenarios caught (of 6) |
+| :--- | :--- |
+| pipeline&#x2011;check | **3 ✅** |
+| Checkov | **0 ✅** |
+
+### CircleCI — 6 scenarios
+
+| Scanner | Scenarios caught (of 6) |
+| :--- | :--- |
+| pipeline&#x2011;check | **4 ✅** |
+| Checkov | **1 ✅** |
+
+### Bitbucket Pipelines — 6 scenarios
+
+| Scanner | Scenarios caught (of 6) |
+| :--- | :--- |
+| pipeline&#x2011;check | **2 ✅** |
+| Checkov | **1 ✅** |
+
 ### Jenkins — 1 scenario
 
 | Scanner | Scenarios caught (of 1) |
@@ -85,7 +106,8 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 
 > [!NOTE]
 > **Corpus scope.** Scenarios 01–38 are GitHub Actions; 39+ are the
-> multi-provider expansion (GitLab CI, Jenkins, more to come). Each scenario
+> multi-provider expansion (GitLab CI, Jenkins, Azure Pipelines, CircleCI,
+> Bitbucket Pipelines). Each scenario
 > is scored only by the scanners that actually parse its provider — a
 > GHA-only scanner (zizmor, KICS, actionlint, octoscan) shows `—`
 > (not-applicable), never a miss, on a GitLab or Jenkins row it was never

@@ -33,16 +33,16 @@ overall (a scenario in two categories counts once in each row).
 <!-- AUTOGEN:cicd-sec-coverage -->
 | # | Category | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard |
 | :-: | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| 1 | Insufficient flow control | 4 | 3/4 | 0/3 | 0/3 | 0/3 | 0/4 | 0/3 | 0/3 | 1/1 |
-| 2 | Inadequate IAM | 5 | 3/5 | 0/3 | 0/3 | 0/3 | 0/5 | 0/3 | 0/3 | 1/2 |
-| 3 | Dependency chain abuse | 13 | 9/13 | 3/10 | 3/10 | 2/10 | 0/13 | 0/10 | 0/10 | 3/3 |
-| 4 | Poisoned pipeline execution | 19 | 16/19 | 10/15 | 8/15 | 4/15 | 8/18 | 6/15 | 10/15 | 2/4 |
+| 1 | Insufficient flow control | 5 | 3/5 | 0/3 | 0/3 | 0/3 | 0/5 | 0/3 | 0/3 | 1/1 |
+| 2 | Inadequate IAM | 6 | 4/6 | 0/3 | 0/3 | 0/3 | 0/6 | 0/3 | 0/3 | 1/2 |
+| 3 | Dependency chain abuse | 19 | 13/19 | 3/10 | 3/10 | 2/10 | 2/19 | 0/10 | 0/10 | 3/3 |
+| 4 | Poisoned pipeline execution | 24 | 17/24 | 10/15 | 8/15 | 4/15 | 8/23 | 6/15 | 10/15 | 2/4 |
 | 5 | Insufficient PBAC | 7 | 5/7 | 3/6 | 1/6 | 0/6 | 1/7 | 0/6 | 1/6 | 1/1 |
-| 6 | Insufficient credential hygiene | 6 | 6/6 | 3/4 | 1/4 | 2/4 | 0/6 | 0/4 | 1/4 | 2/2 |
-| 7 | Insecure system configuration | 5 | 4/5 | 0/3 | 1/3 | 0/3 | 0/5 | 0/3 | 1/3 | 1/2 |
+| 6 | Insufficient credential hygiene | 10 | 8/10 | 3/4 | 1/4 | 2/4 | 0/10 | 0/4 | 1/4 | 2/2 |
+| 7 | Insecure system configuration | 8 | 6/8 | 0/3 | 1/3 | 0/3 | 0/8 | 0/3 | 1/3 | 1/2 |
 | 8 | Ungoverned 3rd-party services | 1 | 1/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | — |
-| 9 | Improper artifact integrity validation | 8 | 7/8 | 3/6 | 1/6 | 0/6 | 0/8 | 0/6 | 1/6 | 2/2 |
-| 10 | Insufficient logging & visibility | 1 | 1/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | — |
+| 9 | Improper artifact integrity validation | 11 | 9/11 | 3/6 | 1/6 | 0/6 | 2/11 | 0/6 | 1/6 | 2/2 |
+| 10 | Insufficient logging & visibility | 2 | 1/2 | 0/1 | 0/1 | 0/1 | 0/2 | 0/1 | 0/1 | — |
 <!-- /AUTOGEN:cicd-sec-coverage -->
 
 > Read this table for **shape**, not absolute leaderboard position.
@@ -62,9 +62,9 @@ assign to each scenario in
 <!-- AUTOGEN:severity-coverage -->
 | Severity | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard |
 | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| 🔴 critical | 10 | 8/10 | 3/9 | 3/9 | 0/9 | 0/10 | 0/9 | 3/9 | 0/1 |
-| 🟠 high | 30 | 23/30 | 10/23 | 8/23 | 7/23 | 8/29 | 6/23 | 9/23 | 5/7 |
-| 🟡 medium | 8 | 8/8 | 3/6 | 1/6 | 0/6 | 1/8 | 0/6 | 0/6 | 2/2 |
+| 🔴 critical | 11 | 9/11 | 3/9 | 3/9 | 0/9 | 0/11 | 0/9 | 3/9 | 0/1 |
+| 🟠 high | 41 | 28/41 | 10/23 | 8/23 | 7/23 | 8/40 | 6/23 | 9/23 | 5/7 |
+| 🟡 medium | 14 | 11/14 | 3/6 | 1/6 | 0/6 | 3/14 | 0/6 | 0/6 | 2/2 |
 <!-- /AUTOGEN:severity-coverage -->
 
 > If a scanner's critical-row fraction is meaningfully lower than its
@@ -99,17 +99,26 @@ scenarios from the field tested here.
 | 41 | [GitLab: `CI_JOB_TOKEN` cross-project access](../scenarios/41-gitlab-ci-job-token-cross-project/README.md) | **ciguard** |
 | 47 | [GitLab: OIDC `id_tokens` over-broad aud/sub](../scenarios/47-gitlab-oidc-broad-aud-sub/README.md) | **pipeline&#x2011;check** |
 | 48 | [GitLab: untagged shared-runner + privileged dind](../scenarios/48-gitlab-shared-runner-privileged/README.md) | **ciguard** |
+| 52 | [Azure: `addSpnToEnvironment` SP-secret exposure](../scenarios/52-azure-spn-to-environment/README.md) | **pipeline&#x2011;check** |
+| 53 | [Azure: `resources: repositories` untrusted ref](../scenarios/53-azure-resources-untrusted-repo/README.md) | **pipeline&#x2011;check** |
+| 54 | [Azure: self-hosted pool for untrusted builds](../scenarios/54-azure-self-hosted-untrusted/README.md) | **pipeline&#x2011;check** |
+| 55 | [CircleCI: orb pinned to `@volatile`](../scenarios/55-circleci-orb-volatile/README.md) | **pipeline&#x2011;check** |
+| 57 | [CircleCI: `machine: true` privileged executor](../scenarios/57-circleci-machine-privileged/README.md) | **pipeline&#x2011;check** |
+| 59 | [CircleCI: hardcoded secret in `environment:`](../scenarios/59-circleci-secret-in-environment/README.md) | **pipeline&#x2011;check** |
+| 62 | [Bitbucket: `$BITBUCKET_*` script injection](../scenarios/62-bitbucket-var-injection/README.md) | **pipeline&#x2011;check** |
+| 63 | [Bitbucket: `pipe:` mutable tag](../scenarios/63-bitbucket-pipe-mutable-tag/README.md) | **pipeline&#x2011;check** |
+| 64 | [Bitbucket: `image:` mutable tag](../scenarios/64-bitbucket-image-mutable-tag/README.md) | **Checkov** |
 
 **Solo catches per scanner** — scenarios where this is the only ✅ on the row:
 
 | Scanner | Solo catches |
 | :-- | :-: |
-| pipeline&#x2011;check | **13** |
+| pipeline&#x2011;check | **21** |
 | ciguard | **2** |
+| Checkov | **1** |
 | zizmor | **0** |
 | poutine | **0** |
 | KICS | **0** |
-| Checkov | **0** |
 | actionlint | **0** |
 | octoscan | **0** |
 <!-- /AUTOGEN:unique-catches -->
