@@ -48,4 +48,4 @@ tag), never a branch.
 ## References
 
 - GitLab Docs — Pipeline security (Includes): https://docs.gitlab.com/ci/pipeline_security/
-- "Pipeline security lessons from March supply chain incidents": https://about.gitlab.com/blog/
+- GitLab Docs — `include` keyword (remote / project / ref): https://docs.gitlab.com/ci/yaml/#include

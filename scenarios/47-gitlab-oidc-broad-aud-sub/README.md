@@ -50,9 +50,11 @@ creating a matching namespace path.
 ## Fix
 
 Use a **unique `aud:` per service**; bind the deploy job to a GitLab
-`environment:`; and in the trust policy bind to the immutable `project_id` /
-`namespace_id` (not a path glob), require `ref_protected`, and use exact-match
-conditions on `sub`.
+`environment:`; and tighten the trust policy's `sub` condition to an
+exact-match value (no `*` glob) and require `ref_protected`. On gitlab.com you
+can additionally bind to the immutable `project_id` / `namespace_id` claims;
+on self-managed instances (like the `gitlab.example.com` here) those aren't
+available as cloud condition keys, so the exact-match `sub` is the lever.
 
 ## References
 

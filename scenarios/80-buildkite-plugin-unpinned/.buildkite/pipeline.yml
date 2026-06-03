@@ -14,7 +14,8 @@ steps:
   - label: ":docker: build"
     command: build.sh
     plugins:
-      # DANGER — plugin pinned to a mutable ref. Pin an exact version, e.g.
-      # docker-compose#v4.16.0.
-      - docker-compose#latest:
+      # DANGER — plugin pinned to a mutable branch ref (`#main`) instead of an
+      # exact tag. Whoever pushes to the plugin's main branch changes the code
+      # that runs in the agent. Pin an exact version, e.g. docker-compose#v4.16.0.
+      - docker-compose#main:
           run: app

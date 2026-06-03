@@ -75,7 +75,7 @@ The check is automated:
 The repo has exactly **three** workflow files whose jobs are not gated:
 
 - [`scanner-comparison.yml`](.github/workflows/scanner-comparison.yml)
-  — runs the seven scanners against the static tree.
+  — runs the eight scanners against the static tree.
   Permissions: `contents: read`, `security-events: write` (for SARIF
   upload). Read-only checkout (`persist-credentials: false`).
 - [`safety-check.yml`](.github/workflows/safety-check.yml)

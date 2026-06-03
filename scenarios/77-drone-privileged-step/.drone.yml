@@ -15,9 +15,11 @@ name: build
 
 steps:
   - name: build-image
-    image: plugins/docker@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
-    # DANGER — privileged step reaches the host Docker daemon. Use a rootless
-    # builder / dedicated isolated runner instead.
+    image: docker@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+    # DANGER — privileged step reaches the host Docker daemon. (Drone only
+    # honours `privileged: true` for TRUSTED repos; an admin marking this repo
+    # trusted is the enabling condition.) Use a rootless builder / dedicated
+    # isolated runner instead.
     privileged: true
-    settings:
-      repo: example/app
+    commands:
+      - docker build -t app .

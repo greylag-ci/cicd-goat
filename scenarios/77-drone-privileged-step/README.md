@@ -13,12 +13,15 @@ steps:
 ```
 
 A Drone pipeline step with `privileged: true` gets full access to the host
-Docker daemon / kernel.
+Docker daemon / kernel. Drone only honours `privileged: true` for repos an
+admin has marked **trusted**, so the enabling condition is a trusted repo (or
+one of Drone's auto-trusted official plugin images) running this step.
 
 ## How an attacker exploits it
 
-The privileged step reaches the host Docker daemon, mounts host paths, and
-escapes the container — host compromise, especially on shared runners.
+On a trusted repo, the privileged step reaches the host Docker daemon, mounts
+host paths, and escapes the container — host compromise, especially on shared
+runners.
 
 ## Expected scanner coverage
 

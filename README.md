@@ -211,8 +211,10 @@ corpus (narrow but real): leads the leaderboard ahead of the next-best
 scanner (zizmor); ships a rule family that fires when a workflow is
 *missing* a security control (SBOM, SLSA, artifact signing, vuln-scan,
 `environment:` binding, `timeout-minutes`, container digest pinning)
-— no other scanner here carries those rules at all; covers 23 CI/CD
-providers and manifest types beyond GitHub Actions.
+— no other scanner here carries those rules at all; and covers many more
+CI/CD providers and manifest types beyond GitHub Actions — eleven of which
+this range now exercises (GitLab, Azure, CircleCI, Bitbucket, Jenkins, Tekton,
+Argo, Drone, Buildkite, Cloud Build).
 Inline VS Code experience via the
 [Pipeline-Check extension](https://github.com/greylag-ci/pipeline-check-vscode);
 the Python rule engine lives at

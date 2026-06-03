@@ -1,5 +1,5 @@
 # scenarios/50-azure-template-parameter-injection
-# CICD-SEC-4 (Poisoned Pipeline Execution) · CICD-SEC-3 — Azure Pipelines
+# CICD-SEC-4 (Poisoned Pipeline Execution) — Azure Pipelines
 #
 # Pattern: a `${{ }}` template expression splices a free-form string PARAMETER
 # into the pipeline at COMPILE time. Because `${{ }}` expands before the
