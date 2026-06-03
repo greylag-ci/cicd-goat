@@ -1,0 +1,32 @@
+# scenarios/93-drone-host-socket
+# CICD-SEC-7 (Insecure System Configuration) — Drone CI — CRITICAL
+#
+# Pattern: a step is privileged AND mounts the host's Docker socket
+# (`/var/run/docker.sock`). With the host daemon in reach, the step launches a
+# container that mounts the node root and chroots into it — full host takeover.
+# The host-escape escalation of scenario 77 (privileged step).
+#
+# SAFETY: static fixture, nested under scenarios/ — Drone only runs the
+# `.drone.yml` at the REPOSITORY ROOT, never a nested one. (Drone honours
+# `privileged` + host volumes only for TRUSTED repos.) See README.md.
+
+kind: pipeline
+type: docker
+name: build
+
+steps:
+  - name: build-image
+    image: docker@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+    # DANGER — privileged + the host Docker socket mounted in.
+    privileged: true
+    volumes:
+      - name: dockersock
+        path: /var/run/docker.sock
+    commands:
+      - docker run --rm -v /:/host alpine chroot /host sh -c 'id'
+
+volumes:
+  # DANGER — exposes the node's Docker daemon socket to the step.
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock

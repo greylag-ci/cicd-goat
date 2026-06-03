@@ -1,0 +1,33 @@
+# scenarios/90-azure-untrusted-template-selfhosted
+# CICD-SEC-3 (Dependency Chain Abuse) · CICD-SEC-7 (Insecure System Config)
+# Azure Pipelines — CRITICAL
+#
+# Pattern: the worst-case combination of scenarios 53 + 54 — an EXTERNAL repo
+# resource on a MUTABLE ref is checked out and its template runs on a PERSISTENT
+# self-hosted agent. Whoever controls that branch executes their template/steps
+# on an agent whose state survives between jobs, so the compromise persists and
+# steals subsequent pipelines' source and secrets. Supply-chain RCE with a
+# foothold.
+#
+# SAFETY: static fixture, nested under scenarios/ (Azure runs only a YAML a
+# pipeline is configured to point at; nothing here does). See README.md.
+
+trigger: none
+pr: none
+
+resources:
+  repositories:
+    # DANGER (1) — external repo pinned to a mutable branch, not a tag/commit.
+    - repository: templates
+      type: github
+      name: third-party/ci-templates
+      ref: refs/heads/main
+      endpoint: github-connection
+
+pool:
+  # DANGER (2) — its steps/templates run on a persistent self-hosted agent.
+  name: 'Self-Hosted-Linux'
+
+steps:
+  - checkout: templates
+  - template: build-and-deploy.yml@templates

@@ -6,7 +6,7 @@
 [![scanner-comparison](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml/badge.svg)](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml)
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-3a3a3a?style=flat-square)](LICENSE)
 [![CICD-SEC top 10](https://img.shields.io/badge/owasp-CICD--SEC_10%2F10-9c2b2b?style=flat-square)](https://owasp.org/www-project-top-10-ci-cd-security-risks/)
-[![scenarios 88](https://img.shields.io/badge/scenarios-88-1f6feb?style=flat-square)](scenarios/README.md)
+[![scenarios 93](https://img.shields.io/badge/scenarios-93-1f6feb?style=flat-square)](scenarios/README.md)
 [![providers 11](https://img.shields.io/badge/providers-11-1f6feb?style=flat-square)](docs/MATRIX.md)
 [![scanners 8](https://img.shields.io/badge/scanners-8-1f6feb?style=flat-square)](docs/MATRIX.md)
 <!-- /AUTOGEN:badges -->
@@ -16,7 +16,7 @@
 > Every CI/CD scanner has blind spots. The only honest way to measure them
 > is on a target where the bugs are catalogued in advance. This is that target.
 
-Eighty-eight vulnerable pipelines, each demonstrating one specific attack pattern
+Ninety-three vulnerable pipelines, each demonstrating one specific attack pattern
 drawn from named incident disclosures (tj-actions 2025, ArtiPACKED 2024,
 Codecov 2021, Birsan dependency confusion 2021,
 event-stream/ua-parser-js/node-ipc/Shai-Hulud npm lifecycle abuse,
@@ -30,8 +30,9 @@ confused-deputy auto-merge, and recursive submodule checkout from PR. Every
 GHA job is gated with `if: false` so the workflows show up in run history but
 never spawn a runner.
 
-**Scenarios 39+ extend the range to ten other providers** — the same one-bug,
-one-writeup model on the platforms where most pipelines actually live: GitLab CI,
+**Scenarios 39+ extend the range to ten other providers** (with a couple of
+later GitHub Actions additions, e.g. 89) — the same one-bug, one-writeup model
+on the platforms where most pipelines actually live: GitLab CI,
 Jenkins, Azure Pipelines, CircleCI, Bitbucket Pipelines, Tekton, Argo Workflows,
 Drone CI, Buildkite, and Google Cloud Build. These ship as static fixtures
 nested under `scenarios/NN-*/` (never at a provider's auto-run path), so they're
@@ -50,9 +51,9 @@ the latest [`scanner-comparison`](../../actions/workflows/scanner-comparison.yml
 run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 
 <!-- AUTOGEN:leaderboard -->
-### GitHub Actions — 38 scenarios
+### GitHub Actions — 39 scenarios
 
-| Scanner | Scenarios caught (of 38) |
+| Scanner | Scenarios caught (of 39) |
 | :--- | :--- |
 | pipeline&#x2011;check | **31 ✅** |
 | zizmor | **16 ✅** |
@@ -62,19 +63,19 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 | KICS | **7 ✅** |
 | actionlint | **6 ✅** |
 
-### GitLab CI — 10 scenarios
+### GitLab CI — 11 scenarios
 
-| Scanner | Scenarios caught (of 10) |
+| Scanner | Scenarios caught (of 11) |
 | :--- | :--- |
-| pipeline&#x2011;check | **8 ✅** |
+| pipeline&#x2011;check | **9 ✅** |
 | ciguard | **8 ✅** |
 | Checkov | **0 ✅** |
 
-### Azure Pipelines — 6 scenarios
+### Azure Pipelines — 7 scenarios
 
-| Scanner | Scenarios caught (of 6) |
+| Scanner | Scenarios caught (of 7) |
 | :--- | :--- |
-| pipeline&#x2011;check | **3 ✅** |
+| pipeline&#x2011;check | **4 ✅** |
 | Checkov | **0 ✅** |
 
 ### CircleCI — 7 scenarios
@@ -104,18 +105,18 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 | :--- | :--- |
 | pipeline&#x2011;check | **3 ✅** |
 
-### Argo Workflows — 4 scenarios
+### Argo Workflows — 5 scenarios
 
-| Scanner | Scenarios caught (of 4) |
+| Scanner | Scenarios caught (of 5) |
 | :--- | :--- |
 | pipeline&#x2011;check | **4 ✅** |
 | Checkov | **2 ✅** |
 
-### Drone CI — 2 scenarios
+### Drone CI — 3 scenarios
 
-| Scanner | Scenarios caught (of 2) |
+| Scanner | Scenarios caught (of 3) |
 | :--- | :--- |
-| pipeline&#x2011;check | **2 ✅** |
+| pipeline&#x2011;check | **3 ✅** |
 
 ### Buildkite — 2 scenarios
 
@@ -136,7 +137,7 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 **[Walkthroughs of five hand-picked scenarios](docs/FIELD-TEST.md)**
 
 > [!NOTE]
-> **Corpus scope.** Scenarios 01–38 are GitHub Actions; 39+ are the
+> **Corpus scope.** Scenarios 01–38 (and 89) are GitHub Actions; 39+ are the
 > multi-provider expansion (GitLab CI, Jenkins, Azure Pipelines, CircleCI,
 > Bitbucket Pipelines, Tekton, Argo, Drone, Buildkite, Cloud Build). Each scenario
 > is scored only by the scanners that actually parse its provider — a
@@ -149,9 +150,9 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 
 ## What's in this repo
 
-- **[Scenarios](scenarios/README.md)** — 88 vulnerable pipelines across 11
-  providers (38 GitHub Actions + 10 GitLab CI + 6 Azure + 7 CircleCI +
-  7 Bitbucket + 6 Jenkins + 4 Tekton + 4 Argo + 2 Drone + 2 Buildkite +
+- **[Scenarios](scenarios/README.md)** — 93 vulnerable pipelines across 11
+  providers (39 GitHub Actions + 11 GitLab CI + 7 Azure + 7 CircleCI +
+  7 Bitbucket + 6 Jenkins + 4 Tekton + 5 Argo + 3 Drone + 2 Buildkite +
   2 Cloud Build), each with its own writeup
   (exploitation walkthrough, per-scanner coverage, the fix). Indexed by
   attack class and CICD-SEC category.

@@ -1,7 +1,7 @@
 # Scenarios
 
-Eighty-eight deliberately-vulnerable pipelines, each demonstrating one canonical
-attack pattern from the modern threat landscape. **Scenarios 01–38 are
+Ninety-three deliberately-vulnerable pipelines, each demonstrating one canonical
+attack pattern from the modern threat landscape. **Scenarios 01–38 (and 89) are
 GitHub Actions** workflows; scenarios 30–33 are **variants** of scenario 02
 that probe each scanner's untrusted-input list across four different
 `github.event.*` contexts (issue body, head_ref, commit message, comment
@@ -24,10 +24,13 @@ the rest render `—` (not-applicable), and several rows are all-miss **next-gen
 targets** — canonical bugs (Azure/CircleCI injection, persist-credentials, the
 Mandiant secret-to-artifact leak, `skip-ssl-verify`, Jenkins `input`-without-submitter,
 and the configuration-spread fork-trust PPE) that no scanner here catches yet.
-**Scenarios 83–88 add critical examples**: container/cluster escape (hostPath →
-node takeover, Tekton/Argo) and fork-PR RCE / secret-theft (the "pwn request"
-class, on GitLab/Jenkins/CircleCI/Bitbucket). See the per-provider leaderboards
-in the [README](../README.md) and the sectioned [matrix](../docs/MATRIX.md).
+**Scenarios 83–93 add critical examples**: container/cluster escape (hostPath →
+node takeover, Tekton/Argo 83/84; host Docker socket, Drone 93), fork-PR RCE /
+secret-theft (the "pwn request" class, GitLab/Jenkins/CircleCI/Bitbucket 85–88),
+**IaC plan/apply RCE** (`terraform apply` on untrusted PR/MR — GHA 89, GitLab 91),
+an untrusted external template on a self-hosted agent (Azure 90), and K8s RBAC
+takeover (Argo cluster-admin SA 92). See the per-provider leaderboards in the
+[README](../README.md) and the sectioned [matrix](../docs/MATRIX.md).
 
 **Safety — two placement rules keep every pattern inert:**
 
@@ -132,18 +135,23 @@ in the [README](../README.md) and the sectioned [matrix](../docs/MATRIX.md).
 | 86 | [Jenkins — builds untrusted fork PRs with creds](86-jenkins-untrusted-pr-build/README.md) | 4 | **Jenkins** 🔴 — PPE (config-spread) |
 | 87 | [CircleCI — secrets passed to forked PRs](87-circleci-forked-pr-secrets/README.md) | 6, 4 | **CircleCI** 🔴 — pwn-request secret theft |
 | 88 | [Bitbucket — fork PR pipeline exposes secrets](88-bitbucket-forked-pr-secrets/README.md) | 6, 4 | **Bitbucket** 🔴 — pwn-request secret theft |
+| 89 | [GHA — `terraform apply` on untrusted PR](89-iac-apply-untrusted/README.md) | 4 | **GitHub Actions** 🔴 — IaC plan/apply RCE |
+| 90 | [Azure — untrusted template on self-hosted agent](90-azure-untrusted-template-selfhosted/README.md) | 3, 7 | **Azure** 🔴 — supply-chain RCE + foothold |
+| 91 | [GitLab — `terraform apply` in MR pipeline](91-gitlab-iac-apply-mr/README.md) | 4 | **GitLab** 🔴 — IaC plan/apply RCE |
+| 92 | [Argo — cluster-admin ServiceAccount](92-argo-cluster-admin-sa/README.md) | 2, 5 | **Argo** 🔴 — K8s RBAC cluster takeover |
+| 93 | [Drone — privileged step mounts host Docker socket](93-drone-host-socket/README.md) | 7 | **Drone** 🔴 — host-socket escape |
 
 ## OWASP CICD-SEC top 10 — full coverage
 
 | Risk | Coverage | Scenarios |
 |:---|:---|:---|
 | CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25, 37, 43, 66, 68 |
-| CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22, 36, 41, 47, 52, 76, 82, 85 |
-| CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29, 35, 38, 42, 45, 46, 53, 55, 58, 60, 63, 64, 69, 73, 78, 80, 81 |
-| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33, 34, 38, 39, 40, 45, 48, 49, 50, 56, 62, 66, 67, 71, 74, 79, 85, 86, 87, 88 |
-| CICD-SEC-5: Insufficient Pipeline-Based Access Controls       | ✅ | 1, 4, 6, 25, 26, 36, 41, 68, 70 |
+| CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22, 36, 41, 47, 52, 76, 82, 85, 92 |
+| CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29, 35, 38, 42, 45, 46, 53, 55, 58, 60, 63, 64, 69, 73, 78, 80, 81, 90 |
+| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33, 34, 38, 39, 40, 45, 48, 49, 50, 56, 62, 66, 67, 71, 74, 79, 85, 86, 87, 88, 89, 91 |
+| CICD-SEC-5: Insufficient Pipeline-Based Access Controls       | ✅ | 1, 4, 6, 25, 26, 36, 41, 68, 70, 92 |
 | CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17, 43, 44, 51, 52, 59, 61, 87, 88 |
-| CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22, 47, 48, 54, 57, 65, 70, 72, 75, 77, 83, 84 |
+| CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22, 47, 48, 54, 57, 65, 70, 72, 75, 77, 83, 84, 90, 93 |
 | CICD-SEC-8: Ungoverned Usage of Third-Party Services          | ✅ | 24 |
 | CICD-SEC-9: Improper Artifact Integrity Validation            | ✅ | 5, 7, 9, 17, 19, 35, 42, 46, 53, 58, 64, 73, 78, 81 |
 | CICD-SEC-10: Insufficient Logging and Visibility              | ✅ | 27, 61 |

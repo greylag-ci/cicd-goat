@@ -58,6 +58,7 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 36 | Environment secret read without consumer binding | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 37 | Confused-deputy auto-merge via bot-identity gate | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 38 | Recursive submodule checkout from PR | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 89 | GHA: `terraform apply` on untrusted PR (IaC RCE) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 |    | **canonical bugs caught** | **31 ✅** | **16 ✅** | **12 ✅** | **7 ✅** | **10 ✅** | **6 ✅** | **12 ✅** |
 
 ### GitLab CI
@@ -74,7 +75,8 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 47 | GitLab: OIDC `id_tokens` over-broad aud/sub | ✅ | ❌ | ❌ |
 | 48 | GitLab: untagged shared-runner + privileged dind | ❌ | ❌ | ✅ |
 | 85 | GitLab: fork MR pipeline mints cloud OIDC token | ✅ | ❌ | ✅ |
-|    | **canonical bugs caught** | **8 ✅** | **0 ✅** | **8 ✅** |
+| 91 | GitLab: `terraform apply` in a merge-request pipeline | ✅ | ❌ | ❌ |
+|    | **canonical bugs caught** | **9 ✅** | **0 ✅** | **8 ✅** |
 
 ### Azure Pipelines
 
@@ -86,7 +88,8 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 52 | Azure: `addSpnToEnvironment` SP-secret exposure | ✅ | ❌ |
 | 53 | Azure: `resources: repositories` untrusted ref | ✅ | ❌ |
 | 54 | Azure: self-hosted pool for untrusted builds | ✅ | ❌ |
-|    | **canonical bugs caught** | **3 ✅** | **0 ✅** |
+| 90 | Azure: untrusted `resources` template on self-hosted agent | ✅ | ❌ |
+|    | **canonical bugs caught** | **4 ✅** | **0 ✅** |
 
 ### CircleCI
 
@@ -144,6 +147,7 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 75 | Argo: privileged / root container | ✅ | ✅ |
 | 76 | Argo: default ServiceAccount + token automount | ✅ | ✅ |
 | 84 | Argo: hostPath mount → node filesystem escape | ✅ | ❌ |
+| 92 | Argo: cluster-admin ServiceAccount → cluster takeover | ❌ | ❌ |
 |    | **canonical bugs caught** | **4 ✅** | **2 ✅** |
 
 ### Drone CI
@@ -152,7 +156,8 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | :-:| :--- | :-: |
 | 77 | Drone: `privileged: true` step | ✅ |
 | 78 | Drone: step `image:` mutable tag | ✅ |
-|    | **canonical bugs caught** | **2 ✅** |
+| 93 | Drone: privileged step mounts host Docker socket | ✅ |
+|    | **canonical bugs caught** | **3 ✅** |
 
 ### Buildkite
 
@@ -276,6 +281,11 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 86 | [Jenkins: builds untrusted fork PRs with creds (PPE)](../scenarios/86-jenkins-untrusted-pr-build/README.md) | Jenkins | 4 | 🔴 critical |
 | 87 | [CircleCI: secrets passed to forked PRs](../scenarios/87-circleci-forked-pr-secrets/README.md) | CircleCI | 6 · 4 | 🔴 critical |
 | 88 | [Bitbucket: fork PR pipeline exposes secrets](../scenarios/88-bitbucket-forked-pr-secrets/README.md) | Bitbucket Pipelines | 6 · 4 | 🔴 critical |
+| 89 | [GHA: `terraform apply` on untrusted PR (IaC RCE)](../scenarios/89-iac-apply-untrusted/README.md) | GitHub Actions | 4 | 🔴 critical |
+| 90 | [Azure: untrusted `resources` template on self-hosted agent](../scenarios/90-azure-untrusted-template-selfhosted/README.md) | Azure Pipelines | 3 · 7 | 🔴 critical |
+| 91 | [GitLab: `terraform apply` in a merge-request pipeline](../scenarios/91-gitlab-iac-apply-mr/README.md) | GitLab CI | 4 | 🔴 critical |
+| 92 | [Argo: cluster-admin ServiceAccount → cluster takeover](../scenarios/92-argo-cluster-admin-sa/README.md) | Argo Workflows | 2 · 5 | 🔴 critical |
+| 93 | [Drone: privileged step mounts host Docker socket](../scenarios/93-drone-host-socket/README.md) | Drone CI | 7 | 🔴 critical |
 <!-- /AUTOGEN:scenarios-index -->
 
 > [!NOTE]

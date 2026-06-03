@@ -1,0 +1,24 @@
+# scenarios/91-gitlab-iac-apply-mr
+# CICD-SEC-4 (Poisoned Pipeline Execution) — GitLab CI — CRITICAL
+#
+# Pattern: a job runs `terraform apply` on merge-request pipelines. Terraform
+# executes attacker code at plan/apply time (external data sources, local-exec
+# / custom provisioners, arbitrary providers), so a fork/branch MR author gets
+# arbitrary code execution on the runner — plus the cloud credentials the apply
+# uses. GitLab twin of scenario 89; the "apply on untrusted input" RCE class.
+#
+# SAFETY: relies on NESTING (GitLab never auto-runs a nested .gitlab-ci.yml).
+# No `when: never` gate — the MR `rules:` are the point. See README.md.
+
+stages: [deploy]
+
+terraform-apply:
+  stage: deploy
+  image: hashicorp/terraform@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+  # DANGER — runs on merge-request pipelines (incl. forks when enabled).
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  script:
+    - terraform init
+    # DANGER — applies the MR's Terraform; attacker IaC runs on the runner.
+    - terraform apply -auto-approve
