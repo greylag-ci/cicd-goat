@@ -964,4 +964,90 @@ Same source as the main matrix — auto-rebuilt from the latest
 | :-- | :-- | :-: |
 | pipeline&#x2011;check | `HELM-005`, `HELM-006`, **`K8S-005`**, `K8S-006`, `K8S-007`, `K8S-008`, `K8S-009`, `K8S-010`, `K8S-011`, `K8S-012`, `K8S-015`, `K8S-016`, `K8S-019`, `K8S-024`, `K8S-032`, `K8S-033` | ✅ |
 | Checkov | `CKV2_K8S_6`, `CKV_K8S_10`, `CKV_K8S_11`, `CKV_K8S_12`, `CKV_K8S_13`, **`CKV_K8S_16`**, `CKV_K8S_20`, `CKV_K8S_21`, `CKV_K8S_22`, `CKV_K8S_23`, `CKV_K8S_28`, `CKV_K8S_29`, `CKV_K8S_31`, `CKV_K8S_37`, `CKV_K8S_38`, `CKV_K8S_40`, `CKV_K8S_8`, `CKV_K8S_9` | ✅ |
+
+### Scenario 105 — GHA: Codecov-style remote uploader piped to shell (GitHub Actions)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `GHA-004`, `GHA-015`, **`GHA-016`**, `GHA-037` | ✅ |
+| zizmor | `zizmor/artipacked`, `zizmor/excessive-permissions` | ❌ |
+| poutine | **`unverified_script_exec`** | ✅ |
+| KICS | _(none)_ | ❌ |
+| Checkov | `CKV2_GHA_1` | ❌ |
+| actionlint | `if-cond` | ❌ |
+| octoscan | _(none)_ | ❌ |
+
+### Scenario 106 — GitLab: `include: remote:` unpinned 3rd-party template (GitLab CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`GL-005`**, `GL-015` | ✅ |
+| Checkov | _(none)_ | ❌ |
+| ciguard | `ART-003`, **`PIPE-002`**, `SC-003` | ✅ |
+
+### Scenario 107 — GHA: org secret handed to unpinned 3rd-party action (GitHub Actions)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, `AC-018`, `GHA-001`, `GHA-004`, `GHA-014`, `GHA-015`, `GHA-037`, **`GHA-072`**, `GHA-098` | ✅ |
+| zizmor | `zizmor/artipacked`, `zizmor/excessive-permissions`, **`zizmor/unpinned-uses`** | ✅ |
+| poutine | **`github_action_from_unverified_creator_used`** | ✅ |
+| KICS | **`555ab8f9-2001-455e-a077-f2d0f41e2fb9`** | ✅ |
+| Checkov | `CKV2_GHA_1` | ❌ |
+| actionlint | `if-cond` | ❌ |
+| octoscan | `expression-injection`, **`repo-jacking`** | ✅ |
+
+### Scenario 108 — GHA: deploy job missing environment binding (GitHub Actions)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, `GHA-004`, `GHA-006`, `GHA-007`, **`GHA-014`**, `GHA-015`, `GHA-020`, `GHA-024`, `GHA-037`, `GHA-098` | ✅ |
+| zizmor | `zizmor/artipacked`, `zizmor/excessive-permissions` | ❌ |
+| poutine | _(none)_ | ❌ |
+| KICS | _(none)_ | ❌ |
+| Checkov | `CKV2_GHA_1` | ❌ |
+| actionlint | `if-cond` | ❌ |
+| octoscan | _(none)_ | ❌ |
+
+### Scenario 109 — GHA: self-hosted deploy without environment gate (GitHub Actions)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, `GHA-004`, `GHA-006`, `GHA-007`, **`GHA-012`**, **`GHA-014`**, `GHA-015`, `GHA-020`, `GHA-024`, `GHA-037`, `GHA-098` | ✅ |
+| zizmor | `zizmor/artipacked`, `zizmor/excessive-permissions` | ❌ |
+| poutine | _(none)_ | ❌ |
+| KICS | _(none)_ | ❌ |
+| Checkov | `CKV2_GHA_1` | ❌ |
+| actionlint | `if-cond`, `runner-label` | ❌ |
+| octoscan | `runner-label` | ❌ |
+
+### Scenario 110 — GitLab: manual deploy defaults to allow_failure (GitLab CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `GL-015`, **`GL-029`** | ✅ |
+| Checkov | _(none)_ | ❌ |
+| ciguard | `ART-003`, `DEP-002`, **`PIPE-004`**, `RUN-003`, `SC-003` | ✅ |
+
+### Scenario 111 — Terraform: CloudTrail logging disabled / single-region (Terraform)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| KICS | `17b30f8f-8dfb-4597-adf6-57600b6cf25e`, `482b7d26-0bdb-4b5f-bf6f-545826c0a3dd`, **`4bb76f17-3d63-4529-bdca-2b454529d774`**, `52ffcfa6-6c70-4ea6-8376-d828d3961669`, `5d9e3164-9265-470c-9a10-57ae454ac0c7`, `8173d5eb-96b5-4aa6-a71b-ecfa153c123d`, `e38a8e0a-b88b-4902-b3fe-b0fcb17d5c10`, `e592a0c5-5bdb-414c-9066-5dba7cdea370` | ✅ |
+| Checkov | `CKV2_AWS_10`, `CKV_AWS_251`, `CKV_AWS_252`, `CKV_AWS_35`, `CKV_AWS_36`, **`CKV_AWS_67`** | ✅ |
+
+### Scenario 112 — Terraform: VPC flow logs + S3 access logging off (Terraform)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| KICS | `568a4d22-3517-44a6-a7ad-6a7eed88722c`, `e38a8e0a-b88b-4902-b3fe-b0fcb17d5c10`, `e592a0c5-5bdb-414c-9066-5dba7cdea370`, **`f83121ea-03da-434f-9277-9cd247ab3047`**, **`f861041c-8c9f-4156-acfc-5e6e524f5884`**, `fd632aaf-b8a1-424d-a4d1-0de22fd3247a` | ✅ |
+| Checkov | `CKV2_AWS_11`, `CKV2_AWS_12`, `CKV2_AWS_6`, `CKV2_AWS_61`, `CKV2_AWS_62`, `CKV_AWS_144`, `CKV_AWS_145`, **`CKV_AWS_18`**, `CKV_AWS_21` | ✅ |
+
+### Scenario 113 — GitLab: `CI_DEBUG_TRACE` leaks secrets to job log (GitLab CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `GL-015` | ❌ |
+| Checkov | _(none)_ | ❌ |
+| ciguard | `ART-003`, `SC-003` | ❌ |
 <!-- /AUTOGEN:rule-firings -->

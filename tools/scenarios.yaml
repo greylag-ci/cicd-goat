@@ -364,3 +364,36 @@ scenarios:
   # and Checkov (CKV_K8S_16) parse the template and flag it. KICS doesn't score
   # helm (provider not in its capability list) -> na.
   - {id: 104, title: "Helm: privileged container in chart template",      provider: helm,           cicd_sec: [7],    severity: critical, slug: 104-helm-privileged-pod,        expected: {pipeline-check: [K8S-005], checkov: [CKV_K8S_16]}}
+
+  # ── Wave 7: fill the thin OWASP categories (SEC-8 ungoverned 3rd-party,
+  #            SEC-1 flow control, SEC-10 logging/visibility). Scenarios 105-113.
+  # SEC-8 — Ungoverned usage of 3rd-party services.
+  # 105 Codecov 2021 shape: remote uploader piped to a shell. pipeline-check
+  # GHA-016 (curl-pipe) + poutine unverified_script_exec both name it.
+  - {id: 105, title: "GHA: Codecov-style remote uploader piped to shell",  cicd_sec: [8, 3], severity: high,   slug: 105-codecov-bash-uploader,         expected: {pipeline-check: [GHA-016], zizmor: [], poutine: [unverified_script_exec], kics: [], checkov: [], actionlint: [], octoscan: []}}
+  # 106 GitLab remote include with no pinned ref. pipeline-check GL-005 +
+  # ciguard PIPE-002 (UnsafeRemoteInclude) name it; Checkov GitLab ruleset misses.
+  - {id: 106, title: "GitLab: `include: remote:` unpinned 3rd-party template", provider: gitlab, cicd_sec: [8, 3], severity: high, slug: 106-gitlab-include-remote,          expected: {pipeline-check: [GL-005], checkov: [], ciguard: [PIPE-002]}}
+  # 107 org secret at workflow scope handed to an unpinned 3rd-party action.
+  # pipeline-check GHA-072 names the over-scoped secret; zizmor/poutine/kics/
+  # octoscan all flag the unpinned/unverified 3rd-party action.
+  - {id: 107, title: "GHA: org secret handed to unpinned 3rd-party action", cicd_sec: [8, 6], severity: high, slug: 107-thirdparty-action-broad-secret, expected: {pipeline-check: [GHA-072], zizmor: [zizmor/unpinned-uses], poutine: [github_action_from_unverified_creator_used], kics: [555ab8f9-2001-455e-a077-f2d0f41e2fb9], checkov: [], actionlint: [], octoscan: [repo-jacking]}}
+  # SEC-1 — Insufficient flow control mechanisms.
+  - {id: 108, title: "GHA: deploy job missing environment binding",        cicd_sec: [1],    severity: medium, slug: 108-deploy-no-environment,         expected: {pipeline-check: [GHA-014], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
+  # 109 self-hosted ungated deploy. pinned CI (pipeline-check 1.5.0) has no
+  # GHA-112 yet; it names both facets via GHA-014 (ungated deploy) + GHA-012
+  # (self-hosted runner without ephemeral marker).
+  - {id: 109, title: "GHA: self-hosted deploy without environment gate",   cicd_sec: [1, 7], severity: high,   slug: 109-selfhosted-deploy-no-gate,     expected: {pipeline-check: [GHA-014, GHA-012], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
+  # 110 manual deploy relies on GitLab's allow_failure default. pipeline-check
+  # GL-029 names the exact bug; ciguard PIPE-004 (UnprotectedDeployJob) names
+  # the same flow-control gap (the deploy job is ungated).
+  - {id: 110, title: "GitLab: manual deploy defaults to allow_failure",    provider: gitlab, cicd_sec: [1],  severity: medium, slug: 110-gitlab-manual-allow-failure,    expected: {pipeline-check: [GL-029], checkov: [], ciguard: [PIPE-004]}}
+  # SEC-10 — Insufficient logging & visibility. Terraform logging-disabled rows:
+  # Checkov + KICS (pipeline-check TF needs a plan -> na). KICS UUIDs:
+  # 4bb76f17=CloudTrail Logging Disabled, f83121ea=VPC FlowLogs Disabled,
+  # f861041c=S3 Bucket Logging Disabled.
+  - {id: 111, title: "Terraform: CloudTrail logging disabled / single-region", provider: terraform, cicd_sec: [10], severity: high, slug: 111-terraform-cloudtrail-disabled, expected: {checkov: [CKV_AWS_67], kics: [4bb76f17-3d63-4529-bdca-2b454529d774]}}
+  - {id: 112, title: "Terraform: VPC flow logs + S3 access logging off",   provider: terraform, cicd_sec: [10], severity: medium, slug: 112-terraform-no-flow-logs,        expected: {checkov: [CKV_AWS_18], kics: [f83121ea-03da-434f-9277-9cd247ab3047, f861041c-8c9f-4156-acfc-5e6e524f5884]}}
+  # 113 GitLab CI_DEBUG_TRACE dumps masked secrets to the job log. No scanner
+  # here carries a rule for it -> honest all-miss next-gen target.
+  - {id: 113, title: "GitLab: `CI_DEBUG_TRACE` leaks secrets to job log",  provider: gitlab, cicd_sec: [10, 6], severity: medium, slug: 113-gitlab-debug-trace,           expected: {pipeline-check: [], checkov: [], ciguard: []}}

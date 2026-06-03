@@ -1,0 +1,23 @@
+# scenarios/106-gitlab-include-remote
+# CICD-SEC-8 (Ungoverned Usage of 3rd Party Services) · CICD-SEC-3
+#
+# Pattern: the pipeline pulls its build/deploy logic from a third-party
+# `include: remote:` URL with no pinned ref. Whoever controls that endpoint
+# (or poisons DNS / the CDN) injects jobs that run with the project's CI
+# credentials on the next pipeline. The org has handed pipeline definition
+# to an external service it doesn't govern.
+#
+# SAFETY: relies on NESTING (GitLab never auto-runs a nested .gitlab-ci.yml).
+# See README.md.
+
+include:
+  # DANGER — remote include, no ref pinning possible; the external host
+  # dictates what runs in every pipeline.
+  - remote: 'https://templates.example.com/ci/build.yml'
+
+stages: [build]
+
+build:
+  stage: build
+  script:
+    - make build

@@ -1,0 +1,31 @@
+# scenarios/105-codecov-bash-uploader
+# CICD-SEC-8 (Ungoverned Usage of 3rd Party Services) · CICD-SEC-3
+# Pattern: the pipeline trusts a 3rd-party uploader by piping a remote
+# script straight into a shell — `curl -s https://codecov.io/bash | bash`.
+# This is the exact shape of the Codecov 2021 incident: the uploader was
+# tampered with upstream and exfiltrated every CI env var (tokens, cloud
+# creds) from thousands of pipelines. The org never governed what that
+# 3rd-party service could do inside the runner.
+#
+# Safety: the job is gated with `if: false` (the real form runs on push).
+# See scenarios/105-codecov-bash-uploader/README.md.
+
+name: scenario-105-codecov-bash-uploader
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  coverage:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+      - name: Upload coverage
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        # DANGER — remote script piped to a shell interpreter. Whoever
+        # controls (or poisons) codecov.io runs arbitrary code in the
+        # runner with the full secret-laden environment.
+        run: curl -s https://codecov.io/bash | bash
