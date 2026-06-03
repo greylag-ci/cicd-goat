@@ -1,24 +1,37 @@
 # Scenarios
 
-Thirty-eight deliberately-vulnerable GitHub Actions workflows, each
-demonstrating one canonical attack pattern from the modern threat
-landscape. Scenarios 30–33 are **variants** of scenario 02 that probe
-each scanner's untrusted-input list across four different
-`github.event.*` contexts (issue body, head_ref, commit message,
-comment body) — they share scenario 02's `expected:` rules so a
-scanner that scopes its rule narrower than its competitors surfaces as
-drift on the matrix. Scenarios 34–38 broaden the corpus: a Project-
-Zero-bug-2070 `ACTIONS_ALLOW_UNSECURE_COMMANDS` revival, a signed-
-but-not-bound `cosign verify`, a cross-job environment-secret leak,
-a confused-deputy auto-merge (Synacktiv's Dependabot exploit), and a
-recursive submodule checkout from a PR. Every scenario lives as a
-runnable-but-gated workflow at
-[`.github/workflows/scenario-NN-*.yml`](../.github/workflows/) so every
-GHA-aware static scanner can analyze it, plus a writeup here.
+Forty deliberately-vulnerable pipelines, each demonstrating one canonical
+attack pattern from the modern threat landscape. **Scenarios 01–38 are
+GitHub Actions** workflows; scenarios 30–33 are **variants** of scenario 02
+that probe each scanner's untrusted-input list across four different
+`github.event.*` contexts (issue body, head_ref, commit message, comment
+body) — they share scenario 02's `expected:` rules so a scanner that scopes
+its rule narrower than its competitors surfaces as drift on the matrix.
+Scenarios 34–38 broaden the GHA corpus: a Project-Zero-bug-2070
+`ACTIONS_ALLOW_UNSECURE_COMMANDS` revival, a signed-but-not-bound
+`cosign verify`, a cross-job environment-secret leak, a confused-deputy
+auto-merge (Synacktiv's Dependabot exploit), and a recursive submodule
+checkout from a PR.
 
-Every job in every scenario workflow is gated with `if: false` — the
-workflow triggers on the documented events (so it appears in run history),
-but no runner is ever assigned.
+**Scenarios 39+ begin the multi-provider expansion** — the same one-bug,
+one-writeup model applied to the *other* CI/CD platforms where most real
+pipelines live (GitLab CI, Jenkins, and more to come). Only the scanners
+that actually parse a given provider's files score those rows; the rest
+render `—` (not-applicable). See the per-provider leaderboards in the
+[README](../README.md) and the sectioned [matrix](../docs/MATRIX.md).
+
+**Safety — two placement rules keep every pattern inert:**
+
+- GitHub Actions scenarios live at
+  [`.github/workflows/scenario-NN-*.yml`](../.github/workflows/) and every
+  job is gated with `if: false` — the workflow triggers on its documented
+  events (so it appears in run history) but no runner is ever assigned.
+- Non-GHA provider files (`.gitlab-ci.yml`, `Jenkinsfile`, …) live
+  **nested under `scenarios/NN-<slug>/`**, never at a provider's canonical
+  auto-run path. GitHub never runs them, and no other platform
+  auto-discovers a nested pipeline file, so they're static fixtures a
+  scanner can read but nothing will execute (enforced by
+  [`tools/check-provider-files-safe.py`](../tools/check-provider-files-safe.py)).
 
 | #  | Scenario | CICD-SEC | Attack class |
 |---:|---|---|---|
@@ -60,6 +73,8 @@ but no runner is ever assigned.
 | 36 | [Environment secret read without consumer binding](36-environment-secret-no-binding/README.md) | 5, 2 | Cross-job leak via `needs.<>.outputs.*` |
 | 37 | [Confused-deputy auto-merge via bot-identity gate](37-confused-deputy-auto-merge/README.md) | 1 | Synacktiv Dependabot exploit shape |
 | 38 | [Recursive submodule checkout from PR](38-submodule-trust-from-pr/README.md) | 3, 4 | `submodules: recursive` trusts attacker `.gitmodules` |
+| 39 | [GitLab CI — script injection via `$CI_*`](39-gitlab-ci-script-injection/README.md) | 4 | **GitLab** — untrusted MR/commit var in `script:` |
+| 40 | [Jenkins — `sh` string-interpolation injection](40-jenkins-shell-injection/README.md) | 4 | **Jenkins** — untrusted value in double-quoted GString |
 
 ## OWASP CICD-SEC top 10 — full coverage
 
@@ -68,7 +83,7 @@ but no runner is ever assigned.
 | CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25, 37 |
 | CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22, 36 |
 | CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29, 35, 38 |
-| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33, 34, 38 |
+| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33, 34, 38, 39, 40 |
 | CICD-SEC-5: Insufficient Pipeline-Based Access Controls       | ✅ | 1, 4, 6, 25, 26, 36 |
 | CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17 |
 | CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22 |

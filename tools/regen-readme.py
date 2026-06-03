@@ -56,6 +56,69 @@ SEVERITY_LABELS = {
     "low":      "\U0001f535 low",        # 🔵
 }
 
+# Provider a scenario targets when its `provider:` key is omitted — the
+# original 38 scenarios predate the multi-provider expansion and are all
+# GitHub Actions.
+DEFAULT_PROVIDER = "github"
+
+# Display names + canonical render order for the per-provider sections.
+# Only providers that actually appear in scenarios.yaml are rendered, but
+# they always come out in this order so the GitHub Actions corpus leads.
+PROVIDER_LABELS = {
+    "github":     "GitHub Actions",
+    "gitlab":     "GitLab CI",
+    "azure":      "Azure Pipelines",
+    "circleci":   "CircleCI",
+    "bitbucket":  "Bitbucket Pipelines",
+    "jenkins":    "Jenkins",
+    "tekton":     "Tekton",
+    "argo":       "Argo Workflows",
+    "drone":      "Drone CI",
+    "buildkite":  "Buildkite",
+    "cloudbuild": "Cloud Build",
+}
+PROVIDER_ORDER = list(PROVIDER_LABELS)
+
+
+def scenario_provider(scn: dict) -> str:
+    return scn.get("provider", DEFAULT_PROVIDER)
+
+
+def scanner_supports(scanner: dict, provider: str) -> bool:
+    """True if `scanner` can statically scan `provider`'s pipeline files.
+
+    A scanner with no `providers:` key is treated as universal (applies to
+    every provider) for backward compatibility; in practice every scanner
+    in scenarios.yaml declares one.
+    """
+    provs = scanner.get("providers")
+    if provs is None:
+        return True
+    return provider in provs
+
+
+def applicable(scn: dict, scanner: dict) -> bool:
+    return scanner_supports(scanner, scenario_provider(scn))
+
+
+def providers_in_use(data: dict) -> list[str]:
+    """Providers that appear in scenarios.yaml, in canonical render order."""
+    seen = {scenario_provider(s) for s in data["scenarios"]}
+    extra = sorted(seen - set(PROVIDER_ORDER))  # unknown providers, if any
+    return [p for p in PROVIDER_ORDER if p in seen] + extra
+
+
+def provider_label(provider: str) -> str:
+    return PROVIDER_LABELS.get(provider, provider)
+
+
+def scenarios_for(data: dict, provider: str) -> list[dict]:
+    return [s for s in data["scenarios"] if scenario_provider(s) == provider]
+
+
+def scanners_for(data: dict, provider: str) -> list[dict]:
+    return [s for s in data["scanners"] if scanner_supports(s, provider)]
+
 # Matches either the canonical workflow filename (`scenario-NN-...yml`)
 # or a sibling file inside the scenario's writeup dir
 # (`scenarios/NN-.../action/action.yml`, `scenarios/NN-.../trust-policy.json`,
@@ -127,6 +190,12 @@ def download_latest_run_sarif(repo: str, workflow: str, dest: Path) -> None:
 
 
 def verdict(scenario: dict, scanner: dict, sarif_data: dict) -> str:
+    # Structural na: the scanner can't read this provider's files at all,
+    # so it's not-applicable rather than a miss.  Resolved before looking
+    # at `expected:` so authors don't have to spell out `na` for every
+    # GHA-only scanner on every non-GHA row.
+    if not applicable(scenario, scanner):
+        return VERDICT_NA
     # Use .get() on both hops in case a malformed scenario row omits
     # `expected:` entirely — KeyError here would abort the whole regen.
     expected = scenario.get("expected", {}).get(scanner["id"])
@@ -145,74 +214,93 @@ def verdict(scenario: dict, scanner: dict, sarif_data: dict) -> str:
     return VERDICT_MISS
 
 
-def compute_totals(data: dict, sarif_data: dict) -> dict[str, dict[str, int]]:
-    """Per-scanner verdict counts across all scenarios."""
+def compute_totals(
+    data: dict, sarif_data: dict, scenarios: list[dict] | None = None
+) -> dict[str, dict[str, int]]:
+    """Per-scanner verdict counts across `scenarios` (default: all)."""
+    if scenarios is None:
+        scenarios = data["scenarios"]
     totals: dict[str, dict[str, int]] = {}
     for s in data["scanners"]:
         t = {VERDICT_FULL: 0, VERDICT_PARTIAL: 0, VERDICT_MISS: 0, VERDICT_NA: 0}
-        for scn in data["scenarios"]:
+        for scn in scenarios:
             t[verdict(scn, s, sarif_data)] += 1
         totals[s["id"]] = t
     return totals
 
 
-def render_leaderboard(data: dict, sarif_data: dict) -> str:
-    """Compact, glance-able totals table for the README landing page.
+def _leaderboard_cell(t: dict[str, int]) -> str:
+    cell = f"**{t[VERDICT_FULL]} {VERDICT_FULL}**"
+    if t[VERDICT_PARTIAL]:
+        cell += f" · {t[VERDICT_PARTIAL]} {VERDICT_PARTIAL}"
+    return cell
 
-    Sorted by full-catch count desc, then partials desc.  Stable on ties
-    via the scanner order in scenarios.yaml.
+
+def render_leaderboard(data: dict, sarif_data: dict) -> str:
+    """Per-provider leaderboards for the README landing page.
+
+    One ranked table per provider in use, listing only the scanners that
+    can scan that provider (so GHA-only scanners don't show up under
+    GitLab / Jenkins / …).  Within each table, sorted by full-catch count
+    desc, then partials desc; stable on ties via scanners.yaml order.
+    The denominator is the number of scenarios for that provider.
     """
-    totals = compute_totals(data, sarif_data)
-    label = {s["id"]: s["label"] for s in data["scanners"]}
-    n_scenarios = len(data["scenarios"])
-    order = sorted(
-        [s["id"] for s in data["scanners"]],
-        key=lambda sid: (-totals[sid][VERDICT_FULL], -totals[sid][VERDICT_PARTIAL]),
-    )
-    rows = [
-        f"| Scanner | Scenarios caught (of {n_scenarios}) |",
-        "| :--- | :--- |",
-    ]
-    for sid in order:
-        t = totals[sid]
-        cell = f"**{t[VERDICT_FULL]} {VERDICT_FULL}**"
-        if t[VERDICT_PARTIAL]:
-            cell += f" · {t[VERDICT_PARTIAL]} {VERDICT_PARTIAL}"
-        rows.append(f"| {label[sid]} | {cell} |")
-    return "\n".join(rows)
+    out: list[str] = []
+    for prov in providers_in_use(data):
+        scns = scenarios_for(data, prov)
+        scanners = scanners_for(data, prov)
+        totals = compute_totals(data, sarif_data, scns)
+        order = sorted(
+            scanners,
+            key=lambda s: (-totals[s["id"]][VERDICT_FULL], -totals[s["id"]][VERDICT_PARTIAL]),
+        )
+        n = len(scns)
+        out.append(f"### {provider_label(prov)} — {n} scenario{'s' if n != 1 else ''}")
+        out.append("")
+        out.append(f"| Scanner | Scenarios caught (of {n}) |")
+        out.append("| :--- | :--- |")
+        for s in order:
+            out.append(f"| {s['label']} | {_leaderboard_cell(totals[s['id']])} |")
+        out.append("")
+    return "\n".join(out).rstrip()
 
 
 def render_matrix(data: dict, sarif_data: dict) -> str:
-    scanners = data["scanners"]
-    rows: list[str] = []
-    rows.append("| #  | Scenario | " + " | ".join(s["label"] for s in scanners) + " |")
-    rows.append("| :-:| :--- | " + " | ".join(":-:" for _ in scanners) + " |")
-    totals = compute_totals(data, sarif_data)
-    for scn in data["scenarios"]:
-        cells = [verdict(scn, s, sarif_data) for s in scanners]
-        rows.append(f"| {scn['id']:02d} | {scn['title']} | " + " | ".join(cells) + " |")
-    # Totals row
-    parts = []
-    for s in scanners:
-        t = totals[s["id"]]
-        cell = f"**{t[VERDICT_FULL]} {VERDICT_FULL}**"
-        if t[VERDICT_PARTIAL]:
-            cell += f" · {t[VERDICT_PARTIAL]} {VERDICT_PARTIAL}"
-        parts.append(cell)
-    rows.append("|    | **canonical bugs caught** | " + " | ".join(parts) + " |")
-    return "\n".join(rows)
+    """Full verdict matrix, sectioned by provider.
+
+    Each provider gets its own table whose columns are only the scanners
+    that scan that provider — keeping non-applicable "—" columns out of
+    the table rather than filling them with em-dashes.
+    """
+    out: list[str] = []
+    for prov in providers_in_use(data):
+        scns = scenarios_for(data, prov)
+        scanners = scanners_for(data, prov)
+        totals = compute_totals(data, sarif_data, scns)
+        out.append(f"### {provider_label(prov)}")
+        out.append("")
+        out.append("| #  | Scenario | " + " | ".join(s["label"] for s in scanners) + " |")
+        out.append("| :-:| :--- | " + " | ".join(":-:" for _ in scanners) + " |")
+        for scn in scns:
+            cells = [verdict(scn, s, sarif_data) for s in scanners]
+            out.append(f"| {scn['id']:02d} | {scn['title']} | " + " | ".join(cells) + " |")
+        parts = [_leaderboard_cell(totals[s["id"]]) for s in scanners]
+        out.append("|    | **canonical bugs caught** | " + " | ".join(parts) + " |")
+        out.append("")
+    return "\n".join(out).rstrip()
 
 
 def render_scenarios_index(data: dict) -> str:
     rows: list[str] = []
-    rows.append("| #  | Title | CICD-SEC | Severity |")
-    rows.append("| :-:| :--- | :-: | :-- |")
+    rows.append("| #  | Title | Provider | CICD-SEC | Severity |")
+    rows.append("| :-:| :--- | :-- | :-: | :-- |")
     for scn in data["scenarios"]:
         cs = " · ".join(str(x) for x in scn["cicd_sec"])
         sev = SEVERITY_LABELS.get(scn["severity"], scn["severity"])
+        prov = provider_label(scenario_provider(scn))
         # docs/MATRIX.md lives one level below repo root, so links go up.
         link = f"../scenarios/{scn['slug']}/README.md"
-        rows.append(f"| {scn['id']:02d} | [{scn['title']}]({link}) | {cs} | {sev} |")
+        rows.append(f"| {scn['id']:02d} | [{scn['title']}]({link}) | {prov} | {cs} | {sev} |")
     return "\n".join(rows)
 
 
@@ -236,6 +324,21 @@ def _catches(scn: dict, scanner: dict, sarif_data: dict) -> bool:
     return verdict(scn, scanner, sarif_data) == VERDICT_FULL
 
 
+def _coverage_cell(scns: list[dict], scanner: dict, sarif_data: dict) -> str:
+    """`caught / applicable` for a scanner over a scenario bucket.
+
+    The denominator counts only scenarios whose provider this scanner can
+    scan, so a GHA-only scanner shows e.g. `0/3` (or `—` when none of the
+    bucket's scenarios are GHA) instead of being scored against GitLab /
+    Jenkins rows it was never built to read.
+    """
+    appl = [sc for sc in scns if applicable(sc, scanner)]
+    if not appl:
+        return VERDICT_NA
+    caught = sum(1 for sc in appl if _catches(sc, scanner, sarif_data))
+    return f"{caught}/{len(appl)}"
+
+
 def render_cicd_sec_coverage(data: dict, sarif_data: dict) -> str:
     """One row per CICD-SEC category 1..10; cells show catches/total."""
     scanners = data["scanners"]
@@ -251,12 +354,9 @@ def render_cicd_sec_coverage(data: dict, sarif_data: dict) -> str:
         scns = by_cat.get(c, [])
         n = len(scns)
         if n == 0:
-            cells = ["—" for _ in scanners]
+            cells = [VERDICT_NA for _ in scanners]
         else:
-            cells = [
-                f"{sum(1 for sc in scns if _catches(sc, s, sarif_data))}/{n}"
-                for s in scanners
-            ]
+            cells = [_coverage_cell(scns, s, sarif_data) for s in scanners]
         rows.append(
             f"| {c} | {CICD_SEC_TITLES.get(c, '')} | {n if n else '—'} | "
             + " | ".join(cells) + " |"
@@ -280,10 +380,7 @@ def render_severity_coverage(data: dict, sarif_data: dict) -> str:
         if n == 0:
             continue
         label = SEVERITY_LABELS.get(sev, sev)
-        cells = [
-            f"{sum(1 for sc in scns if _catches(sc, s, sarif_data))}/{n}"
-            for s in scanners
-        ]
+        cells = [_coverage_cell(scns, s, sarif_data) for s in scanners]
         rows.append(f"| {label} | {n} | " + " | ".join(cells) + " |")
     return "\n".join(rows)
 
@@ -295,10 +392,13 @@ def render_rule_firings(data: dict, sarif_data: dict) -> str:
     list with **bold**, so noise/off-target firings are visually distinct
     from canonical-bug matches.
     """
-    scanners = data["scanners"]
     out: list[str] = []
     for scn in data["scenarios"]:
-        out.append(f"### Scenario {scn['id']:02d} — {scn['title']}")
+        prov = scenario_provider(scn)
+        # Only scanners that can read this provider's files — the rest
+        # would be a row of "(none) / —" noise on every non-GHA scenario.
+        scanners = scanners_for(data, prov)
+        out.append(f"### Scenario {scn['id']:02d} — {scn['title']} ({provider_label(prov)})")
         out.append("")
         out.append("| Scanner | Rules fired | Verdict |")
         out.append("| :-- | :-- | :-: |")
@@ -306,7 +406,7 @@ def render_rule_firings(data: dict, sarif_data: dict) -> str:
             fired = sorted(
                 sarif_data.get(s["sarif_tool"], {}).get(scn["id"], set())
             )
-            expected = scn["expected"].get(s["id"])
+            expected = scn.get("expected", {}).get(s["id"])
             expected_set: set[str] = (
                 set(expected) if isinstance(expected, list) else set()
             )
@@ -361,6 +461,7 @@ def render_unique_catches(data: dict, sarif_data: dict) -> str:
 def render_badge_line(data: dict) -> str:
     n_scn = len(data["scenarios"])
     n_scan = len(data["scanners"])
+    n_prov = len(providers_in_use(data))
     badges = [
         "[![scanner-comparison](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml/badge.svg)]"
         "(https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml)",
@@ -368,6 +469,7 @@ def render_badge_line(data: dict) -> str:
         "[![CICD-SEC top 10](https://img.shields.io/badge/owasp-CICD--SEC_10%2F10-9c2b2b?style=flat-square)]"
         "(https://owasp.org/www-project-top-10-ci-cd-security-risks/)",
         f"[![scenarios {n_scn}](https://img.shields.io/badge/scenarios-{n_scn}-1f6feb?style=flat-square)](scenarios/README.md)",
+        f"[![providers {n_prov}](https://img.shields.io/badge/providers-{n_prov}-1f6feb?style=flat-square)](docs/MATRIX.md)",
         f"[![scanners {n_scan}](https://img.shields.io/badge/scanners-{n_scan}-1f6feb?style=flat-square)](docs/MATRIX.md)",
     ]
     return "\n".join(badges)
@@ -399,7 +501,9 @@ def verify(data: dict, sarif_data: dict) -> int:
     drifts: list[str] = []
     for scn in data["scenarios"]:
         for s in data["scanners"]:
-            expected = scn["expected"].get(s["id"])
+            if not applicable(scn, s):
+                continue
+            expected = scn.get("expected", {}).get(s["id"])
             if not isinstance(expected, list) or not expected:
                 continue
             fired = sarif_data.get(s["sarif_tool"], {}).get(scn["id"], set())

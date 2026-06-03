@@ -17,7 +17,11 @@ Three steps:
 
 Then add a column to **The full matrix** by registering the scanner in
 [`tools/scenarios.yaml`](tools/scenarios.yaml) (`scanners:` list — `id`,
-`sarif_tool`, `label`) and the next `regen-readme.py` run picks it up.
+`sarif_tool`, `label`, and **`providers`**: the list of CI/CD providers it
+can statically scan) and the next `regen-readme.py` run picks it up. The
+`providers` list is what decides which per-provider leaderboard the scanner
+appears in; on a scenario whose `provider` isn't in the list the scanner
+auto-renders `—` (not-applicable) and is excluded from its denominator.
 
 ### Gotchas seen so far
 
@@ -55,6 +59,42 @@ before adding the next scanner:
   pattern) or `… || [ $? -eq 1 ]` (pipeline-check pattern) — but be
   aware the `|| [ $? -eq 1 ]` form has subtle interactions with
   `set -e` on multi-line scripts that bit us on the actionlint job.
+- **Basename-only SARIF URIs.** A scanner's SARIF
+  `artifactLocation.uri` must contain the scanned file's path for the
+  matrix to attribute the finding (`SCENARIO_RE` keys on `scenario-NN-`
+  / `scenarios/NN-`). ciguard's native SARIF writes only the *basename*
+  (`.gitlab-ci.yml`), so every finding would land unattributed. The fix
+  is [`tools/ciguard-scan-tree.py`](tools/ciguard-scan-tree.py): it runs
+  ciguard per file and rewrites each URI to the real nested path before
+  merging — the ciguard analogue of `actionlint-to-sarif.py`. Check a
+  new scanner's URIs before trusting its matrix column.
+- **Parser strictness vs. the `if: false` gate.** ciguard's pydantic
+  `Job.if` model rejects a YAML boolean `if: false` (it wants a string),
+  so it can't parse this repo's gated GHA workflows at all. Rather than
+  re-quote the safety gate on 38 files for one scanner, ciguard's
+  `providers` list simply omits `github`. When a scanner can't read a
+  provider's files *as this corpus writes them*, drop that provider from
+  its `providers` rather than bending the fixtures.
+
+## Add a scenario for another provider (GitLab, Jenkins, …)
+
+Same as a GHA scenario, with three differences driven by the safety model
+([SAFETY.md invariant 1b](SAFETY.md#invariant-1b--non-gha-provider-files-are-nested-never-at-a-canonical-path)):
+
+1. **Put the pipeline file *inside* the scenario dir**, at the provider's
+   conventional name but nested — e.g. `scenarios/NN-<slug>/.gitlab-ci.yml`,
+   `scenarios/NN-<slug>/Jenkinsfile`, `scenarios/NN-<slug>/.circleci/config.yml`.
+   Never at the repo root / `.circleci/` / etc.; `check-provider-files-safe.py`
+   fails the build if you do. Add a provider-appropriate always-skip gate
+   where one exists (GitLab `workflow: rules: - when: never`) plus a loud
+   header comment.
+2. **Set `provider:`** on the scenarios.yaml row (e.g. `provider: gitlab`),
+   and only fill `expected:` for scanners whose `providers` list includes
+   that provider — the rest resolve to `—` automatically.
+3. **Reconcile rule IDs against real SARIF.** Author your best guess, then
+   after the first `scanner-comparison` run inspect
+   [`docs/RULE-FIRINGS.md`](docs/RULE-FIRINGS.md) and run
+   `regen-readme.py --verify` to confirm the rules you claimed actually fire.
 
 ## Add a scenario
 

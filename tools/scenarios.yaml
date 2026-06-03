@@ -8,26 +8,61 @@
 #     sarif_tool  : value of run.tool.driver.name in the scanner's SARIF
 #                   (used by --verify mode and the regen of totals)
 #     label       : column header in the matrix (may include HTML entities)
+#     providers   : list of CI/CD providers this scanner can statically
+#                   scan.  A (scenario, scanner) cell where the scenario's
+#                   `provider` is NOT in this list renders "—" (na) and is
+#                   excluded from the scanner's denominator — the scanner
+#                   was never built to read that provider's files, so it
+#                   is structurally not-applicable, not a miss.  This is
+#                   what keeps GHA-only scanners (zizmor, KICS, actionlint,
+#                   octoscan) from being penalised on GitLab/Jenkins/...
+#                   rows they can't parse.
 #
 #   scenarios: ordered list (row order in the matrix)
 #     id          : integer (1..N)
 #     title       : markdown short title for the matrix
+#     provider    : CI/CD provider this scenario targets.  Optional;
+#                   defaults to `github` when omitted (the original 38
+#                   GHA scenarios).  One of: github | gitlab | azure |
+#                   circleci | bitbucket | jenkins | tekton | argo |
+#                   drone | buildkite | cloudbuild.  Drives which scanner
+#                   columns apply (see scanners[].providers) and which
+#                   per-provider leaderboard / matrix the row lands in.
 #     cicd_sec    : list of OWASP CICD-SEC category numbers
 #     severity    : one of critical | high | medium | low
-#     expected    : per-scanner expected canonical rule IDs.  Verdict
-#                   is derived as:
+#     expected    : per-scanner expected canonical rule IDs.  Only fill in
+#                   entries for scanners whose `providers` includes this
+#                   scenario's provider; the rest auto-resolve to na.
+#                   Verdict is derived as:
 #                     na      -> "—"  (not applicable to this class)
 #                     []      -> "❌"  (no rule expected; bug not catchable)
 #                     [list]  -> all fire ✅ ; some fire ⚠️ ; none fire ❌
 
+# `providers` capability per scanner is grounded in the Wave-0 research
+# spike (see docs / commit history):
+#   - pipeline-check : broadest coverage — every provider in the corpus.
+#   - checkov        : GHA + gitlab_ci / azure_pipelines / circleci /
+#                      bitbucket_pipelines / argo frameworks.
+#   - poutine        : GHA today; gitlab / azure / tekton support exists
+#                      upstream but its nested-file discovery + SARIF path
+#                      attribution is unconfirmed on this corpus, so it is
+#                      scoped to [github] until the spike flips it.
+#   - ciguard        : gitlab + jenkins (declarative). ciguard *has* a
+#                      GitHub Actions ruleset, but its pydantic `Job.if`
+#                      model rejects a YAML boolean `if: false` — exactly
+#                      the safety gate every GHA scenario here carries — so
+#                      it errors out on this corpus's GHA files and is
+#                      scoped to the providers it can actually parse.
+#   - zizmor / kics / actionlint / octoscan : GitHub Actions only.
 scanners:
-  - {id: pipeline-check, sarif_tool: pipeline_check, label: "pipeline&#x2011;check"}
-  - {id: zizmor,         sarif_tool: zizmor,         label: zizmor}
-  - {id: poutine,        sarif_tool: poutine,        label: poutine}
-  - {id: kics,           sarif_tool: KICS,           label: KICS}
-  - {id: checkov,        sarif_tool: Checkov,        label: Checkov}
-  - {id: actionlint,     sarif_tool: actionlint,     label: actionlint}
-  - {id: octoscan,       sarif_tool: octoscan,       label: octoscan}
+  - {id: pipeline-check, sarif_tool: pipeline_check, label: "pipeline&#x2011;check", providers: [github, gitlab, azure, circleci, bitbucket, jenkins, tekton, argo, drone, buildkite, cloudbuild]}
+  - {id: zizmor,         sarif_tool: zizmor,         label: zizmor,                  providers: [github]}
+  - {id: poutine,        sarif_tool: poutine,        label: poutine,                 providers: [github]}
+  - {id: kics,           sarif_tool: KICS,           label: KICS,                    providers: [github]}
+  - {id: checkov,        sarif_tool: Checkov,        label: Checkov,                 providers: [github, gitlab, azure, circleci, bitbucket, argo]}
+  - {id: actionlint,     sarif_tool: actionlint,     label: actionlint,              providers: [github]}
+  - {id: octoscan,       sarif_tool: octoscan,       label: octoscan,                providers: [github]}
+  - {id: ciguard,        sarif_tool: ciguard,        label: ciguard,                 providers: [gitlab, jenkins]}
 
 scenarios:
   - {id: 1,  title: "`pull_request_target` + fork-head checkout",    cicd_sec: [4, 5], severity: critical, slug: 01-prtarget-checkout-head,                  expected: {pipeline-check: [GHA-002, GHA-044], zizmor: [zizmor/dangerous-triggers], poutine: [untrusted_checkout_exec], kics: [], checkov: [], actionlint: [], octoscan: [dangerous-checkout]}}
@@ -102,3 +137,30 @@ scenarios:
   - {id: 37, title: "Confused-deputy auto-merge via bot-identity gate", cicd_sec: [1],  severity: high,    slug: 37-confused-deputy-auto-merge,              expected: {pipeline-check: [], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
   # `submodules: recursive` from a PR trigger trusts arbitrary URLs in the PR head's .gitmodules; any post-checkout build step that touches the workspace runs attacker code. No scanner here flags this shape today — pair-detection (checkout-with-submodules + run:/uses: in same job) is the candidate rule.
   - {id: 38, title: "Recursive submodule checkout from PR",          cicd_sec: [3, 4], severity: high,     slug: 38-submodule-trust-from-pr,                 expected: {pipeline-check: [], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
+
+  # ── Multi-provider expansion (Wave 0 pilots) ──────────────────────────
+  # Non-github scenarios. Scanners whose `providers:` list omits the row's
+  # provider auto-resolve to "—" (na); only the applicable scanners carry
+  # an `expected:` entry. Rule IDs were reconciled against real scanner
+  # output (pipeline-check 1.0.4, Checkov 3.2.532, ciguard 0.11.2 run
+  # against the nested fixtures), same process as the GHA rows. CI pins
+  # pipeline-check 1.4.0; if a rule ID shifted there, the weekly
+  # `regen-readme --verify` drift report flags it (it never blocks).
+  #
+  # GitLab CI analogue of scenarios 02 / 30-33: an attacker-controlled
+  # predefined variable ($CI_COMMIT_TITLE / MR title / branch name) is
+  # interpolated straight into a `script:` line and evaluated by the shell.
+  # pipeline-check catches it (GL-002, ScriptInjectionViaUntrustedCommitMrContext);
+  # Checkov's gitlab_ci ruleset has no $CI_* injection check (0 findings ->
+  # []), and ciguard emits only hygiene/missing-control findings on this
+  # file, none naming the injection ([]).
+  - {id: 39, title: "GitLab CI: script injection via `$CI_*` / MR vars", provider: gitlab,  cicd_sec: [4], severity: high, slug: 39-gitlab-ci-script-injection, expected: {pipeline-check: [GL-002], checkov: [], ciguard: []}}
+  # Jenkins analogue: a `sh "...${untrusted}..."` step uses a double-quoted
+  # Groovy GString, so attacker-controlled values (branch/PR name, params)
+  # are expanded as shell *syntax* before the shell runs. Reliable detection
+  # really wants Groovy AST; regex scanners catch the obvious double-quote
+  # shape. Only pipeline-check + ciguard read Jenkinsfiles here. pipeline-check
+  # catches it (JF-002, ScriptStepInterpolatesAttackerControllableEnvVar);
+  # ciguard fires only agent/hygiene rules on this file, none naming the
+  # interpolation sink ([]).
+  - {id: 40, title: "Jenkins: `sh` string-interpolation injection",      provider: jenkins, cicd_sec: [4], severity: high, slug: 40-jenkins-shell-injection,   expected: {pipeline-check: [JF-002], ciguard: []}}

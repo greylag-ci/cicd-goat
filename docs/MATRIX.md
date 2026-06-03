@@ -16,6 +16,8 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | —   | not applicable to that scanner's class                   |
 
 <!-- AUTOGEN:matrix -->
+### GitHub Actions
+
 | #  | Scenario | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan |
 | :-:| :--- | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | 01 | `pull_request_target` + fork-head checkout | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ✅ |
@@ -57,6 +59,20 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 37 | Confused-deputy auto-merge via bot-identity gate | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 38 | Recursive submodule checkout from PR | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 |    | **canonical bugs caught** | **31 ✅** | **16 ✅** | **12 ✅** | **7 ✅** | **9 ✅** | **6 ✅** | **12 ✅** |
+
+### GitLab CI
+
+| #  | Scenario | pipeline&#x2011;check | Checkov | ciguard |
+| :-:| :--- | :-: | :-: | :-: |
+| 39 | GitLab CI: script injection via `$CI_*` / MR vars | ✅ | ❌ | ❌ |
+|    | **canonical bugs caught** | **1 ✅** | **0 ✅** | **0 ✅** |
+
+### Jenkins
+
+| #  | Scenario | pipeline&#x2011;check | ciguard |
+| :-:| :--- | :-: | :-: |
+| 40 | Jenkins: `sh` string-interpolation injection | ✅ | ❌ |
+|    | **canonical bugs caught** | **1 ✅** | **0 ✅** |
 <!-- /AUTOGEN:matrix -->
 
 > [!IMPORTANT]
@@ -74,46 +90,48 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 ## Scenarios index
 
 <!-- AUTOGEN:scenarios-index -->
-| #  | Title | CICD-SEC | Severity |
-| :-:| :--- | :-: | :-- |
-| 01 | [`pull_request_target` + fork-head checkout](../scenarios/01-prtarget-checkout-head/README.md) | 4 · 5 | 🔴 critical |
-| 02 | [Script injection via issue title](../scenarios/02-script-injection-issue-title/README.md) | 4 | 🟠 high |
-| 03 | [Action pinned to mutable ref](../scenarios/03-action-mutable-ref/README.md) | 3 | 🟠 high |
-| 04 | [`GITHUB_TOKEN` `write-all`](../scenarios/04-github-token-write-all/README.md) | 5 | 🟡 medium |
-| 05 | [Cache poisoning via PR title](../scenarios/05-cache-poisoning-pr-controlled/README.md) | 4 · 9 | 🟠 high |
-| 06 | [Reusable workflow `secrets: inherit`](../scenarios/06-reusable-secrets-inherit/README.md) | 5 · 6 | 🟡 medium |
-| 07 | [`workflow_run` artifact RCE](../scenarios/07-workflow-run-artifact-rce/README.md) | 4 · 9 | 🔴 critical |
-| 08 | [Self-hosted runner on public repo](../scenarios/08-self-hosted-public-fork/README.md) | 7 | 🔴 critical |
-| 09 | [Container image `:latest`](../scenarios/09-container-image-latest/README.md) | 3 · 9 | 🟡 medium |
-| 10 | [AWS OIDC wildcard `sub`](../scenarios/10-oidc-aws-wildcard-sub/README.md) | 2 · 7 | 🔴 critical |
-| 11 | [`pip install` no hashes](../scenarios/11-pip-install-no-hashes/README.md) | 3 | 🟡 medium |
-| 12 | [`persist-credentials` leak](../scenarios/12-persist-credentials-leak/README.md) | 6 · 3 | 🟠 high |
-| 13 | [`workflow_dispatch` input injection](../scenarios/13-input-injection-workflow-dispatch/README.md) | 4 | 🟠 high |
-| 14 | [`$GITHUB_ENV` poisoning](../scenarios/14-env-injection-pr-body/README.md) | 4 | 🟠 high |
-| 15 | [Hardcoded secret in `env:`](../scenarios/15-hardcoded-secret-env/README.md) | 6 | 🟠 high |
-| 16 | [`curl \| sh` install](../scenarios/16-curl-pipe-sh/README.md) | 3 | 🟡 medium |
-| 17 | [ArtiPACKED — `.git/` in artifact](../scenarios/17-artipacked-git-dir/README.md) | 6 · 9 | 🔴 critical |
-| 18 | [Composite action `${{ inputs.* }}` injection](../scenarios/18-composite-action-input-injection/README.md) | 4 | 🟠 high |
-| 19 | [Codecov-style trusted-installer](../scenarios/19-codecov-style-installer/README.md) | 3 · 9 | 🔴 critical |
-| 20 | [Dependency confusion (Birsan)](../scenarios/20-dependency-confusion/README.md) | 3 | 🔴 critical |
-| 21 | [Matrix expansion injection](../scenarios/21-matrix-expansion-injection/README.md) | 4 | 🟠 high |
-| 22 | [GCP OIDC over-broad WIF](../scenarios/22-gcp-oidc-broad-wif/README.md) | 2 · 7 | 🔴 critical |
-| 23 | [`github-actions[bot]` branch-protection bypass](../scenarios/23-actions-bot-branch-protection-bypass/README.md) | 1 | 🟠 high |
-| 24 | [Third-party webhook exfiltration](../scenarios/24-third-party-webhook-exfil/README.md) | 8 | 🟠 high |
-| 25 | [Environment branch-pattern bypass](../scenarios/25-environment-branch-pattern-bypass/README.md) | 1 · 5 | 🟠 high |
-| 26 | [GitHub App token over-scope](../scenarios/26-app-token-over-scope/README.md) | 5 | 🟡 medium |
-| 27 | [Secret leak in workflow logs](../scenarios/27-secret-leak-in-logs/README.md) | 10 | 🟠 high |
-| 28 | [Reusable workflow `${{ inputs.* }}` injection](../scenarios/28-reusable-workflow-input-injection/README.md) | 4 | 🟠 high |
-| 29 | [npm lifecycle-script RCE](../scenarios/29-npm-lifecycle-script-rce/README.md) | 3 | 🔴 critical |
-| 30 | [Script injection via issue body](../scenarios/30-script-injection-issue-body/README.md) | 4 | 🟠 high |
-| 31 | [Script injection via `github.head_ref`](../scenarios/31-script-injection-head-ref/README.md) | 4 | 🟠 high |
-| 32 | [Script injection via commit message](../scenarios/32-script-injection-commit-message/README.md) | 4 | 🟠 high |
-| 33 | [Script injection via comment body](../scenarios/33-script-injection-comment-body/README.md) | 4 | 🟠 high |
-| 34 | [`ACTIONS_ALLOW_UNSECURE_COMMANDS` re-enabled](../scenarios/34-actions-allow-unsecure-commands/README.md) | 4 | 🟠 high |
-| 35 | [`cosign verify` without identity binding](../scenarios/35-cosign-verify-no-identity-binding/README.md) | 3 · 9 | 🟠 high |
-| 36 | [Environment secret read without consumer binding](../scenarios/36-environment-secret-no-binding/README.md) | 5 · 2 | 🟠 high |
-| 37 | [Confused-deputy auto-merge via bot-identity gate](../scenarios/37-confused-deputy-auto-merge/README.md) | 1 | 🟠 high |
-| 38 | [Recursive submodule checkout from PR](../scenarios/38-submodule-trust-from-pr/README.md) | 3 · 4 | 🟠 high |
+| #  | Title | Provider | CICD-SEC | Severity |
+| :-:| :--- | :-- | :-: | :-- |
+| 01 | [`pull_request_target` + fork-head checkout](../scenarios/01-prtarget-checkout-head/README.md) | GitHub Actions | 4 · 5 | 🔴 critical |
+| 02 | [Script injection via issue title](../scenarios/02-script-injection-issue-title/README.md) | GitHub Actions | 4 | 🟠 high |
+| 03 | [Action pinned to mutable ref](../scenarios/03-action-mutable-ref/README.md) | GitHub Actions | 3 | 🟠 high |
+| 04 | [`GITHUB_TOKEN` `write-all`](../scenarios/04-github-token-write-all/README.md) | GitHub Actions | 5 | 🟡 medium |
+| 05 | [Cache poisoning via PR title](../scenarios/05-cache-poisoning-pr-controlled/README.md) | GitHub Actions | 4 · 9 | 🟠 high |
+| 06 | [Reusable workflow `secrets: inherit`](../scenarios/06-reusable-secrets-inherit/README.md) | GitHub Actions | 5 · 6 | 🟡 medium |
+| 07 | [`workflow_run` artifact RCE](../scenarios/07-workflow-run-artifact-rce/README.md) | GitHub Actions | 4 · 9 | 🔴 critical |
+| 08 | [Self-hosted runner on public repo](../scenarios/08-self-hosted-public-fork/README.md) | GitHub Actions | 7 | 🔴 critical |
+| 09 | [Container image `:latest`](../scenarios/09-container-image-latest/README.md) | GitHub Actions | 3 · 9 | 🟡 medium |
+| 10 | [AWS OIDC wildcard `sub`](../scenarios/10-oidc-aws-wildcard-sub/README.md) | GitHub Actions | 2 · 7 | 🔴 critical |
+| 11 | [`pip install` no hashes](../scenarios/11-pip-install-no-hashes/README.md) | GitHub Actions | 3 | 🟡 medium |
+| 12 | [`persist-credentials` leak](../scenarios/12-persist-credentials-leak/README.md) | GitHub Actions | 6 · 3 | 🟠 high |
+| 13 | [`workflow_dispatch` input injection](../scenarios/13-input-injection-workflow-dispatch/README.md) | GitHub Actions | 4 | 🟠 high |
+| 14 | [`$GITHUB_ENV` poisoning](../scenarios/14-env-injection-pr-body/README.md) | GitHub Actions | 4 | 🟠 high |
+| 15 | [Hardcoded secret in `env:`](../scenarios/15-hardcoded-secret-env/README.md) | GitHub Actions | 6 | 🟠 high |
+| 16 | [`curl \| sh` install](../scenarios/16-curl-pipe-sh/README.md) | GitHub Actions | 3 | 🟡 medium |
+| 17 | [ArtiPACKED — `.git/` in artifact](../scenarios/17-artipacked-git-dir/README.md) | GitHub Actions | 6 · 9 | 🔴 critical |
+| 18 | [Composite action `${{ inputs.* }}` injection](../scenarios/18-composite-action-input-injection/README.md) | GitHub Actions | 4 | 🟠 high |
+| 19 | [Codecov-style trusted-installer](../scenarios/19-codecov-style-installer/README.md) | GitHub Actions | 3 · 9 | 🔴 critical |
+| 20 | [Dependency confusion (Birsan)](../scenarios/20-dependency-confusion/README.md) | GitHub Actions | 3 | 🔴 critical |
+| 21 | [Matrix expansion injection](../scenarios/21-matrix-expansion-injection/README.md) | GitHub Actions | 4 | 🟠 high |
+| 22 | [GCP OIDC over-broad WIF](../scenarios/22-gcp-oidc-broad-wif/README.md) | GitHub Actions | 2 · 7 | 🔴 critical |
+| 23 | [`github-actions[bot]` branch-protection bypass](../scenarios/23-actions-bot-branch-protection-bypass/README.md) | GitHub Actions | 1 | 🟠 high |
+| 24 | [Third-party webhook exfiltration](../scenarios/24-third-party-webhook-exfil/README.md) | GitHub Actions | 8 | 🟠 high |
+| 25 | [Environment branch-pattern bypass](../scenarios/25-environment-branch-pattern-bypass/README.md) | GitHub Actions | 1 · 5 | 🟠 high |
+| 26 | [GitHub App token over-scope](../scenarios/26-app-token-over-scope/README.md) | GitHub Actions | 5 | 🟡 medium |
+| 27 | [Secret leak in workflow logs](../scenarios/27-secret-leak-in-logs/README.md) | GitHub Actions | 10 | 🟠 high |
+| 28 | [Reusable workflow `${{ inputs.* }}` injection](../scenarios/28-reusable-workflow-input-injection/README.md) | GitHub Actions | 4 | 🟠 high |
+| 29 | [npm lifecycle-script RCE](../scenarios/29-npm-lifecycle-script-rce/README.md) | GitHub Actions | 3 | 🔴 critical |
+| 30 | [Script injection via issue body](../scenarios/30-script-injection-issue-body/README.md) | GitHub Actions | 4 | 🟠 high |
+| 31 | [Script injection via `github.head_ref`](../scenarios/31-script-injection-head-ref/README.md) | GitHub Actions | 4 | 🟠 high |
+| 32 | [Script injection via commit message](../scenarios/32-script-injection-commit-message/README.md) | GitHub Actions | 4 | 🟠 high |
+| 33 | [Script injection via comment body](../scenarios/33-script-injection-comment-body/README.md) | GitHub Actions | 4 | 🟠 high |
+| 34 | [`ACTIONS_ALLOW_UNSECURE_COMMANDS` re-enabled](../scenarios/34-actions-allow-unsecure-commands/README.md) | GitHub Actions | 4 | 🟠 high |
+| 35 | [`cosign verify` without identity binding](../scenarios/35-cosign-verify-no-identity-binding/README.md) | GitHub Actions | 3 · 9 | 🟠 high |
+| 36 | [Environment secret read without consumer binding](../scenarios/36-environment-secret-no-binding/README.md) | GitHub Actions | 5 · 2 | 🟠 high |
+| 37 | [Confused-deputy auto-merge via bot-identity gate](../scenarios/37-confused-deputy-auto-merge/README.md) | GitHub Actions | 1 | 🟠 high |
+| 38 | [Recursive submodule checkout from PR](../scenarios/38-submodule-trust-from-pr/README.md) | GitHub Actions | 3 · 4 | 🟠 high |
+| 39 | [GitLab CI: script injection via `$CI_*` / MR vars](../scenarios/39-gitlab-ci-script-injection/README.md) | GitLab CI | 4 | 🟠 high |
+| 40 | [Jenkins: `sh` string-interpolation injection](../scenarios/40-jenkins-shell-injection/README.md) | Jenkins | 4 | 🟠 high |
 <!-- /AUTOGEN:scenarios-index -->
 
 > [!NOTE]
