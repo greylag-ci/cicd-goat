@@ -1,0 +1,29 @@
+# scenarios/88-bitbucket-forked-pr-secrets
+# CICD-SEC-6 (Insufficient Credential Hygiene) · CICD-SEC-4 — Bitbucket — CRITICAL
+#
+# Pattern: a `pull-requests:` pipeline runs fork-PR code while account/repository
+# variables are in scope, and the repo enables pipelines for forked
+# repositories. The fork's PR edits `bitbucket-pipelines.yml` to exfiltrate the
+# in-scope variables (or defeats secured-var masking by writing them to an
+# artifact, scenario 61). Bitbucket withholds *secured* vars from fork PRs by
+# default, so the bug bites when (a) the var is unsecured, or (b) fork-pipeline
+# runs are enabled with secrets in reach. Bitbucket analogue of pull_request_target
+# fork RCE (scenario 01).
+#
+# The "Enable pipelines on forked repositories" toggle is an account/repo
+# setting (not in this file); shown here is the in-file half.
+#
+# SAFETY: static fixture, nested under scenarios/ (Bitbucket runs only the root
+# bitbucket-pipelines.yml). See README.md.
+
+image: atlassian/default-image@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+
+pipelines:
+  pull-requests:
+    '**':
+      - step:
+          name: build-and-deploy
+          script:
+            - ./build.sh        # fork-controlled build runs in the parent context
+            # DANGER — the deploy token is in scope for fork PR code to read.
+            - curl -H "Authorization: Bearer $DEPLOY_TOKEN" https://deploy.example.com/release

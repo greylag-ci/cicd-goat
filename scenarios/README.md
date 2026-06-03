@@ -1,6 +1,6 @@
 # Scenarios
 
-Eighty-two deliberately-vulnerable pipelines, each demonstrating one canonical
+Eighty-eight deliberately-vulnerable pipelines, each demonstrating one canonical
 attack pattern from the modern threat landscape. **Scenarios 01–38 are
 GitHub Actions** workflows; scenarios 30–33 are **variants** of scenario 02
 that probe each scanner's untrusted-input list across four different
@@ -15,16 +15,19 @@ checkout from a PR.
 
 **Scenarios 39+ are the multi-provider expansion** — the same one-bug,
 one-writeup model applied to the *other* CI/CD platforms where most real
-pipelines live: **GitLab CI** (39, 41–48), **Jenkins** (40, 67–70),
-**Azure Pipelines** (49–54), **CircleCI** (55–60), **Bitbucket Pipelines**
-(61–66), **Tekton** (71–73), **Argo Workflows** (74–76), **Drone CI** (77–78),
-**Buildkite** (79–80), and **Google Cloud Build** (81–82). Only the scanners
-that actually parse a given provider's files score those rows; the rest render
-`—` (not-applicable), and several rows are all-miss **next-gen targets** —
-canonical bugs (Azure/CircleCI injection, persist-credentials, the Mandiant
-secret-to-artifact leak, `skip-ssl-verify`, Jenkins `input`-without-submitter)
-that no scanner here catches yet. See the per-provider leaderboards in the
-[README](../README.md) and the sectioned [matrix](../docs/MATRIX.md).
+pipelines live: **GitLab CI** (39, 41–48, 85), **Jenkins** (40, 67–70, 86),
+**Azure Pipelines** (49–54), **CircleCI** (55–60, 87), **Bitbucket Pipelines**
+(61–66, 88), **Tekton** (71–73, 83), **Argo Workflows** (74–76, 84),
+**Drone CI** (77–78), **Buildkite** (79–80), and **Google Cloud Build** (81–82).
+Only the scanners that actually parse a given provider's files score those rows;
+the rest render `—` (not-applicable), and several rows are all-miss **next-gen
+targets** — canonical bugs (Azure/CircleCI injection, persist-credentials, the
+Mandiant secret-to-artifact leak, `skip-ssl-verify`, Jenkins `input`-without-submitter,
+and the configuration-spread fork-trust PPE) that no scanner here catches yet.
+**Scenarios 83–88 add critical examples**: container/cluster escape (hostPath →
+node takeover, Tekton/Argo) and fork-PR RCE / secret-theft (the "pwn request"
+class, on GitLab/Jenkins/CircleCI/Bitbucket). See the per-provider leaderboards
+in the [README](../README.md) and the sectioned [matrix](../docs/MATRIX.md).
 
 **Safety — two placement rules keep every pattern inert:**
 
@@ -123,18 +126,24 @@ that no scanner here catches yet. See the per-provider leaderboards in the
 | 80 | [Buildkite — plugin on a mutable ref](80-buildkite-plugin-unpinned/README.md) | 3 | **Buildkite** — supply chain (plugin) |
 | 81 | [Cloud Build — step image not pinned](81-cloudbuild-image-unpinned/README.md) | 3, 9 | **Cloud Build** — mutable image |
 | 82 | [Cloud Build — default service account](82-cloudbuild-default-serviceaccount/README.md) | 2 | **Cloud Build** — over-broad SA |
+| 83 | [Tekton — privileged + hostPath node escape](83-tekton-hostpath-escape/README.md) | 7 | **Tekton** 🔴 — container/node escape |
+| 84 | [Argo — hostPath node filesystem escape](84-argo-hostpath-escape/README.md) | 7 | **Argo** 🔴 — container/node escape |
+| 85 | [GitLab — fork MR pipeline mints cloud OIDC token](85-gitlab-fork-pipeline-oidc/README.md) | 4, 2 | **GitLab** 🔴 — fork RCE → cloud creds |
+| 86 | [Jenkins — builds untrusted fork PRs with creds](86-jenkins-untrusted-pr-build/README.md) | 4 | **Jenkins** 🔴 — PPE (config-spread) |
+| 87 | [CircleCI — secrets passed to forked PRs](87-circleci-forked-pr-secrets/README.md) | 6, 4 | **CircleCI** 🔴 — pwn-request secret theft |
+| 88 | [Bitbucket — fork PR pipeline exposes secrets](88-bitbucket-forked-pr-secrets/README.md) | 6, 4 | **Bitbucket** 🔴 — pwn-request secret theft |
 
 ## OWASP CICD-SEC top 10 — full coverage
 
 | Risk | Coverage | Scenarios |
 |:---|:---|:---|
 | CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25, 37, 43, 66, 68 |
-| CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22, 36, 41, 47, 52, 76, 82 |
+| CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22, 36, 41, 47, 52, 76, 82, 85 |
 | CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29, 35, 38, 42, 45, 46, 53, 55, 58, 60, 63, 64, 69, 73, 78, 80, 81 |
-| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33, 34, 38, 39, 40, 45, 48, 49, 50, 56, 62, 66, 67, 71, 74, 79 |
+| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33, 34, 38, 39, 40, 45, 48, 49, 50, 56, 62, 66, 67, 71, 74, 79, 85, 86, 87, 88 |
 | CICD-SEC-5: Insufficient Pipeline-Based Access Controls       | ✅ | 1, 4, 6, 25, 26, 36, 41, 68, 70 |
-| CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17, 43, 44, 51, 52, 59, 61 |
-| CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22, 47, 48, 54, 57, 65, 70, 72, 75, 77 |
+| CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17, 43, 44, 51, 52, 59, 61, 87, 88 |
+| CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22, 47, 48, 54, 57, 65, 70, 72, 75, 77, 83, 84 |
 | CICD-SEC-8: Ungoverned Usage of Third-Party Services          | ✅ | 24 |
 | CICD-SEC-9: Improper Artifact Integrity Validation            | ✅ | 5, 7, 9, 17, 19, 35, 42, 46, 53, 58, 64, 73, 78, 81 |
 | CICD-SEC-10: Insufficient Logging and Visibility              | ✅ | 27, 61 |

@@ -1,0 +1,32 @@
+// scenarios/86-jenkins-untrusted-pr-build
+// CICD-SEC-4 (Poisoned Pipeline Execution) — Jenkins — CRITICAL
+//
+// Pattern: the canonical Jenkins "Poisoned Pipeline Execution". A multibranch
+// pipeline is configured to BUILD FORK PULL REQUESTS and to TRUST them (the
+// GitHub/Bitbucket Branch Source "Discover PRs from forks -> Trust: Everyone"
+// strategy). Because the fork's own Jenkinsfile + repo content drive the build,
+// an attacker forks, edits the build to dump credentials, opens a PR, and
+// Jenkins runs it with the controller's credentials. (OWASP CICD-SEC-4 / Cider
+// "PPE".) Jenkins analogue of pull_request_target fork RCE (scenario 01).
+//
+// The enabling condition is the JOB/folder fork-trust configuration, which
+// lives in Jenkins config — NOT in this file. Shown here: a pipeline that runs
+// PR-controlled build steps with credentials in scope.
+//
+// SAFETY: static fixture, nested under scenarios/ (Jenkins runs only a
+// configured Jenkinsfile). See README.md.
+
+pipeline {
+    agent { label 'build-linux' }
+    stages {
+        stage('Build PR') {
+            steps {
+                // DANGER — fork-supplied build runs with controller creds in scope.
+                sh 'make build'
+                withCredentials([string(credentialsId: 'prod-deploy-token', variable: 'TOKEN')]) {
+                    sh './deploy.sh'   // PR-controlled code can read $TOKEN
+                }
+            }
+        }
+    }
+}

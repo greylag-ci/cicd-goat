@@ -1,0 +1,34 @@
+# scenarios/85-gitlab-fork-pipeline-oidc
+# CICD-SEC-4 (Poisoned Pipeline Execution) · CICD-SEC-2 (Inadequate IAM)
+# GitLab CI — CRITICAL
+#
+# Pattern: the highest-impact GitLab chain — a job that (a) runs on
+# merge_request_event pipelines (so fork MR code can execute in the parent when
+# "run fork MRs in the parent project" is on, see scenario 43) AND (b) mints a
+# cloud OIDC token via `id_tokens`. A fork author's MR code runs in the parent
+# context, mints the OIDC token, and assumes the cloud role — turning a pull
+# request into cloud-account compromise. Combines scenarios 43 + 47.
+#
+# SAFETY: relies on NESTING (GitLab never auto-runs a nested .gitlab-ci.yml).
+# No `when: never` gate — the MR `rules:` are the point of the scenario.
+# See README.md.
+
+stages: [deploy]
+
+deploy-on-mr:
+  stage: deploy
+  image: alpine@sha256:beefdbd8a1da6d2915566fde36db9db0b524eb737fc57cd1367effd16dc0d06d
+  # DANGER (1) — runs on merge-request pipelines, including fork MRs.
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  id_tokens:
+    # DANGER (2) — generic shared audience; the token is mintable by the
+    # fork's MR code, which then assumes the cloud role.
+    AWS_ID_TOKEN:
+      aud: https://gitlab.example.com
+  script:
+    - make build      # fork-controlled build runs here, with the token in reach
+    - >
+      aws sts assume-role-with-web-identity
+      --role-arn "$AWS_DEPLOY_ROLE_ARN" --role-session-name ci
+      --web-identity-token "$AWS_ID_TOKEN"

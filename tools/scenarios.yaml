@@ -105,7 +105,8 @@ scenarios:
   # octoscan: expression-injection demoted in favor of dangerous-write — octoscan's expression-injection rule keys on the consumer-side `${{ matrix.* }}` interpolation, which it (correctly) doesn't tag as untrusted. The PRODUCER side is what octoscan catches via dangerous-write: writing the attacker-controlled string to `$GITHUB_OUTPUT` is the entry point to the cross-axis flow.
   - {id: 21, title: "Matrix expansion injection",                    cicd_sec: [4],    severity: high,     slug: 21-matrix-expansion-injection,              expected: {pipeline-check: [TAINT-002], zizmor: [zizmor/template-injection], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: [dangerous-write]}}
   # pipeline-check: same shape as scenario 10 on the GCP WIF side. The workflow correctly binds `environment: production` so GHA-030 doesn't fire; the over-broad `attribute.repository.startsWith('greylag-ci/')` lives in workload-identity-pool.tf and is caught by GHA-062's Terraform WIF leg.
-  - {id: 22, title: "GCP OIDC over-broad WIF",                       cicd_sec: [2, 7], severity: critical, slug: 22-gcp-oidc-broad-wif,                      expected: {pipeline-check: [GHA-062], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
+  # checkov: CKV_GCP_125 ("GCP GitHub Actions OIDC trust policy configured securely") fires on the sibling workload-identity-pool.tf via Checkov's Terraform framework — it flags the over-broad attribute condition, the canonical bug here. (The AWS/GitLab OIDC scenarios 10/47 ship raw IAM trust-policy.json, which Checkov's json framework doesn't evaluate as IAM, so they stay checkov []; only the Terraform-authored WIF here is caught.)
+  - {id: 22, title: "GCP OIDC over-broad WIF",                       cicd_sec: [2, 7], severity: critical, slug: 22-gcp-oidc-broad-wif,                      expected: {pipeline-check: [GHA-062], zizmor: [], poutine: [], kics: [], checkov: [CKV_GCP_125], actionlint: [], octoscan: []}}
   # pipeline-check: GHA-019 demoted — scenario doesn't write GITHUB_TOKEN to persistent storage. `actions/checkout` leaves the token in .git/config via persist-credentials default-true, but the scenario doesn't upload that as an artifact (no ArtiPACKED shape). GHA-049 grew an `actions-bot-bypass` shape that pairs `git config user.name "github-actions[bot]"` with any `git push` in the same job — the canonical bypass-allowlist abuse primitive. (The full SCM-side branch-protection-allowlist audit lives in SCM-018 / SCM-019, run via `--scm-platform github`.)
   - {id: 23, title: "`github-actions[bot]` branch-protection bypass", cicd_sec: [1],   severity: high,     slug: 23-actions-bot-branch-protection-bypass,    expected: {pipeline-check: [GHA-049], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
   # checkov: CKV_GHA_3 demoted — same reasoning as scenario 15. The Checkov matcher requires an inline `${{ secrets.* }}` interpolation in the curl invocation. Scenario 24's exfil step builds the payload from `env | base64` (the env block carries `${{ secrets.* }}` indirectly), so the literal `${{ secrets.* }}` substring isn't present on the curl line itself. Pipeline-check GHA-057 catches the canonical bug.
@@ -262,3 +263,26 @@ scenarios:
   # Google Cloud Build (81-82) — pipeline-check only
   - {id: 81, title: "Cloud Build: step image not pinned by digest",       provider: cloudbuild, cicd_sec: [3, 9], severity: medium, slug: 81-cloudbuild-image-unpinned,     expected: {pipeline-check: [GCB-001]}}
   - {id: 82, title: "Cloud Build: runs as default service account",       provider: cloudbuild, cicd_sec: [2],    severity: medium, slug: 82-cloudbuild-default-serviceaccount, expected: {pipeline-check: [GCB-002]}}
+
+  # ── Wave 4: CRITICAL examples for under-covered providers (83-88) ─────
+  # Two marquee critical classes the corpus lacked outside GitHub Actions:
+  # container/cluster escape (hostPath -> node takeover) and fork-PR RCE /
+  # secret-theft ("pwn request"). Rule IDs grounded against pipeline-check
+  # 1.0.4 / Checkov 3.2.532 / ciguard 0.11.2, reconciled to CI 1.5.0 SARIF.
+  #
+  # Container/cluster escape (CICD-SEC-7) — escalation of the privileged-step
+  # scenarios 72 / 75; pipeline-check has dedicated hostPath/host-namespace rules.
+  - {id: 83, title: "Tekton: privileged step + hostPath node escape",     provider: tekton,    cicd_sec: [7],    severity: critical, slug: 83-tekton-hostpath-escape,        expected: {pipeline-check: [TKN-004]}}
+  - {id: 84, title: "Argo: hostPath mount → node filesystem escape",      provider: argo,      cicd_sec: [7],    severity: critical, slug: 84-argo-hostpath-escape,          expected: {pipeline-check: [ARGO-004], checkov: []}}
+  # Fork-PR RCE / secret-theft (the "pwn request" class) — analogue of #01.
+  # 85 (GitLab) chains fork-MR execution + OIDC -> cloud-cred theft; caught via
+  # the OIDC-binding rule (GL-031) and the ungated-deploy rule (ciguard PIPE-004).
+  - {id: 85, title: "GitLab: fork MR pipeline mints cloud OIDC token",    provider: gitlab,    cicd_sec: [4, 2], severity: critical, slug: 85-gitlab-fork-pipeline-oidc,     expected: {pipeline-check: [GL-031], checkov: [], ciguard: [PIPE-004]}}
+  # 86 (Jenkins) is all-miss: the enabling fork-trust strategy is JOB config,
+  # not in the Jenkinsfile — the canonical PPE next-gen target.
+  - {id: 86, title: "Jenkins: builds untrusted fork PRs with creds (PPE)", provider: jenkins,  cicd_sec: [4],    severity: critical, slug: 86-jenkins-untrusted-pr-build,    expected: {pipeline-check: [], ciguard: []}}
+  # 87 (CircleCI) caught via CC-030 (context-secret job without branch filter/gate);
+  # 88 (Bitbucket) via BB-004 (deploy step missing environment gate) — both flag
+  # the missing control that lets a fork PR reach the secret.
+  - {id: 87, title: "CircleCI: secrets passed to forked PRs",             provider: circleci,  cicd_sec: [6, 4], severity: critical, slug: 87-circleci-forked-pr-secrets,    expected: {pipeline-check: [CC-030], checkov: []}}
+  - {id: 88, title: "Bitbucket: fork PR pipeline exposes secrets",        provider: bitbucket, cicd_sec: [6, 4], severity: critical, slug: 88-bitbucket-forked-pr-secrets,   expected: {pipeline-check: [BB-004], checkov: []}}

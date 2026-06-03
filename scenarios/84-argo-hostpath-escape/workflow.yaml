@@ -1,0 +1,39 @@
+# scenarios/84-argo-hostpath-escape
+# CICD-SEC-7 (Insecure System Configuration) — Argo Workflows — CRITICAL
+#
+# Pattern: an Argo template mounts the NODE root filesystem via a `hostPath`
+# volume. Any step that can read/write the node's `/` escapes the pod boundary
+# — it reads other workloads' secrets, drops a static pod / modifies the
+# kubelet, and takes over the node. Container-escape escalation of the
+# privileged-container bug (scenario 75).
+#
+# SAFETY: static fixture, nested under scenarios/ — Argo resources only run
+# when applied to a cluster; this file is never applied. A non-default SA and
+# non-root context are set so the ONLY intended bug is the hostPath escape.
+# See README.md.
+
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: build-
+spec:
+  entrypoint: main
+  serviceAccountName: ci-runner
+  automountServiceAccountToken: false
+  volumes:
+    # DANGER — the node's entire root filesystem is mounted into the pod.
+    - name: host-root
+      hostPath:
+        path: /
+  templates:
+    - name: main
+      container:
+        image: cgr.dev/chainguard/bash@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+        command: [sh, -c]
+        args: ["chroot /host /bin/sh -c 'cat /etc/kubernetes/admin.conf'"]
+        volumeMounts:
+          - name: host-root
+            mountPath: /host
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
