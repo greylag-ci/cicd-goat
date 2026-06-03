@@ -25,7 +25,11 @@ tar), and recover the token. `ARG` is no better — it's recorded in history too
 |---------|-----------|
 | pipeline-check | `DF-006` — ENV/ARG carries a credential-shaped literal |
 | Checkov | — (its dockerfile framework has no secret-in-ENV check) |
-| KICS | (reconciled from CI — KICS has a secrets-in-Dockerfile query) |
+| KICS | — (fires only `Healthcheck Instruction Missing` noise; no secret-in-ENV Dockerfile query in this version) |
+
+> Solo catch — only pipeline-check (`DF-006`) names the baked-in credential.
+> Checkov and KICS both parse the Dockerfile but neither carries a
+> secret-in-`ENV` query, so this is an all-but-one miss.
 
 ## Fix
 

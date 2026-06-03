@@ -29,7 +29,7 @@ locked-down, non-root, no-escalation container.
 |---------|-----------|
 | pipeline-check | `K8S-035` — container `runAsUser` is 0 (root) |
 | Checkov | `CKV_K8S_20` — containers should not run with `allowPrivilegeEscalation` |
-| KICS | (reconciled from CI) |
+| KICS | `Privilege Escalation Allowed` (`5572cc5e-…`) — `allowPrivilegeEscalation` not false |
 
 ## Fix
 

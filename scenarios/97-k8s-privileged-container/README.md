@@ -27,10 +27,13 @@ node — and from there, often the cluster.
 |---------|-----------|
 | pipeline-check | `K8S-005` — container `securityContext.privileged: true` |
 | Checkov | `CKV_K8S_16` — container should not be privileged |
-| KICS | (reconciled from CI) |
+| KICS | — (honest miss: its `Container Is Privileged` query fires on the Helm Deployment in scenario 104 but **not** on this plain `Deployment` in the tested KICS version) |
 
-> Three-scanner agreement — the IaC manifests are the corpus's richest
-> cross-scanner comparison.
+> A real coverage gap worth recording: pipeline-check and Checkov both flag
+> the privileged container, but KICS's privileged-container query doesn't fire
+> on this `kind: Deployment` (it does fire on the identically-structured Helm
+> chart in 104) — a scanner quirk this corpus surfaces precisely because the
+> bug is catalogued in advance.
 
 ## Fix
 

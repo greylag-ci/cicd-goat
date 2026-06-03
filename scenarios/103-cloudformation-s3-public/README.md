@@ -26,9 +26,13 @@ Anyone on the internet lists/reads the bucket (data exposure) and writes to it
 
 | Scanner | Detection |
 |---------|-----------|
-| Checkov | reconciled from CI (Checkov's CloudFormation framework flags S3 public-access; in all-framework mode its CFN detection can be inconsistent) |
-| KICS | (reconciled from CI — KICS has CloudFormation S3 queries) |
+| Checkov | `CKV_AWS_20` (public READ) + `CKV_AWS_57` (public WRITE) — both fire on the `PublicReadWrite` ACL |
+| KICS | `S3 Bucket Allows Public ACL` (`48f100d9-…`) |
 | pipeline-check | — (its CloudFormation ruleset is thin / non-attributable) |
+
+> Two-scanner agreement: Checkov's CloudFormation framework and KICS both parse
+> the template and flag the public ACL directly — no AWS account or deploy
+> needed.
 
 ## Fix
 

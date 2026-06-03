@@ -29,7 +29,7 @@ and the cluster.
 |---------|-----------|
 | pipeline-check | `K8S-014` — hostPath references a sensitive host directory |
 | Checkov | — (no hostPath-specific canonical fires; many securityContext checks do, as noise) |
-| KICS | (reconciled from CI — KICS has a hostPath query) |
+| KICS | `Workload Mounting With Sensitive OS Directory` (`5308a7a8-…`) — hostPath of node root |
 
 ## Fix
 

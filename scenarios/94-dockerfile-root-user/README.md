@@ -22,7 +22,7 @@ reach.
 |---------|-----------|
 | pipeline-check | `DF-002` — container runs as root (missing/root USER) |
 | Checkov | `CKV_DOCKER_3` — a non-root user has been created |
-| KICS | (reconciled from CI — KICS has a "container runs as root" query) |
+| KICS | `Missing User Instruction` (`fd54f200-…`) — no `USER` directive |
 
 > Dockerfile is scored by three scanners here — a richer comparison than the
 > single-scorer pipeline rows.

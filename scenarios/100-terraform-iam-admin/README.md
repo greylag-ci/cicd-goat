@@ -24,8 +24,8 @@ takeover.
 
 | Scanner | Detection |
 |---------|-----------|
-| Checkov | `CKV_AWS_355` — no IAM policy should allow `*` as a statement's resource |
-| KICS | (reconciled from CI — KICS has IAM-wildcard queries) |
+| Checkov | `CKV_AWS_62` — IAM policy grants full `*-*` administrative privileges (also fires `CKV_AWS_355/63`) |
+| KICS | `IAM Policies With Full Privileges` (`2f37c4a3-…`) |
 | pipeline-check | — (its Terraform provider needs a `terraform show -json` plan, not raw `.tf`) |
 
 ## Fix
