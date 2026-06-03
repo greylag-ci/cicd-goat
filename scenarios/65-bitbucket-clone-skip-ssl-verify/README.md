@@ -7,11 +7,16 @@
 ## The pattern
 
 ```yaml
-clone:
-  skip-ssl-verify: true
+- step:
+    clone:
+      skip-ssl-verify: true
+    script: [...]
 ```
 
 Disables TLS certificate verification on the repository clone.
+`skip-ssl-verify` is only valid on a **step-level** `clone:` (the global
+`clone:` accepts only `depth` / `lfs` / `enabled`) and applies to self-hosted
+runners.
 
 ## How an attacker exploits it
 

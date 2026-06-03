@@ -10,13 +10,15 @@
 
 image: atlassian/default-image@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
 
-clone:
-  # DANGER — TLS verification disabled on the clone; MITM can inject source.
-  skip-ssl-verify: true
-
 pipelines:
   default:
     - step:
         name: build
+        clone:
+          # DANGER — TLS verification disabled on the clone; MITM can inject
+          # source. `skip-ssl-verify` is only valid on a step-level `clone:`
+          # (the global `clone:` accepts only depth / lfs / enabled), and it
+          # applies to self-hosted runners.
+          skip-ssl-verify: true
         script:
           - make build

@@ -55,14 +55,14 @@ on this row.
 
 | Scanner | Detection |
 |---------|-----------|
-| pipeline-check | GitLab injection rule (`GL-*`) |
-| Checkov | `CKV_GITLABCI_*` script-injection / suspect-script family |
-| ciguard | GitLab `PIPE-*` / `RUN-*` injection rule |
-| poutine | `injection` — *pending the nested-file discovery spike; scoped out for now* |
+| pipeline-check | `GL-002` — script injection via untrusted commit/MR context |
+| Checkov | — (its `gitlab_ci` ruleset has no `$CI_*` script-injection check) |
+| ciguard | — (emits only hygiene/missing-control findings on this file) |
 
-> Exact fired rule IDs are reconciled against real SARIF from the first
-> `scanner-comparison` run, the same way the GitHub Actions rows are kept
-> honest (see `tools/regen-readme.py --verify`).
+> Reconciled against real `scanner-comparison` SARIF (`regen-readme.py
+> --verify`). poutine is GitHub-Actions-only in this comparison and renders
+> `—`; its GitLab support is real upstream but its nested-file discovery +
+> SARIF path attribution on this corpus is unconfirmed, so it stays scoped out.
 
 ## Fix
 

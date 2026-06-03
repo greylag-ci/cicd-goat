@@ -8,12 +8,14 @@
 
 ```yaml
 plugins:
-  - docker-compose#latest:
+  - docker-compose#main:
       run: app
 ```
 
-A Buildkite plugin pinned to a mutable ref (`#latest`). A plugin runs hooks in
-the agent's context with the build's environment in scope.
+A Buildkite plugin pinned to a mutable **branch** ref (`#main`) rather than an
+exact tag. The ref is a git tag/branch/commit; a branch floats, so whoever
+pushes to it changes the plugin code that runs in the agent's context with the
+build's environment in scope.
 
 ## How an attacker exploits it
 
