@@ -1,0 +1,33 @@
+# scenarios/83-tekton-hostpath-escape
+# CICD-SEC-7 (Insecure System Configuration) — Tekton — CRITICAL
+#
+# Pattern: a Tekton Task mounts the NODE root filesystem via a `hostPath`
+# volume and runs the step privileged. A step that can read/write the node's
+# `/` (and is privileged) breaks out of its container entirely — it reads
+# other tenants' secrets, writes to the kubelet, and takes over the node. This
+# is the container-escape escalation of the privileged-step bug (scenario 72).
+#
+# SAFETY: static fixture, nested under scenarios/ — Tekton resources only run
+# when applied to a cluster; this file is never applied. See README.md.
+
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: build
+spec:
+  volumes:
+    # DANGER — the node's entire root filesystem is mounted into the pod.
+    - name: host-root
+      hostPath:
+        path: /
+  steps:
+    - name: build
+      image: cgr.dev/chainguard/bash@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+      # DANGER — privileged + host root mount = full node takeover.
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - name: host-root
+          mountPath: /host
+      script: |
+        chroot /host /bin/sh -c 'cat /etc/kubernetes/admin.conf'

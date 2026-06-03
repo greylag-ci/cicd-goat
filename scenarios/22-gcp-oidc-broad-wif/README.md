@@ -50,7 +50,7 @@ Two real attack vectors:
 | zizmor             | ❌ workflow-only                                                     |
 | poutine            | ❌                                                                   |
 | KICS               | ⚠️ IaC rule fires on the `.tf` if scanned, not on the workflow      |
-| Checkov            | ⚠️ Similar — IaC side only                                          |
+| **Checkov**        | ✅ `CKV_GCP_125` — its Terraform framework flags the over-broad WIF attribute condition in `workload-identity-pool.tf` (the canonical bug; the AWS/GitLab OIDC scenarios ship raw JSON trust policies that Checkov doesn't evaluate, so only this Terraform-authored one is caught) |
 
 > Like Scenario 10, this is a **split-scope** finding: workflow scanners
 > see the auth step but not the WIF attribute condition; IaC scanners

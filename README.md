@@ -6,7 +6,7 @@
 [![scanner-comparison](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml/badge.svg)](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml)
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-3a3a3a?style=flat-square)](LICENSE)
 [![CICD-SEC top 10](https://img.shields.io/badge/owasp-CICD--SEC_10%2F10-9c2b2b?style=flat-square)](https://owasp.org/www-project-top-10-ci-cd-security-risks/)
-[![scenarios 82](https://img.shields.io/badge/scenarios-82-1f6feb?style=flat-square)](scenarios/README.md)
+[![scenarios 88](https://img.shields.io/badge/scenarios-88-1f6feb?style=flat-square)](scenarios/README.md)
 [![providers 11](https://img.shields.io/badge/providers-11-1f6feb?style=flat-square)](docs/MATRIX.md)
 [![scanners 8](https://img.shields.io/badge/scanners-8-1f6feb?style=flat-square)](docs/MATRIX.md)
 <!-- /AUTOGEN:badges -->
@@ -16,7 +16,7 @@
 > Every CI/CD scanner has blind spots. The only honest way to measure them
 > is on a target where the bugs are catalogued in advance. This is that target.
 
-Eighty-two vulnerable pipelines, each demonstrating one specific attack pattern
+Eighty-eight vulnerable pipelines, each demonstrating one specific attack pattern
 drawn from named incident disclosures (tj-actions 2025, ArtiPACKED 2024,
 Codecov 2021, Birsan dependency confusion 2021,
 event-stream/ua-parser-js/node-ipc/Shai-Hulud npm lifecycle abuse,
@@ -58,16 +58,16 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 | zizmor | **16 ✅** |
 | poutine | **12 ✅** |
 | octoscan | **12 ✅** |
-| Checkov | **9 ✅** |
+| Checkov | **10 ✅** |
 | KICS | **7 ✅** |
 | actionlint | **6 ✅** |
 
-### GitLab CI — 9 scenarios
+### GitLab CI — 10 scenarios
 
-| Scanner | Scenarios caught (of 9) |
+| Scanner | Scenarios caught (of 10) |
 | :--- | :--- |
-| pipeline&#x2011;check | **7 ✅** |
-| ciguard | **7 ✅** |
+| pipeline&#x2011;check | **8 ✅** |
+| ciguard | **8 ✅** |
 | Checkov | **0 ✅** |
 
 ### Azure Pipelines — 6 scenarios
@@ -77,38 +77,38 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 | pipeline&#x2011;check | **3 ✅** |
 | Checkov | **0 ✅** |
 
-### CircleCI — 6 scenarios
+### CircleCI — 7 scenarios
 
-| Scanner | Scenarios caught (of 6) |
+| Scanner | Scenarios caught (of 7) |
 | :--- | :--- |
-| pipeline&#x2011;check | **4 ✅** |
+| pipeline&#x2011;check | **5 ✅** |
 | Checkov | **1 ✅** |
 
-### Bitbucket Pipelines — 6 scenarios
+### Bitbucket Pipelines — 7 scenarios
 
-| Scanner | Scenarios caught (of 6) |
+| Scanner | Scenarios caught (of 7) |
 | :--- | :--- |
-| pipeline&#x2011;check | **2 ✅** |
+| pipeline&#x2011;check | **3 ✅** |
 | Checkov | **1 ✅** |
 
-### Jenkins — 5 scenarios
+### Jenkins — 6 scenarios
 
-| Scanner | Scenarios caught (of 5) |
+| Scanner | Scenarios caught (of 6) |
 | :--- | :--- |
 | pipeline&#x2011;check | **4 ✅** |
 | ciguard | **1 ✅** |
 
-### Tekton — 3 scenarios
+### Tekton — 4 scenarios
 
-| Scanner | Scenarios caught (of 3) |
-| :--- | :--- |
-| pipeline&#x2011;check | **2 ✅** |
-
-### Argo Workflows — 3 scenarios
-
-| Scanner | Scenarios caught (of 3) |
+| Scanner | Scenarios caught (of 4) |
 | :--- | :--- |
 | pipeline&#x2011;check | **3 ✅** |
+
+### Argo Workflows — 4 scenarios
+
+| Scanner | Scenarios caught (of 4) |
+| :--- | :--- |
+| pipeline&#x2011;check | **4 ✅** |
 | Checkov | **2 ✅** |
 
 ### Drone CI — 2 scenarios
@@ -149,9 +149,9 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 
 ## What's in this repo
 
-- **[Scenarios](scenarios/README.md)** — 82 vulnerable pipelines across 11
-  providers (38 GitHub Actions + 9 GitLab CI + 6 Azure + 6 CircleCI +
-  6 Bitbucket + 5 Jenkins + 3 Tekton + 3 Argo + 2 Drone + 2 Buildkite +
+- **[Scenarios](scenarios/README.md)** — 88 vulnerable pipelines across 11
+  providers (38 GitHub Actions + 10 GitLab CI + 6 Azure + 7 CircleCI +
+  7 Bitbucket + 6 Jenkins + 4 Tekton + 4 Argo + 2 Drone + 2 Buildkite +
   2 Cloud Build), each with its own writeup
   (exploitation walkthrough, per-scanner coverage, the fix). Indexed by
   attack class and CICD-SEC category.

