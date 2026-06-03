@@ -74,6 +74,12 @@ scanners:
   - {id: actionlint,     sarif_tool: actionlint,     label: actionlint,              providers: [github]}
   - {id: octoscan,       sarif_tool: octoscan,       label: octoscan,                providers: [github]}
   - {id: ciguard,        sarif_tool: ciguard,        label: ciguard,                 providers: [gitlab, jenkins]}
+  # Trivy (`trivy config`) — dedicated IaC/container misconfiguration scanner;
+  # renders Helm charts and parses Dockerfile/K8s/Terraform/CloudFormation.
+  # Does NOT scan CI pipeline YAML (GHA/GitLab/etc.), so its providers are the
+  # five IaC/manifest formats only. Rule IDs are Trivy AVD/check IDs (e.g.
+  # AVD-AWS-*, AVD-KSV-*, DS***), reconciled from CI.
+  - {id: trivy,          sarif_tool: Trivy,          label: Trivy,                   providers: [dockerfile, kubernetes, terraform, cloudformation, helm]}
 
 scenarios:
   - {id: 1,  title: "`pull_request_target` + fork-head checkout",    cicd_sec: [4, 5], severity: critical, slug: 01-prtarget-checkout-head,                  expected: {pipeline-check: [GHA-002, GHA-044], zizmor: [zizmor/dangerous-triggers], poutine: [untrusted_checkout_exec], kics: [], checkov: [], actionlint: [], octoscan: [dangerous-checkout]}}
@@ -397,3 +403,19 @@ scenarios:
   # 113 GitLab CI_DEBUG_TRACE dumps masked secrets to the job log. No scanner
   # here carries a rule for it -> honest all-miss next-gen target.
   - {id: 113, title: "GitLab: `CI_DEBUG_TRACE` leaks secrets to job log",  provider: gitlab, cicd_sec: [10, 6], severity: medium, slug: 113-gitlab-debug-trace,           expected: {pipeline-check: [], checkov: [], ciguard: []}}
+
+  # ── Wave 8: Trivy (9th scanner) + grow the thinnest IaC formats (CFN 1->4,
+  #            Helm 1->3, Terraform 5->7). Scenarios 114-120. All expected lists
+  #            start empty and are reconciled from the first CI run (Trivy is new;
+  #            Checkov/KICS rule IDs aren't reproducible locally).
+  # CloudFormation (114-116) — Checkov + KICS + Trivy (pipeline-check CFN -> na).
+  - {id: 114, title: "CloudFormation: security group SSH open to 0.0.0.0/0", provider: cloudformation, cicd_sec: [7], severity: high, slug: 114-cfn-sg-open,            expected: {checkov: [], kics: [], trivy: []}}
+  - {id: 115, title: "CloudFormation: IAM managed policy `*:*` (full admin)", provider: cloudformation, cicd_sec: [2], severity: critical, slug: 115-cfn-iam-admin,       expected: {checkov: [], kics: [], trivy: []}}
+  - {id: 116, title: "CloudFormation: RDS unencrypted + publicly accessible", provider: cloudformation, cicd_sec: [7, 2], severity: high, slug: 116-cfn-rds-unencrypted-public, expected: {checkov: [], kics: [], trivy: []}}
+  # Helm (117-118) — pipeline-check + Checkov + Trivy (Trivy renders the chart;
+  # KICS doesn't score helm -> na).
+  - {id: 117, title: "Helm: container runs as root + privilege escalation",  provider: helm, cicd_sec: [7], severity: high, slug: 117-helm-weak-securitycontext,        expected: {pipeline-check: [], checkov: [], trivy: []}}
+  - {id: 118, title: "Helm: hostPath mount of node root in chart",           provider: helm, cicd_sec: [7], severity: critical, slug: 118-helm-hostpath,                expected: {pipeline-check: [], checkov: [], trivy: []}}
+  # Terraform (119-120) — Checkov + KICS + Trivy (pipeline-check TF -> na).
+  - {id: 119, title: "Terraform: S3 bucket unencrypted + unversioned",       provider: terraform, cicd_sec: [7], severity: high, slug: 119-terraform-s3-unencrypted,      expected: {checkov: [], kics: [], trivy: []}}
+  - {id: 120, title: "Terraform: RDS publicly accessible + unencrypted",     provider: terraform, cicd_sec: [7, 2], severity: high, slug: 120-terraform-rds-public,       expected: {checkov: [], kics: [], trivy: []}}

@@ -1,0 +1,23 @@
+# scenarios/117-helm-weak-securitycontext
+# CICD-SEC-7 — Helm. The chart ships a container that runs as root and permits
+# privilege escalation (the literal securityContext is detectable without
+# rendering values).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: app }
+  template:
+    metadata:
+      labels: { app: app }
+    spec:
+      containers:
+        - name: app
+          image: alpine@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+          securityContext:
+            # DANGER — root + privilege escalation, no capability drop.
+            runAsNonRoot: false
+            allowPrivilegeEscalation: true

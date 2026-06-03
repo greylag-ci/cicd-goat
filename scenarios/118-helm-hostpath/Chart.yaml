@@ -1,0 +1,5 @@
+apiVersion: v2
+name: agent
+description: ci-goat fixture — do not install
+version: 0.1.0
+appVersion: "1.0"

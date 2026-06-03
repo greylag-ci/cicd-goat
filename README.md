@@ -16,7 +16,7 @@
 > Every CI/CD scanner has blind spots. The only honest way to measure them
 > is on a target where the bugs are catalogued in advance. This is that target.
 
-One hundred and thirteen vulnerable pipelines and IaC manifests, each demonstrating
+One hundred and twenty vulnerable pipelines and IaC manifests, each demonstrating
 one specific attack pattern drawn from named incident disclosures (tj-actions 2025, ArtiPACKED 2024,
 Codecov 2021, Birsan dependency confusion 2021,
 event-stream/ua-parser-js/node-ipc/Shai-Hulud npm lifecycle abuse,
@@ -206,23 +206,25 @@ Full catches per provider (`caught/total`; `—` = the scanner can't parse that 
 > the IaC/manifest layer the pipeline deploys (Dockerfile, Kubernetes, Terraform,
 > CloudFormation, Helm); 105–113 fill the thinnest OWASP categories (ungoverned
 > 3rd-party services, flow control, logging/visibility) across GHA, GitLab, and
-> Terraform. Each scenario
+> Terraform; 114–120 grow the thinnest IaC formats (CloudFormation, Helm,
+> Terraform). Each scenario
 > is scored only by the scanners that actually parse its provider — a
 > GHA-only scanner (zizmor, KICS, actionlint, octoscan) shows `—`
 > (not-applicable), never a miss, on a GitLab or Jenkins row it was never
-> built to read; that's why the leaderboards are ranked per provider. Dedicated
-> IaC/container scanners (Trivy, hadolint, tfsec) aren't wired in yet — the IaC
-> rows are currently scored by the CI/CD scanners that already read those formats
-> (Checkov, KICS, pipeline-check); adding a purpose-built IaC scanner is a natural
-> next step now that the corpus has IaC rows for it to score.
+> built to read; that's why the leaderboards are ranked per provider. **Trivy**
+> (added as the 9th scanner) is the dedicated IaC/container misconfiguration
+> tool — it renders Helm charts and parses Dockerfile/Kubernetes/Terraform/
+> CloudFormation, so the IaC rows are now scored by up to four tools (Trivy +
+> Checkov + KICS + pipeline-check); it doesn't read CI pipeline YAML, so it
+> shows `—` on the GHA/GitLab/… rows.
 
 ## What's in this repo
 
-- **[Scenarios](scenarios/README.md)** — 113 vulnerable pipelines and IaC
+- **[Scenarios](scenarios/README.md)** — 120 vulnerable pipelines and IaC
   manifests across 16 providers/formats (43 GitHub Actions + 14 GitLab CI +
   7 Azure + 7 CircleCI + 7 Bitbucket + 6 Jenkins + 4 Tekton + 5 Argo +
   3 Drone + 2 Buildkite + 2 Cloud Build + 3 Dockerfile + 3 Kubernetes +
-  5 Terraform + 1 CloudFormation + 1 Helm), each with its own writeup
+  7 Terraform + 4 CloudFormation + 3 Helm), each with its own writeup
   (exploitation walkthrough, per-scanner coverage, the fix). Indexed by
   attack class and CICD-SEC category.
 - **[Full matrix](docs/MATRIX.md)** — per-(scenario × scanner) verdict
@@ -252,7 +254,7 @@ Full catches per provider (`caught/total`; `—` = the scanner can't parse that 
     │  .github/workflows/scanner-comparison.yml               │
     │                                                         │
     │   pipeline-check ▸ zizmor ▸ poutine ▸ kics ▸ checkov    │
-    │      ▸ actionlint ▸ octoscan ▸ ciguard                  │
+    │      ▸ actionlint ▸ octoscan ▸ ciguard ▸ trivy          │
     │                        │                                │
     │                        ▼                                │
     │              upload SARIF                               │

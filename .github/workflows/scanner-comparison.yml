@@ -443,9 +443,55 @@ jobs:
           name: ciguard-sarif
           path: ciguard.sarif
 
+  trivy:
+    name: trivy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+        with:
+          persist-credentials: false
+      - name: Run Trivy config (IaC misconfiguration) via Docker
+        # Trivy is the dedicated IaC/container misconfiguration scanner in this
+        # comparison. `trivy config` parses Dockerfile / Kubernetes / Terraform
+        # / CloudFormation / Helm (it renders charts) and emits native SARIF
+        # (tool.driver.name = "Trivy"). Pinned by sha256 digest from Docker Hub
+        # per the safety model. We scan the `scenarios` tree from the mounted
+        # repo root; a jq pass normalises each finding's artifact URI down to the
+        # repo-relative `scenarios/...` form so regen-readme.py's SCENARIO_RE can
+        # attribute it. `--exit-code 0` so findings don't fail the job — the
+        # SARIF upload tells the story (matrix verdicts + --verify drift).
+        run: |
+          set -euo pipefail
+          mkdir -p trivy-results
+          docker run --rm \
+            -v "$PWD:/path:ro" \
+            -v "$PWD/trivy-results:/results" \
+            -w /path \
+            aquasec/trivy:0.71.0@sha256:016eae51fdcf989332a5404af7e8f625cd5d95d7c0907a221d080a996f556500 \
+            config scenarios \
+              --format sarif \
+              --output /results/results.sarif \
+              --severity UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL \
+              --exit-code 0 \
+              --no-progress
+          jq '(.runs[]?.results[]?.locations[]?.physicalLocation.artifactLocation.uri) |= (if . != null and test("scenarios/") then sub("^.*scenarios/"; "scenarios/") else . end)' \
+            trivy-results/results.sarif > trivy-results/results.fixed.sarif
+          mv trivy-results/results.fixed.sarif trivy-results/results.sarif
+      - uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba  # v4
+        if: always()
+        with:
+          sarif_file: trivy-results/results.sarif
+          category: trivy
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
+        if: always()
+        with:
+          name: trivy-sarif
+          path: trivy-results
+
   summary:
     name: comparison-summary
-    needs: [pipeline-check, zizmor, poutine, checkov, kics, actionlint, octoscan, ciguard]
+    needs: [pipeline-check, zizmor, poutine, checkov, kics, actionlint, octoscan, ciguard, trivy]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5
