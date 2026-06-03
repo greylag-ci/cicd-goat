@@ -8,7 +8,7 @@
 
 ```yaml
 on: pull_request
-permissions: { id-token: write }
+permissions: { contents: read, id-token: write }
 steps:
   - run: terraform init && terraform apply -auto-approve   # PR-controlled IaC
 ```
