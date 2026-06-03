@@ -1,0 +1,31 @@
+# scenarios/75-argo-privileged-container
+# CICD-SEC-7 (Insecure System Configuration) — Argo Workflows
+#
+# Pattern: an Argo template container runs privileged / as root
+# (`securityContext.privileged: true`, `runAsUser: 0`). A privileged pod shares
+# the node kernel and can reach the host and other workloads — container escape
+# and cross-tenant compromise on a shared cluster.
+#
+# SAFETY: static fixture, nested under scenarios/ — Argo resources only run when
+# applied to a cluster; this file is never applied. A non-default ServiceAccount
+# is set so the ONLY intended bug is the privileged/root container. See README.md.
+
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: build-
+spec:
+  entrypoint: main
+  serviceAccountName: ci-runner
+  automountServiceAccountToken: false
+  templates:
+    - name: main
+      container:
+        image: cgr.dev/chainguard/bash@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+        command: [sh, -c]
+        args: ["buildah bud -t app ."]
+        # DANGER — privileged + root. Use a rootless builder; set
+        # runAsNonRoot: true and drop all capabilities.
+        securityContext:
+          privileged: true
+          runAsUser: 0

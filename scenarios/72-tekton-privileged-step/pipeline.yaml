@@ -1,0 +1,27 @@
+# scenarios/72-tekton-privileged-step
+# CICD-SEC-7 (Insecure System Configuration) — Tekton
+#
+# Pattern: a Tekton Task step runs with `securityContext.privileged: true`. A
+# privileged step shares the node kernel and can reach the host, the container
+# runtime, and other workloads — container escape and cross-tenant compromise
+# on a shared cluster.
+#
+# SAFETY: static fixture, nested under scenarios/ — Tekton resources only run
+# when applied to a cluster; this file is never applied. The image is digest-
+# pinned so the ONLY intended bug is the privileged step. See README.md.
+
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: image-build
+spec:
+  steps:
+    - name: build
+      image: cgr.dev/chainguard/bash@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+      # DANGER — privileged step. Use a rootless builder (kaniko/buildkit
+      # rootless) and drop privileges instead.
+      securityContext:
+        privileged: true
+        runAsUser: 0
+      script: |
+        buildah bud -t app .

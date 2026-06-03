@@ -1,0 +1,29 @@
+// scenarios/67-jenkins-grab-sandbox-bypass
+// CICD-SEC-4 (Poisoned Pipeline Execution) — Jenkins
+//
+// Pattern: an AST-transforming annotation (`@Grab`) in a Jenkinsfile / sandboxed
+// shared library. `@Grab` is applied during *compilation*, BEFORE the Groovy
+// sandbox's runtime checks, so a user who controls a Jenkinsfile or sandboxed
+// library can fetch and execute arbitrary Java on the controller — a full
+// sandbox bypass / RCE. This is the CVE-2019-1003000 / -1003001 / -1003002
+// (SECURITY-1266) class; public PoCs grab `org.buildobjects:jproc` and run shell.
+//
+// SAFETY: static fixture, nested under scenarios/ — Jenkins only runs a
+// Jenkinsfile a job is explicitly configured to load; nothing here configures
+// one. See README.md.
+
+@Grab(group = 'org.buildobjects', module = 'jproc', version = '2.8.2')
+import org.buildobjects.process.ProcBuilder
+
+pipeline {
+    agent { label 'build-linux' }
+    stages {
+        stage('Build') {
+            steps {
+                // The danger is the compile-time @Grab above; by the time any
+                // step runs, arbitrary Java has already been pulled and loaded.
+                echo 'built'
+            }
+        }
+    }
+}

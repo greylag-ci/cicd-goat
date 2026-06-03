@@ -1,0 +1,25 @@
+// scenarios/69-jenkins-library-mutable-ref
+// CICD-SEC-3 (Dependency Chain Abuse) — Jenkins
+//
+// Pattern: a shared library loaded via `@Library('lib@master')` — a MUTABLE
+// branch ref. Whoever can push to that library repo's `master` executes code in
+// every consuming pipeline on the next run. (A *trusted*, folder-global library
+// runs outside the Groovy sandbox, making it controller RCE.) Jenkins analogue
+// of the mutable-action-ref / reusable-workflow-trust class (scenarios 03 / 28).
+//
+// SAFETY: static fixture, nested under scenarios/ (Jenkins runs only a
+// configured Jenkinsfile). See README.md.
+
+// DANGER — mutable branch ref. Pin to an immutable tag or commit SHA instead.
+@Library('platform-shared-lib@master') _
+
+pipeline {
+    agent { label 'build-linux' }
+    stages {
+        stage('Build') {
+            steps {
+                buildUtils.compile()   // provided by the mutable shared library
+            }
+        }
+    }
+}

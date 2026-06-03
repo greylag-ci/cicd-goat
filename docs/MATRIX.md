@@ -116,7 +116,53 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | #  | Scenario | pipeline&#x2011;check | ciguard |
 | :-:| :--- | :-: | :-: |
 | 40 | Jenkins: `sh` string-interpolation injection | ✅ | ❌ |
-|    | **canonical bugs caught** | **1 ✅** | **0 ✅** |
+| 67 | Jenkins: `@Grab` sandbox-bypass (CVE-2019-1003000) | ✅ | ❌ |
+| 68 | Jenkins: `input` step without `submitter` | ❌ | ❌ |
+| 69 | Jenkins: shared library on a mutable `@master` ref | ✅ | ❌ |
+| 70 | Jenkins: `agent any` (controller exposure) | ✅ | ✅ |
+|    | **canonical bugs caught** | **4 ✅** | **1 ✅** |
+
+### Tekton
+
+| #  | Scenario | pipeline&#x2011;check |
+| :-:| :--- | :-: |
+| 71 | Tekton: `$(params.*)` injected into step script | ❌ |
+| 72 | Tekton: privileged / root step | ✅ |
+| 73 | Tekton: step `image:` not pinned to a digest | ✅ |
+|    | **canonical bugs caught** | **2 ✅** |
+
+### Argo Workflows
+
+| #  | Scenario | pipeline&#x2011;check | Checkov |
+| :-:| :--- | :-: | :-: |
+| 74 | Argo: `{{inputs.parameters}}` injected into args | ✅ | ❌ |
+| 75 | Argo: privileged / root container | ✅ | ✅ |
+| 76 | Argo: default ServiceAccount + token automount | ✅ | ✅ |
+|    | **canonical bugs caught** | **3 ✅** | **2 ✅** |
+
+### Drone CI
+
+| #  | Scenario | pipeline&#x2011;check |
+| :-:| :--- | :-: |
+| 77 | Drone: `privileged: true` step | ✅ |
+| 78 | Drone: step `image:` mutable tag | ✅ |
+|    | **canonical bugs caught** | **2 ✅** |
+
+### Buildkite
+
+| #  | Scenario | pipeline&#x2011;check |
+| :-:| :--- | :-: |
+| 79 | Buildkite: `$BUILDKITE_*` command injection | ✅ |
+| 80 | Buildkite: plugin pinned to a mutable ref | ✅ |
+|    | **canonical bugs caught** | **2 ✅** |
+
+### Cloud Build
+
+| #  | Scenario | pipeline&#x2011;check |
+| :-:| :--- | :-: |
+| 81 | Cloud Build: step image not pinned by digest | ✅ |
+| 82 | Cloud Build: runs as default service account | ✅ |
+|    | **canonical bugs caught** | **2 ✅** |
 <!-- /AUTOGEN:matrix -->
 
 > [!IMPORTANT]
@@ -202,6 +248,22 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 64 | [Bitbucket: `image:` mutable tag](../scenarios/64-bitbucket-image-mutable-tag/README.md) | Bitbucket Pipelines | 3 · 9 | 🟡 medium |
 | 65 | [Bitbucket: `clone: skip-ssl-verify: true`](../scenarios/65-bitbucket-clone-skip-ssl-verify/README.md) | Bitbucket Pipelines | 7 | 🟡 medium |
 | 66 | [Bitbucket: custom-pipeline variable injection](../scenarios/66-bitbucket-custom-pipeline-injection/README.md) | Bitbucket Pipelines | 4 · 1 | 🟠 high |
+| 67 | [Jenkins: `@Grab` sandbox-bypass (CVE-2019-1003000)](../scenarios/67-jenkins-grab-sandbox-bypass/README.md) | Jenkins | 4 | 🔴 critical |
+| 68 | [Jenkins: `input` step without `submitter`](../scenarios/68-jenkins-input-no-submitter/README.md) | Jenkins | 1 · 5 | 🟠 high |
+| 69 | [Jenkins: shared library on a mutable `@master` ref](../scenarios/69-jenkins-library-mutable-ref/README.md) | Jenkins | 3 | 🟠 high |
+| 70 | [Jenkins: `agent any` (controller exposure)](../scenarios/70-jenkins-agent-any/README.md) | Jenkins | 7 · 5 | 🟠 high |
+| 71 | [Tekton: `$(params.*)` injected into step script](../scenarios/71-tekton-param-injection/README.md) | Tekton | 4 | 🟠 high |
+| 72 | [Tekton: privileged / root step](../scenarios/72-tekton-privileged-step/README.md) | Tekton | 7 | 🟠 high |
+| 73 | [Tekton: step `image:` not pinned to a digest](../scenarios/73-tekton-image-unpinned/README.md) | Tekton | 3 · 9 | 🟡 medium |
+| 74 | [Argo: `{{inputs.parameters}}` injected into args](../scenarios/74-argo-param-injection/README.md) | Argo Workflows | 4 | 🟠 high |
+| 75 | [Argo: privileged / root container](../scenarios/75-argo-privileged-container/README.md) | Argo Workflows | 7 | 🟠 high |
+| 76 | [Argo: default ServiceAccount + token automount](../scenarios/76-argo-default-serviceaccount/README.md) | Argo Workflows | 2 | 🟡 medium |
+| 77 | [Drone: `privileged: true` step](../scenarios/77-drone-privileged-step/README.md) | Drone CI | 7 | 🟠 high |
+| 78 | [Drone: step `image:` mutable tag](../scenarios/78-drone-image-unpinned/README.md) | Drone CI | 3 · 9 | 🟡 medium |
+| 79 | [Buildkite: `$BUILDKITE_*` command injection](../scenarios/79-buildkite-var-injection/README.md) | Buildkite | 4 | 🟠 high |
+| 80 | [Buildkite: plugin pinned to a mutable ref](../scenarios/80-buildkite-plugin-unpinned/README.md) | Buildkite | 3 | 🟡 medium |
+| 81 | [Cloud Build: step image not pinned by digest](../scenarios/81-cloudbuild-image-unpinned/README.md) | Cloud Build | 3 · 9 | 🟡 medium |
+| 82 | [Cloud Build: runs as default service account](../scenarios/82-cloudbuild-default-serviceaccount/README.md) | Cloud Build | 2 | 🟡 medium |
 <!-- /AUTOGEN:scenarios-index -->
 
 > [!NOTE]

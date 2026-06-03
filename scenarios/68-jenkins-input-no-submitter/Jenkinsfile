@@ -1,0 +1,24 @@
+// scenarios/68-jenkins-input-no-submitter
+// CICD-SEC-1 (Insufficient Flow Control) · CICD-SEC-5 (Insufficient PBAC) — Jenkins
+//
+// Pattern: an `input` approval step with NO `submitter:` restriction. The
+// Pipeline Input step defaults to allowing *any* authenticated user to approve,
+// so a "manual approval before prod" gate that omits `submitter:` defeats the
+// separation-of-duties control it was meant to enforce.
+//
+// SAFETY: static fixture, nested under scenarios/ (Jenkins runs only a
+// configured Jenkinsfile). See README.md.
+
+pipeline {
+    agent { label 'build-linux' }
+    stages {
+        stage('Deploy to production') {
+            steps {
+                // DANGER — no `submitter:`; any logged-in user can approve this
+                // gate, then the privileged deploy runs.
+                input message: 'Deploy to production?'
+                sh './deploy.sh --env prod'
+            }
+        }
+    }
+}

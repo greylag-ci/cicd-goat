@@ -1,6 +1,6 @@
 # Scenarios
 
-Sixty-six deliberately-vulnerable pipelines, each demonstrating one canonical
+Eighty-two deliberately-vulnerable pipelines, each demonstrating one canonical
 attack pattern from the modern threat landscape. **Scenarios 01–38 are
 GitHub Actions** workflows; scenarios 30–33 are **variants** of scenario 02
 that probe each scanner's untrusted-input list across four different
@@ -15,12 +15,14 @@ checkout from a PR.
 
 **Scenarios 39+ are the multi-provider expansion** — the same one-bug,
 one-writeup model applied to the *other* CI/CD platforms where most real
-pipelines live: **GitLab CI** (39, 41–48), **Jenkins** (40), **Azure Pipelines**
-(49–54), **CircleCI** (55–60), and **Bitbucket Pipelines** (61–66). Only the
-scanners that actually parse a given provider's files score those rows; the
-rest render `—` (not-applicable). Several Azure/CircleCI/Bitbucket rows are
-all-miss **next-gen targets** — canonical bugs (Azure/CircleCI injection,
-persist-credentials, the Mandiant secret-to-artifact leak, `skip-ssl-verify`)
+pipelines live: **GitLab CI** (39, 41–48), **Jenkins** (40, 67–70),
+**Azure Pipelines** (49–54), **CircleCI** (55–60), **Bitbucket Pipelines**
+(61–66), **Tekton** (71–73), **Argo Workflows** (74–76), **Drone CI** (77–78),
+**Buildkite** (79–80), and **Google Cloud Build** (81–82). Only the scanners
+that actually parse a given provider's files score those rows; the rest render
+`—` (not-applicable), and several rows are all-miss **next-gen targets** —
+canonical bugs (Azure/CircleCI injection, persist-credentials, the Mandiant
+secret-to-artifact leak, `skip-ssl-verify`, Jenkins `input`-without-submitter)
 that no scanner here catches yet. See the per-provider leaderboards in the
 [README](../README.md) and the sectioned [matrix](../docs/MATRIX.md).
 
@@ -105,20 +107,36 @@ that no scanner here catches yet. See the per-provider leaderboards in the
 | 64 | [Bitbucket — `image:` mutable tag](64-bitbucket-image-mutable-tag/README.md) | 3, 9 | **Bitbucket** — mutable base image |
 | 65 | [Bitbucket — `clone: skip-ssl-verify: true`](65-bitbucket-clone-skip-ssl-verify/README.md) | 7 | **Bitbucket** — TLS verification off |
 | 66 | [Bitbucket — custom-pipeline variable injection](66-bitbucket-custom-pipeline-injection/README.md) | 4, 1 | **Bitbucket** — user-input injection |
+| 67 | [Jenkins — `@Grab` sandbox bypass (CVE-2019-1003000)](67-jenkins-grab-sandbox-bypass/README.md) | 4 | **Jenkins** — compile-time sandbox escape |
+| 68 | [Jenkins — `input` without `submitter`](68-jenkins-input-no-submitter/README.md) | 1, 5 | **Jenkins** — approval-gate bypass |
+| 69 | [Jenkins — shared library on mutable `@master`](69-jenkins-library-mutable-ref/README.md) | 3 | **Jenkins** — mutable library ref |
+| 70 | [Jenkins — `agent any` controller exposure](70-jenkins-agent-any/README.md) | 7, 5 | **Jenkins** — runner isolation |
+| 71 | [Tekton — `$(params.*)` step-script injection](71-tekton-param-injection/README.md) | 4 | **Tekton** — param injection |
+| 72 | [Tekton — privileged / root step](72-tekton-privileged-step/README.md) | 7 | **Tekton** — privileged step |
+| 73 | [Tekton — step image not pinned](73-tekton-image-unpinned/README.md) | 3, 9 | **Tekton** — mutable image |
+| 74 | [Argo — `{{inputs.parameters}}` injection](74-argo-param-injection/README.md) | 4 | **Argo** — param injection |
+| 75 | [Argo — privileged / root container](75-argo-privileged-container/README.md) | 7 | **Argo** — privileged container |
+| 76 | [Argo — default ServiceAccount + automount](76-argo-default-serviceaccount/README.md) | 2 | **Argo** — over-broad SA |
+| 77 | [Drone — `privileged: true` step](77-drone-privileged-step/README.md) | 7 | **Drone** — privileged step |
+| 78 | [Drone — step image mutable tag](78-drone-image-unpinned/README.md) | 3, 9 | **Drone** — mutable image |
+| 79 | [Buildkite — `$BUILDKITE_*` command injection](79-buildkite-var-injection/README.md) | 4 | **Buildkite** — var injection |
+| 80 | [Buildkite — plugin on a mutable ref](80-buildkite-plugin-unpinned/README.md) | 3 | **Buildkite** — supply chain (plugin) |
+| 81 | [Cloud Build — step image not pinned](81-cloudbuild-image-unpinned/README.md) | 3, 9 | **Cloud Build** — mutable image |
+| 82 | [Cloud Build — default service account](82-cloudbuild-default-serviceaccount/README.md) | 2 | **Cloud Build** — over-broad SA |
 
 ## OWASP CICD-SEC top 10 — full coverage
 
 | Risk | Coverage | Scenarios |
 |:---|:---|:---|
-| CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25, 37, 43, 66 |
-| CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22, 36, 41, 47, 52 |
-| CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29, 35, 38, 42, 45, 46, 53, 55, 58, 60, 63, 64 |
-| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33, 34, 38, 39, 40, 45, 48, 49, 50, 56, 62, 66 |
-| CICD-SEC-5: Insufficient Pipeline-Based Access Controls       | ✅ | 1, 4, 6, 25, 26, 36, 41 |
+| CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25, 37, 43, 66, 68 |
+| CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22, 36, 41, 47, 52, 76, 82 |
+| CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29, 35, 38, 42, 45, 46, 53, 55, 58, 60, 63, 64, 69, 73, 78, 80, 81 |
+| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33, 34, 38, 39, 40, 45, 48, 49, 50, 56, 62, 66, 67, 71, 74, 79 |
+| CICD-SEC-5: Insufficient Pipeline-Based Access Controls       | ✅ | 1, 4, 6, 25, 26, 36, 41, 68, 70 |
 | CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17, 43, 44, 51, 52, 59, 61 |
-| CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22, 47, 48, 54, 57, 65 |
+| CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22, 47, 48, 54, 57, 65, 70, 72, 75, 77 |
 | CICD-SEC-8: Ungoverned Usage of Third-Party Services          | ✅ | 24 |
-| CICD-SEC-9: Improper Artifact Integrity Validation            | ✅ | 5, 7, 9, 17, 19, 35, 42, 46, 53, 58, 64 |
+| CICD-SEC-9: Improper Artifact Integrity Validation            | ✅ | 5, 7, 9, 17, 19, 35, 42, 46, 53, 58, 64, 73, 78, 81 |
 | CICD-SEC-10: Insufficient Logging and Visibility              | ✅ | 27, 61 |
 
 Every risk in the top 10 has at least one scenario. See the

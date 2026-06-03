@@ -227,3 +227,38 @@ scenarios:
   - {id: 64, title: "Bitbucket: `image:` mutable tag",                    provider: bitbucket, cicd_sec: [3, 9], severity: medium,   slug: 64-bitbucket-image-mutable-tag,       expected: {pipeline-check: [], checkov: [CKV_BITBUCKETPIPELINES_1]}}
   - {id: 65, title: "Bitbucket: `clone: skip-ssl-verify: true`",          provider: bitbucket, cicd_sec: [7],    severity: medium,   slug: 65-bitbucket-clone-skip-ssl-verify,   expected: {pipeline-check: [], checkov: []}}
   - {id: 66, title: "Bitbucket: custom-pipeline variable injection",      provider: bitbucket, cicd_sec: [4, 1], severity: high,     slug: 66-bitbucket-custom-pipeline-injection, expected: {pipeline-check: [], checkov: []}}
+
+  # ── Wave 3: Jenkins (more) + Tekton + Argo + Drone + Buildkite + Cloud Build (67-82) ──
+  # Mostly single-scanner: pipeline-check scores all six; ciguard adds Jenkins;
+  # Checkov adds Argo (CKV_ARGO_*). Rule IDs grounded against pipeline-check
+  # 1.0.4 / Checkov 3.2.532 / ciguard 0.11.2, reconciled to CI 1.5.0 SARIF.
+  # NOTE: pipeline-check's tekton/argo discovery is single-manifest per path, so
+  # scanner-comparison.yml routes those two providers through
+  # tools/pipeline-check-resource-scan.py.
+  # NOTE: scenario 71 (Tekton param injection) is an all-miss next-gen target:
+  # pipeline-check 1.5.0's TKN-003 fired on the quoted-echo `$(params.*)` shape
+  # in 1.0.4 but no longer does in 1.5.0 (a quoting carve-out, like GHA-003) —
+  # a completeness probe, same spirit as the GHA injection-context variants.
+  #
+  # Jenkins (67-70)
+  - {id: 67, title: "Jenkins: `@Grab` sandbox-bypass (CVE-2019-1003000)",  provider: jenkins, cicd_sec: [4],    severity: critical, slug: 67-jenkins-grab-sandbox-bypass,    expected: {pipeline-check: [JF-019], ciguard: []}}
+  - {id: 68, title: "Jenkins: `input` step without `submitter`",          provider: jenkins, cicd_sec: [1, 5], severity: high,     slug: 68-jenkins-input-no-submitter,    expected: {pipeline-check: [], ciguard: []}}
+  - {id: 69, title: "Jenkins: shared library on a mutable `@master` ref",  provider: jenkins, cicd_sec: [3],    severity: high,     slug: 69-jenkins-library-mutable-ref,   expected: {pipeline-check: [JF-001], ciguard: []}}
+  - {id: 70, title: "Jenkins: `agent any` (controller exposure)",         provider: jenkins, cicd_sec: [7, 5], severity: high,     slug: 70-jenkins-agent-any,             expected: {pipeline-check: [JF-003], ciguard: [JKN-RUN-001]}}
+  # Tekton (71-73) — pipeline-check only
+  - {id: 71, title: "Tekton: `$(params.*)` injected into step script",    provider: tekton,  cicd_sec: [4],    severity: high,     slug: 71-tekton-param-injection,        expected: {pipeline-check: []}}
+  - {id: 72, title: "Tekton: privileged / root step",                     provider: tekton,  cicd_sec: [7],    severity: high,     slug: 72-tekton-privileged-step,        expected: {pipeline-check: [TKN-002]}}
+  - {id: 73, title: "Tekton: step `image:` not pinned to a digest",       provider: tekton,  cicd_sec: [3, 9], severity: medium,   slug: 73-tekton-image-unpinned,         expected: {pipeline-check: [TKN-001]}}
+  # Argo Workflows (74-76) — pipeline-check + Checkov
+  - {id: 74, title: "Argo: `{{inputs.parameters}}` injected into args",   provider: argo,    cicd_sec: [4],    severity: high,     slug: 74-argo-param-injection,          expected: {pipeline-check: [ARGO-005], checkov: []}}
+  - {id: 75, title: "Argo: privileged / root container",                  provider: argo,    cicd_sec: [7],    severity: high,     slug: 75-argo-privileged-container,     expected: {pipeline-check: [ARGO-002], checkov: [CKV_ARGO_2]}}
+  - {id: 76, title: "Argo: default ServiceAccount + token automount",     provider: argo,    cicd_sec: [2],    severity: medium,   slug: 76-argo-default-serviceaccount,   expected: {pipeline-check: [ARGO-003], checkov: [CKV_ARGO_1]}}
+  # Drone CI (77-78) — pipeline-check only
+  - {id: 77, title: "Drone: `privileged: true` step",                     provider: drone,   cicd_sec: [7],    severity: high,     slug: 77-drone-privileged-step,         expected: {pipeline-check: [DR-002]}}
+  - {id: 78, title: "Drone: step `image:` mutable tag",                   provider: drone,   cicd_sec: [3, 9], severity: medium,   slug: 78-drone-image-unpinned,          expected: {pipeline-check: [DR-001]}}
+  # Buildkite (79-80) — pipeline-check only
+  - {id: 79, title: "Buildkite: `$BUILDKITE_*` command injection",        provider: buildkite, cicd_sec: [4],  severity: high,     slug: 79-buildkite-var-injection,       expected: {pipeline-check: [BK-003]}}
+  - {id: 80, title: "Buildkite: plugin pinned to a mutable ref",          provider: buildkite, cicd_sec: [3],  severity: medium,   slug: 80-buildkite-plugin-unpinned,     expected: {pipeline-check: [BK-001]}}
+  # Google Cloud Build (81-82) — pipeline-check only
+  - {id: 81, title: "Cloud Build: step image not pinned by digest",       provider: cloudbuild, cicd_sec: [3, 9], severity: medium, slug: 81-cloudbuild-image-unpinned,     expected: {pipeline-check: [GCB-001]}}
+  - {id: 82, title: "Cloud Build: runs as default service account",       provider: cloudbuild, cicd_sec: [2],    severity: medium, slug: 82-cloudbuild-default-serviceaccount, expected: {pipeline-check: [GCB-002]}}

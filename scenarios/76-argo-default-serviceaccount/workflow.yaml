@@ -1,0 +1,31 @@
+# scenarios/76-argo-default-serviceaccount
+# CICD-SEC-2 (Inadequate IAM) — Argo Workflows
+#
+# Pattern: an Argo Workflow runs with NO `serviceAccountName` (so it uses the
+# namespace **default** ServiceAccount) and the SA token is automounted. A
+# compromised step can then call the Kubernetes API as the default SA — whose
+# permissions are often broader than the workflow needs.
+#
+# SAFETY: static fixture, nested under scenarios/ — Argo resources only run when
+# applied to a cluster; this file is never applied. The container is digest-
+# pinned and non-root so the ONLY intended bug is the default-SA / token
+# automount. See README.md.
+
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: deploy-
+spec:
+  entrypoint: main
+  # DANGER — no serviceAccountName (uses the namespace default SA), and its
+  # token is automounted. Bind a dedicated least-privilege SA and set
+  # automountServiceAccountToken: false.
+  templates:
+    - name: main
+      container:
+        image: cgr.dev/chainguard/kubectl@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+        command: [sh, -c]
+        args: ["kubectl apply -f manifests/"]
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000

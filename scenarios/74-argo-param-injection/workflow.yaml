@@ -1,0 +1,35 @@
+# scenarios/74-argo-param-injection
+# CICD-SEC-4 (Poisoned Pipeline Execution) — Argo Workflows
+#
+# Pattern: an Argo `script`/`container` template interpolates an
+# `{{inputs.parameters.*}}` (or `{{workflow.parameters.*}}`) value directly into
+# its source/args. Workflow parameters can carry attacker-controlled input (e.g.
+# from an event-driven trigger), so the parameter becomes shell syntax. Argo
+# analogue of the expression-injection family (scenarios 02 / 56 / 62 / 71).
+#
+# SAFETY: static fixture, nested under scenarios/ — Argo resources only run when
+# applied to a cluster; this file is never applied. A non-default ServiceAccount,
+# token-automount opt-out, and non-root context are set so the ONLY intended bug
+# is the parameter injection. See README.md.
+
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: build-
+spec:
+  entrypoint: main
+  serviceAccountName: ci-runner
+  automountServiceAccountToken: false
+  templates:
+    - name: main
+      inputs:
+        parameters:
+          - name: msg
+      container:
+        image: cgr.dev/chainguard/bash@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+        command: [sh, -c]
+        # DANGER — workflow input parameter spliced straight into the args.
+        args: ["echo {{inputs.parameters.msg}}"]

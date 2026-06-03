@@ -1,0 +1,20 @@
+# scenarios/82-cloudbuild-default-serviceaccount
+# CICD-SEC-2 (Inadequate IAM) — Google Cloud Build
+#
+# Pattern: a Cloud Build config that runs as the **default** Cloud Build service
+# account (no `serviceAccount:` set). The default SA historically carries broad
+# project roles, so a compromised build step inherits those — far more than the
+# build needs.
+#
+# SAFETY: static fixture, nested under scenarios/ — Cloud Build only runs a
+# config a trigger explicitly points at, never a nested file. The builder image
+# is digest-pinned so the ONLY intended bug is the default service account.
+# See README.md.
+
+# DANGER — no `serviceAccount:` field, so the build runs as the default Cloud
+# Build SA. Bind a dedicated least-privilege user-managed SA instead.
+steps:
+  - name: 'gcr.io/cloud-builders/gcloud@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f'
+    args: ['deploy', 'app', '--source', '.']
+options:
+  logging: CLOUD_LOGGING_ONLY

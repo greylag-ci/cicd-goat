@@ -78,6 +78,17 @@ jobs:
           python -m pipeline_check --pipeline azure     --azure-path scenarios         --output sarif > pc-sarif/pipeline-check-azure.sarif     || [ $? -eq 1 ]
           python -m pipeline_check --pipeline circleci  --circleci-path scenarios      --output sarif > pc-sarif/pipeline-check-circleci.sarif  || [ $? -eq 1 ]
           python -m pipeline_check --pipeline bitbucket --bitbucket-path scenarios     --output sarif > pc-sarif/pipeline-check-bitbucket.sarif || [ $? -eq 1 ]
+          python -m pipeline_check --pipeline drone     --drone-path scenarios         --output sarif > pc-sarif/pipeline-check-drone.sarif     || [ $? -eq 1 ]
+          python -m pipeline_check --pipeline buildkite --buildkite-path scenarios     --output sarif > pc-sarif/pipeline-check-buildkite.sarif || [ $? -eq 1 ]
+          python -m pipeline_check --pipeline cloudbuild --cloudbuild-path scenarios   --output sarif > pc-sarif/pipeline-check-cloudbuild.sarif || [ $? -eq 1 ]
+          # Tekton + Argo: pipeline-check's discovery is single-manifest per
+          # path AND it attaches some findings to a synthetic `resource:///`
+          # URI rather than the file path. tools/pipeline-check-resource-scan.py
+          # runs it per manifest and rewrites every finding's URI to the file
+          # path so regen-readme.py can attribute it. Output lands in the
+          # artifact (consumed by the matrix) under tool.driver.name=pipeline_check.
+          python tools/pipeline-check-resource-scan.py \
+            --output pc-sarif/pipeline-check-resource.sarif scenarios || true
       - name: Upload pipeline-check (github) SARIF
         uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba  # v4
         if: always()
@@ -114,6 +125,24 @@ jobs:
         with:
           sarif_file: pc-sarif/pipeline-check-bitbucket.sarif
           category: pipeline-check-bitbucket
+      - name: Upload pipeline-check (drone) SARIF
+        uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba  # v4
+        if: always()
+        with:
+          sarif_file: pc-sarif/pipeline-check-drone.sarif
+          category: pipeline-check-drone
+      - name: Upload pipeline-check (buildkite) SARIF
+        uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba  # v4
+        if: always()
+        with:
+          sarif_file: pc-sarif/pipeline-check-buildkite.sarif
+          category: pipeline-check-buildkite
+      - name: Upload pipeline-check (cloudbuild) SARIF
+        uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba  # v4
+        if: always()
+        with:
+          sarif_file: pc-sarif/pipeline-check-cloudbuild.sarif
+          category: pipeline-check-cloudbuild
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
         if: always()
         with:
