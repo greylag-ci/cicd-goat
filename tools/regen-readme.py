@@ -337,8 +337,14 @@ def _coverage_cell(scns: list[dict], scanner: dict, sarif_data: dict) -> str:
     scan, so a GHA-only scanner shows e.g. `0/3` (or `—` when none of the
     bucket's scenarios are GHA) instead of being scored against GitLab /
     Jenkins rows it was never built to read.
+
+    Excludes any scenario whose `verdict()` is na — both structural na
+    (wrong provider) and an explicit `expected: na` — so this denominator
+    stays identical to the leaderboard's (`compute_totals`); using bare
+    `applicable()` here would count an `expected: na` cell as a miss in
+    one table while the leaderboard excluded it.
     """
-    appl = [sc for sc in scns if applicable(sc, scanner)]
+    appl = [sc for sc in scns if verdict(sc, scanner, sarif_data) != VERDICT_NA]
     if not appl:
         return VERDICT_NA
     caught = sum(1 for sc in appl if _catches(sc, scanner, sarif_data))

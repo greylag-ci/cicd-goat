@@ -30,7 +30,7 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 08 | Self-hosted runner on public repo | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ | ✅ |
 | 09 | Container image `:latest` | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 10 | AWS OIDC wildcard `sub` | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| 11 | `pip install` no hashes | ✅ | — | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 11 | `pip install` no hashes | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 12 | `persist-credentials` leak | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ |
 | 13 | `workflow_dispatch` input injection | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ |
 | 14 | `$GITHUB_ENV` poisoning | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
