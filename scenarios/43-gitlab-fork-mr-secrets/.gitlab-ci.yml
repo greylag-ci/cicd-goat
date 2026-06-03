@@ -1,0 +1,27 @@
+# scenarios/43-gitlab-fork-mr-secrets
+# CICD-SEC-1 (Insufficient Flow Control) · CICD-SEC-6 (Credential Hygiene)
+#
+# Pattern: a secret-bearing job is gated to run on merge-request pipelines
+# (`$CI_PIPELINE_SOURCE == "merge_request_event"`). When the project also
+# enables "run pipelines for fork merge requests in the parent project",
+# a fork's MR code executes in the PARENT context with the parent's
+# protected variables ($DEPLOY_TOKEN) in scope — a fork author can exfiltrate
+# them. This is the GitLab analogue of pull_request_target fork RCE (scenario 01).
+#
+# SAFETY: this fixture relies on NESTING for safety (GitLab never auto-runs a
+# nested .gitlab-ci.yml). The `workflow:`/job `rules:` here are the very thing
+# the scenario is about, so no always-skip gate is added — it would obscure the
+# rule-based bug. The file is inert because of its location. See README.md.
+
+stages: [deploy]
+
+deploy-on-mr:
+  stage: deploy
+  image: alpine@sha256:beefdbd8a1da6d2915566fde36db9db0b524eb737fc57cd1367effd16dc0d06d
+  # DANGER — runs on every merge-request pipeline, including fork MRs when the
+  # project opts into running them in the parent. The deploy step below uses a
+  # protected variable that a fork's MR code can then read/exfiltrate.
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  script:
+    - curl -H "Authorization: Bearer $DEPLOY_TOKEN" https://deploy.example.com/release

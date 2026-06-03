@@ -65,7 +65,15 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | #  | Scenario | pipeline&#x2011;check | Checkov | ciguard |
 | :-:| :--- | :-: | :-: | :-: |
 | 39 | GitLab CI: script injection via `$CI_*` / MR vars | ✅ | ❌ | ❌ |
-|    | **canonical bugs caught** | **1 ✅** | **0 ✅** | **0 ✅** |
+| 41 | GitLab: `CI_JOB_TOKEN` cross-project access | ❌ | ❌ | ✅ |
+| 42 | GitLab: untrusted `include:` (remote / mutable ref) | ✅ | ❌ | ✅ |
+| 43 | GitLab: secret job on fork merge-request pipeline | ✅ | ❌ | ✅ |
+| 44 | GitLab: hardcoded secret in `variables:` | ✅ | ❌ | ✅ |
+| 45 | GitLab: `curl \| sh` in `before_script` | ✅ | ❌ | ✅ |
+| 46 | GitLab: job `image:` mutable tag | ✅ | ❌ | ✅ |
+| 47 | GitLab: OIDC `id_tokens` over-broad aud/sub | ✅ | ❌ | ❌ |
+| 48 | GitLab: untagged shared-runner + privileged dind | ❌ | ❌ | ✅ |
+|    | **canonical bugs caught** | **7 ✅** | **0 ✅** | **7 ✅** |
 
 ### Jenkins
 
@@ -132,6 +140,14 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 38 | [Recursive submodule checkout from PR](../scenarios/38-submodule-trust-from-pr/README.md) | GitHub Actions | 3 · 4 | 🟠 high |
 | 39 | [GitLab CI: script injection via `$CI_*` / MR vars](../scenarios/39-gitlab-ci-script-injection/README.md) | GitLab CI | 4 | 🟠 high |
 | 40 | [Jenkins: `sh` string-interpolation injection](../scenarios/40-jenkins-shell-injection/README.md) | Jenkins | 4 | 🟠 high |
+| 41 | [GitLab: `CI_JOB_TOKEN` cross-project access](../scenarios/41-gitlab-ci-job-token-cross-project/README.md) | GitLab CI | 2 · 5 | 🟠 high |
+| 42 | [GitLab: untrusted `include:` (remote / mutable ref)](../scenarios/42-gitlab-include-remote-untrusted/README.md) | GitLab CI | 3 · 9 | 🟠 high |
+| 43 | [GitLab: secret job on fork merge-request pipeline](../scenarios/43-gitlab-fork-mr-secrets/README.md) | GitLab CI | 1 · 6 | 🟠 high |
+| 44 | [GitLab: hardcoded secret in `variables:`](../scenarios/44-gitlab-secret-in-variables/README.md) | GitLab CI | 6 | 🟠 high |
+| 45 | [GitLab: `curl \| sh` in `before_script`](../scenarios/45-gitlab-curl-pipe-sh/README.md) | GitLab CI | 3 · 4 | 🟡 medium |
+| 46 | [GitLab: job `image:` mutable tag](../scenarios/46-gitlab-image-latest/README.md) | GitLab CI | 3 · 9 | 🟡 medium |
+| 47 | [GitLab: OIDC `id_tokens` over-broad aud/sub](../scenarios/47-gitlab-oidc-broad-aud-sub/README.md) | GitLab CI | 2 · 7 | 🔴 critical |
+| 48 | [GitLab: untagged shared-runner + privileged dind](../scenarios/48-gitlab-shared-runner-privileged/README.md) | GitLab CI | 7 · 4 | 🟠 high |
 <!-- /AUTOGEN:scenarios-index -->
 
 > [!NOTE]

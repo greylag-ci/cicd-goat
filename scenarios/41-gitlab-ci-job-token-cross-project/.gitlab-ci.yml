@@ -1,0 +1,30 @@
+# scenarios/41-gitlab-ci-job-token-cross-project
+# CICD-SEC-2 (Inadequate IAM) · CICD-SEC-5 (Insufficient PBAC) — GitLab CI
+#
+# Pattern: a job uses $CI_JOB_TOKEN to authenticate to a DIFFERENT project.
+# The job token is minted automatically for every pipeline; if the target
+# project's inbound job-token allowlist is disabled (the common state before
+# GitLab tightened the default), ANY project that can run a pipeline can mint
+# a token and read/clone the target. GitLab issue #243703 and CVE-2024-8641
+# (job token leveraged into a session token) are the canonical disclosures.
+#
+# SAFETY: static fixture, nested under scenarios/ (never auto-run); the
+# `workflow: rules: when: never` gate is belt-and-suspenders. See README.md.
+
+workflow:
+  rules:
+    - when: never
+
+stages: [fetch]
+
+pull-internal-libs:
+  stage: fetch
+  image: alpine@sha256:beefdbd8a1da6d2915566fde36db9db0b524eb737fc57cd1367effd16dc0d06d
+  script:
+    # DANGER — CI_JOB_TOKEN used for CROSS-PROJECT access. If platform/internal-libs
+    # has "allow access from all projects" set (inbound allowlist disabled), any
+    # attacker-controlled project's pipeline can reach it with its own job token.
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.example.com/platform/internal-libs.git
+    - cd internal-libs && ./build.sh
+    # ...and the same token reaches the API of other projects:
+    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" https://gitlab.example.com/api/v4/projects/4242/packages'

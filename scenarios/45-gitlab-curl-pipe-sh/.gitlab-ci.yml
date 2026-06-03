@@ -1,0 +1,26 @@
+# scenarios/45-gitlab-curl-pipe-sh
+# CICD-SEC-3 (Dependency Chain Abuse) · CICD-SEC-4 (Poisoned Pipeline Execution)
+#
+# Pattern: `before_script`/`script` pipes a remote installer straight into a
+# shell — `curl … | sh`. The upstream host (or an attacker via a moved tag,
+# compromised CDN, or MITM) serves whatever script it likes, and it runs with
+# the runner's privileges and the job's secrets. Same mechanism as the Codecov
+# bash-uploader incident (scenarios 16 / 19).
+#
+# SAFETY: static fixture, nested under scenarios/ (never auto-run); the
+# `workflow: rules: when: never` gate is belt-and-suspenders. See README.md.
+
+workflow:
+  rules:
+    - when: never
+
+stages: [setup]
+
+install-tools:
+  stage: setup
+  image: alpine@sha256:beefdbd8a1da6d2915566fde36db9db0b524eb737fc57cd1367effd16dc0d06d
+  before_script:
+    # DANGER — unverified remote script piped directly into a shell.
+    - curl -sSL https://get.example.com/install.sh | sh
+  script:
+    - echo "tools installed; building..."

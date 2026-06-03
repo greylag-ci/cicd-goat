@@ -1,0 +1,35 @@
+# scenarios/48-gitlab-shared-runner-privileged
+# CICD-SEC-7 (Insecure System Configuration) · CICD-SEC-4 (Poisoned Pipeline Execution)
+#
+# Pattern: a build job with NO `tags:` (so it lands on any shared/untagged
+# runner) spins up a privileged Docker-in-Docker service with TLS disabled on
+# the daemon socket. On a shared runner this reaches the host Docker daemon and
+# the workspaces/credentials of other tenants' jobs — container escape and
+# cross-tenant compromise. Pin to a dedicated, ephemeral runner instead.
+#
+# SAFETY: static fixture, nested under scenarios/ (never auto-run); the
+# `workflow: rules: when: never` gate is belt-and-suspenders. See README.md.
+
+workflow:
+  rules:
+    - when: never
+
+stages: [build]
+
+build-image:
+  stage: build
+  # Images digest-pinned on purpose: the ONLY intended bug here is the
+  # untagged-shared-runner + privileged dind, not a mutable-tag finding.
+  image: docker@sha256:6f1a3b6c0a8c9d8e2b4c5a7e9d0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f
+  services:
+    - name: docker:27-dind@sha256:1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b
+      # DANGER — privileged dind with TLS disabled on a shared runner.
+      command: ["--host=tcp://0.0.0.0:2375"]
+  variables:
+    # DANGER — no `tags:` on this job, so it runs on any shared runner; the
+    # empty cert dir disables TLS auth on the exposed Docker daemon socket.
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: "tcp://docker:2375"
+  script:
+    - docker build -t app .
+    - docker push app

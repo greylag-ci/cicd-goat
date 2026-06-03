@@ -1,0 +1,25 @@
+# scenarios/46-gitlab-image-latest
+# CICD-SEC-3 (Dependency Chain Abuse) · CICD-SEC-9 (Improper Artifact Integrity)
+#
+# Pattern: a job `image:` pinned to a MUTABLE tag instead of an immutable
+# digest. The whole job runs inside whatever that tag currently resolves to,
+# so whoever can move the tag (upstream maintainer, or an attacker who
+# compromises the registry namespace) swaps in a malicious image that captures
+# the job's secrets and source on the next run. GitLab analogue of scenario 09.
+#
+# SAFETY: static fixture, nested under scenarios/ (never auto-run); the
+# `workflow: rules: when: never` gate is belt-and-suspenders. See README.md.
+
+workflow:
+  rules:
+    - when: never
+
+stages: [build]
+
+build:
+  stage: build
+  # DANGER — mutable tag. The fix is a digest pin: node@sha256:<...>.
+  image: node:latest
+  script:
+    - npm ci
+    - npm run build

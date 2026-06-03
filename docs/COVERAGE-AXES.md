@@ -33,15 +33,15 @@ overall (a scenario in two categories counts once in each row).
 <!-- AUTOGEN:cicd-sec-coverage -->
 | # | Category | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard |
 | :-: | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| 1 | Insufficient flow control | 3 | 2/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 | — |
-| 2 | Inadequate IAM | 3 | 2/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 | — |
-| 3 | Dependency chain abuse | 10 | 6/10 | 3/10 | 3/10 | 2/10 | 0/10 | 0/10 | 0/10 | — |
-| 4 | Poisoned pipeline execution | 17 | 15/17 | 10/15 | 8/15 | 4/15 | 8/16 | 6/15 | 10/15 | 0/2 |
-| 5 | Insufficient PBAC | 6 | 5/6 | 3/6 | 1/6 | 0/6 | 1/6 | 0/6 | 1/6 | — |
-| 6 | Insufficient credential hygiene | 4 | 4/4 | 3/4 | 1/4 | 2/4 | 0/4 | 0/4 | 1/4 | — |
-| 7 | Insecure system configuration | 3 | 3/3 | 0/3 | 1/3 | 0/3 | 0/3 | 0/3 | 1/3 | — |
+| 1 | Insufficient flow control | 4 | 3/4 | 0/3 | 0/3 | 0/3 | 0/4 | 0/3 | 0/3 | 1/1 |
+| 2 | Inadequate IAM | 5 | 3/5 | 0/3 | 0/3 | 0/3 | 0/5 | 0/3 | 0/3 | 1/2 |
+| 3 | Dependency chain abuse | 13 | 9/13 | 3/10 | 3/10 | 2/10 | 0/13 | 0/10 | 0/10 | 3/3 |
+| 4 | Poisoned pipeline execution | 19 | 16/19 | 10/15 | 8/15 | 4/15 | 8/18 | 6/15 | 10/15 | 2/4 |
+| 5 | Insufficient PBAC | 7 | 5/7 | 3/6 | 1/6 | 0/6 | 1/7 | 0/6 | 1/6 | 1/1 |
+| 6 | Insufficient credential hygiene | 6 | 6/6 | 3/4 | 1/4 | 2/4 | 0/6 | 0/4 | 1/4 | 2/2 |
+| 7 | Insecure system configuration | 5 | 4/5 | 0/3 | 1/3 | 0/3 | 0/5 | 0/3 | 1/3 | 1/2 |
 | 8 | Ungoverned 3rd-party services | 1 | 1/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | — |
-| 9 | Improper artifact integrity validation | 6 | 5/6 | 3/6 | 1/6 | 0/6 | 0/6 | 0/6 | 1/6 | — |
+| 9 | Improper artifact integrity validation | 8 | 7/8 | 3/6 | 1/6 | 0/6 | 0/8 | 0/6 | 1/6 | 2/2 |
 | 10 | Insufficient logging & visibility | 1 | 1/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 | — |
 <!-- /AUTOGEN:cicd-sec-coverage -->
 
@@ -62,9 +62,9 @@ assign to each scenario in
 <!-- AUTOGEN:severity-coverage -->
 | Severity | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard |
 | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| 🔴 critical | 9 | 7/9 | 3/9 | 3/9 | 0/9 | 0/9 | 0/9 | 3/9 | — |
-| 🟠 high | 25 | 20/25 | 10/23 | 8/23 | 7/23 | 8/24 | 6/23 | 9/23 | 0/2 |
-| 🟡 medium | 6 | 6/6 | 3/6 | 1/6 | 0/6 | 1/6 | 0/6 | 0/6 | — |
+| 🔴 critical | 10 | 8/10 | 3/9 | 3/9 | 0/9 | 0/10 | 0/9 | 3/9 | 0/1 |
+| 🟠 high | 30 | 23/30 | 10/23 | 8/23 | 7/23 | 8/29 | 6/23 | 9/23 | 5/7 |
+| 🟡 medium | 8 | 8/8 | 3/6 | 1/6 | 0/6 | 1/8 | 0/6 | 0/6 | 2/2 |
 <!-- /AUTOGEN:severity-coverage -->
 
 > If a scanner's critical-row fraction is meaningfully lower than its
@@ -96,19 +96,22 @@ scenarios from the field tested here.
 | 28 | [Reusable workflow `${{ inputs.* }}` injection](../scenarios/28-reusable-workflow-input-injection/README.md) | **pipeline&#x2011;check** |
 | 39 | [GitLab CI: script injection via `$CI_*` / MR vars](../scenarios/39-gitlab-ci-script-injection/README.md) | **pipeline&#x2011;check** |
 | 40 | [Jenkins: `sh` string-interpolation injection](../scenarios/40-jenkins-shell-injection/README.md) | **pipeline&#x2011;check** |
+| 41 | [GitLab: `CI_JOB_TOKEN` cross-project access](../scenarios/41-gitlab-ci-job-token-cross-project/README.md) | **ciguard** |
+| 47 | [GitLab: OIDC `id_tokens` over-broad aud/sub](../scenarios/47-gitlab-oidc-broad-aud-sub/README.md) | **pipeline&#x2011;check** |
+| 48 | [GitLab: untagged shared-runner + privileged dind](../scenarios/48-gitlab-shared-runner-privileged/README.md) | **ciguard** |
 
 **Solo catches per scanner** — scenarios where this is the only ✅ on the row:
 
 | Scanner | Solo catches |
 | :-- | :-: |
-| pipeline&#x2011;check | **12** |
+| pipeline&#x2011;check | **13** |
+| ciguard | **2** |
 | zizmor | **0** |
 | poutine | **0** |
 | KICS | **0** |
 | Checkov | **0** |
 | actionlint | **0** |
 | octoscan | **0** |
-| ciguard | **0** |
 <!-- /AUTOGEN:unique-catches -->
 
 > Solo-catch count is a different signal from leaderboard rank. A

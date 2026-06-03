@@ -1,0 +1,22 @@
+{
+  "//": "scenarios/47-gitlab-oidc-broad-aud-sub — inert IaC fixture, do not aws iam create-role this.",
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::123456789012:oidc-provider/gitlab.example.com"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "gitlab.example.com:aud": "https://gitlab.example.com"
+        },
+        "StringLike": {
+          "//": "DANGER — wildcard project_path and ref: ANY project on ANY branch in this GitLab instance can assume this role. The fix binds a specific project_id/namespace_id and ref_protected.",
+          "gitlab.example.com:sub": "project_path:*:ref_type:branch:ref:*"
+        }
+      }
+    }
+  ]
+}
