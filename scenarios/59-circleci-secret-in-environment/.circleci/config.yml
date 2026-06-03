@@ -1,0 +1,29 @@
+# scenarios/59-circleci-secret-in-environment
+# CICD-SEC-6 (Insufficient Credential Hygiene) — CircleCI
+#
+# Pattern: a credential hardcoded into a job's `environment:` block in the
+# committed config — visible to anyone who can read the repo or a build log,
+# and persisted in git history. Secrets belong in CircleCI Contexts / project
+# env vars (ideally OIDC short-lived creds), never in config.yml. The 2023
+# CircleCI breach is the cautionary tale for long-lived secrets in the provider.
+# (The token here is a fake hex fixture, no real provider format.)
+#
+# SAFETY: static fixture, nested under scenarios/ (CircleCI runs only the root
+# config.yml). See README.md.
+
+version: 2.1
+
+workflows:
+  deploy:
+    jobs:
+      - deploy
+
+jobs:
+  deploy:
+    docker:
+      - image: cimg/base@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+    environment:
+      # DANGER — hardcoded credential committed in plaintext.
+      LEGACY_API_TOKEN: "deadbeefcafef00dfeedfacebadc0ffee0ddf00d"
+    steps:
+      - run: 'curl -H "Authorization: Bearer $LEGACY_API_TOKEN" https://api.example.com/release'

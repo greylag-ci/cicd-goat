@@ -1,0 +1,25 @@
+# scenarios/66-bitbucket-custom-pipeline-injection
+# CICD-SEC-4 (PPE) · CICD-SEC-1 (Insufficient Flow Control) — Bitbucket Pipelines
+#
+# Pattern: a `custom:` pipeline declares user-provided `variables:` that are
+# then used UNQUOTED in a privileged `script:` step, and the pipeline is
+# triggerable (UI/API) by users who shouldn't reach that step. A trigger-rights
+# user supplies a value with shell metacharacters (or an unauthorized deploy
+# target) and achieves injection / unauthorized deploy. Analogue of scenario 13
+# (workflow_dispatch input injection).
+#
+# SAFETY: static fixture, nested under scenarios/ (Bitbucket runs only the root
+# bitbucket-pipelines.yml). See README.md.
+
+image: atlassian/default-image@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+
+pipelines:
+  custom:
+    deploy:
+      - variables:
+          - name: TARGET           # user-supplied at trigger time
+      - step:
+          name: deploy
+          script:
+            # DANGER — user-provided variable interpolated unquoted into a command.
+            - ./deploy.sh --target $TARGET

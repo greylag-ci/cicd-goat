@@ -59,23 +59,25 @@ jobs:
           pipeline-check==1.5.0 --hash=sha256:da9ed3e242ea213ce2df53e7d054258acce12fc6e8cc77607680d2ff77182625
           REQ
           pip install 'boto3' 'click' 'PyYAML' 'rich'
-      - name: Run pipeline-check (github + gitlab + jenkins)
+      - name: Run pipeline-check (all providers in the corpus)
         # pipeline-check is the only scanner here that reads every provider.
         # One invocation per provider, each pointed at the tree it owns:
-        #   - github : .github/workflows (the 38 gated GHA scenarios)
-        #   - gitlab : scenarios/  (the path flag recurses and finds nested
-        #              .gitlab-ci.yml fixtures; emits the nested path in the
-        #              SARIF URI so regen-readme.py can attribute it)
-        #   - jenkins: scenarios/  (same, for nested Jenkinsfile fixtures)
-        # All three SARIFs carry tool.driver.name = "pipeline_check", so
+        #   - github  : .github/workflows (the 38 gated GHA scenarios)
+        #   - others  : scenarios/  (the per-provider path flag recurses and
+        #               finds the nested fixtures, and emits the nested path in
+        #               the SARIF URI so regen-readme.py can attribute it)
+        # All SARIFs carry tool.driver.name = "pipeline_check", so
         # parse_sarif_dir merges them into one logical scanner in the matrix.
         # `|| [ $? -eq 1 ]` tolerates exit 1 (= findings present).
         run: |
           set -euo pipefail
           mkdir -p pc-sarif
-          python -m pipeline_check --pipeline github  --gha-path .github/workflows --output sarif > pc-sarif/pipeline-check-github.sarif  || [ $? -eq 1 ]
-          python -m pipeline_check --pipeline gitlab  --gitlab-path scenarios      --output sarif > pc-sarif/pipeline-check-gitlab.sarif  || [ $? -eq 1 ]
-          python -m pipeline_check --pipeline jenkins --jenkinsfile-path scenarios --output sarif > pc-sarif/pipeline-check-jenkins.sarif || [ $? -eq 1 ]
+          python -m pipeline_check --pipeline github    --gha-path .github/workflows   --output sarif > pc-sarif/pipeline-check-github.sarif    || [ $? -eq 1 ]
+          python -m pipeline_check --pipeline gitlab    --gitlab-path scenarios        --output sarif > pc-sarif/pipeline-check-gitlab.sarif    || [ $? -eq 1 ]
+          python -m pipeline_check --pipeline jenkins   --jenkinsfile-path scenarios   --output sarif > pc-sarif/pipeline-check-jenkins.sarif   || [ $? -eq 1 ]
+          python -m pipeline_check --pipeline azure     --azure-path scenarios         --output sarif > pc-sarif/pipeline-check-azure.sarif     || [ $? -eq 1 ]
+          python -m pipeline_check --pipeline circleci  --circleci-path scenarios      --output sarif > pc-sarif/pipeline-check-circleci.sarif  || [ $? -eq 1 ]
+          python -m pipeline_check --pipeline bitbucket --bitbucket-path scenarios     --output sarif > pc-sarif/pipeline-check-bitbucket.sarif || [ $? -eq 1 ]
       - name: Upload pipeline-check (github) SARIF
         uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba  # v4
         if: always()
@@ -94,6 +96,24 @@ jobs:
         with:
           sarif_file: pc-sarif/pipeline-check-jenkins.sarif
           category: pipeline-check-jenkins
+      - name: Upload pipeline-check (azure) SARIF
+        uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba  # v4
+        if: always()
+        with:
+          sarif_file: pc-sarif/pipeline-check-azure.sarif
+          category: pipeline-check-azure
+      - name: Upload pipeline-check (circleci) SARIF
+        uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba  # v4
+        if: always()
+        with:
+          sarif_file: pc-sarif/pipeline-check-circleci.sarif
+          category: pipeline-check-circleci
+      - name: Upload pipeline-check (bitbucket) SARIF
+        uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba  # v4
+        if: always()
+        with:
+          sarif_file: pc-sarif/pipeline-check-bitbucket.sarif
+          category: pipeline-check-bitbucket
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
         if: always()
         with:

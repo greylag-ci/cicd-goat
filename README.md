@@ -16,7 +16,7 @@
 > Every CI/CD scanner has blind spots. The only honest way to measure them
 > is on a target where the bugs are catalogued in advance. This is that target.
 
-Forty-eight vulnerable pipelines, each demonstrating one specific attack pattern
+Sixty-six vulnerable pipelines, each demonstrating one specific attack pattern
 drawn from named incident disclosures (tj-actions 2025, ArtiPACKED 2024,
 Codecov 2021, Birsan dependency confusion 2021,
 event-stream/ua-parser-js/node-ipc/Shai-Hulud npm lifecycle abuse,
@@ -31,11 +31,13 @@ GHA job is gated with `if: false` so the workflows show up in run history but
 never spawn a runner.
 
 **Scenarios 39+ extend the range to other providers** — the same one-bug,
-one-writeup model on the platforms where most pipelines actually live, starting
-with GitLab CI and Jenkins. These ship as static fixtures nested under
-`scenarios/NN-*/` (never at a provider's auto-run path), so they're readable by
-scanners but inert on every platform. Only the scanners that parse a given
-provider score those rows — see the per-provider leaderboards below.
+one-writeup model on the platforms where most pipelines actually live: GitLab CI,
+Jenkins, Azure Pipelines, CircleCI, and Bitbucket Pipelines. These ship as
+static fixtures nested under `scenarios/NN-*/` (never at a provider's auto-run
+path), so they're readable by scanners but inert on every platform. Only the
+scanners that parse a given provider score those rows — and several
+Azure/CircleCI/Bitbucket rows are all-miss *next-gen targets* no scanner here
+catches yet. See the per-provider leaderboards below.
 
 ## Leaderboard
 
@@ -94,8 +96,9 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 
 ## What's in this repo
 
-- **[Scenarios](scenarios/README.md)** — 48 vulnerable pipelines (38
-  GitHub Actions + 9 GitLab CI + 1 Jenkins), each with its own writeup
+- **[Scenarios](scenarios/README.md)** — 66 vulnerable pipelines (38
+  GitHub Actions + 9 GitLab CI + 6 Azure + 6 CircleCI + 6 Bitbucket +
+  1 Jenkins), each with its own writeup
   (exploitation walkthrough, per-scanner coverage, the fix). Indexed by
   attack class and CICD-SEC category.
 - **[Full matrix](docs/MATRIX.md)** — per-(scenario × scanner) verdict

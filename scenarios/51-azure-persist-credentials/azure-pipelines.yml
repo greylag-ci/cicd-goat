@@ -1,0 +1,25 @@
+# scenarios/51-azure-persist-credentials
+# CICD-SEC-6 (Insufficient Credential Hygiene) — Azure Pipelines
+#
+# Pattern: `checkout` with `persistCredentials: true` leaves the
+# System.AccessToken / repo OAuth token in `.git/config` as an auth header
+# after fetch. A later step (or attacker-controlled PR code) reads it,
+# base64-decodes the AUTHORIZATION header, and reuses it to push or reach other
+# repos — the Azure equivalent of the ArtiPACKED / persist-credentials leak
+# (scenarios 12 / 17).
+#
+# SAFETY: static fixture, nested under scenarios/ (never auto-run). See README.md.
+
+trigger: none
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  # DANGER — persistCredentials default is false; turning it on writes the
+  # pipeline token into .git/config for every subsequent step to read.
+  - checkout: self
+    persistCredentials: true
+  - script: |
+      git config --get http.https://dev.azure.com.extraheader

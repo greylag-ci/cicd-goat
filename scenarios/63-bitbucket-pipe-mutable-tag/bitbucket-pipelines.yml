@@ -1,0 +1,26 @@
+# scenarios/63-bitbucket-pipe-mutable-tag
+# CICD-SEC-3 (Dependency Chain Abuse) — Bitbucket Pipelines
+#
+# Pattern: a `pipe:` (Bitbucket Pipe) pinned to a MUTABLE tag. A pipe is a
+# Docker container that runs with your pipeline's variables/secrets passed in
+# as inputs. A mutable tag overwritten upstream (or a non-vetted third-party
+# pipe) executes attacker code with those secrets in scope. Analogue of the
+# mutable-action-ref / third-party-exfil class (scenarios 03 / 24).
+#
+# SAFETY: static fixture, nested under scenarios/ (Bitbucket runs only the root
+# bitbucket-pipelines.yml). See README.md.
+
+image: atlassian/default-image@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+
+pipelines:
+  default:
+    - step:
+        name: deploy
+        script:
+          # DANGER — pipe pinned to a mutable tag. Pin by digest (@sha256:...)
+          # or at minimum an exact immutable version, and prefer vetted pipes.
+          - pipe: atlassian/aws-s3-deploy:latest
+            variables:
+              AWS_DEFAULT_REGION: 'us-east-1'
+              S3_BUCKET: 'my-bucket'
+              LOCAL_PATH: 'dist'

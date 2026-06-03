@@ -1,0 +1,28 @@
+# scenarios/52-azure-spn-to-environment
+# CICD-SEC-2 (Inadequate IAM) · CICD-SEC-6 (Credential Hygiene) — Azure Pipelines
+#
+# Pattern: `AzureCLI@2` with `addSpnToEnvironment: true` dumps the service
+# connection's service-principal client id/secret/tenant into the job
+# environment. Any step (or injected code) reads the SP secret and authenticates
+# to Azure ARM directly — pivoting beyond the pipeline with the SP's (often
+# over-scoped) rights. Documented by Synacktiv's CI/CD secrets-extraction work.
+#
+# SAFETY: static fixture, nested under scenarios/ (never auto-run). See README.md.
+
+trigger: none
+pr: none
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: 'SP-CICD-Owner'   # over-scoped service connection
+      scriptType: bash
+      scriptLocation: inlineScript
+      # DANGER — exposes servicePrincipalKey/Id/tenantId as env vars.
+      addSpnToEnvironment: true
+      inlineScript: |
+        echo "client=$servicePrincipalId"
+        # $servicePrincipalKey is now readable by any later step

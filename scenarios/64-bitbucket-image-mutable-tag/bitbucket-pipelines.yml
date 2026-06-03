@@ -1,0 +1,21 @@
+# scenarios/64-bitbucket-image-mutable-tag
+# CICD-SEC-9 (Improper Artifact Integrity) · CICD-SEC-3 — Bitbucket Pipelines
+#
+# Pattern: the build `image:` is pinned to a MUTABLE tag (`:latest`) instead of
+# a digest. Every step runs inside whatever that tag currently resolves to, so
+# a tag overwrite (upstream or via stolen registry creds) swaps in a malicious
+# image on the next run. Analogue of scenarios 09 / 46 / 58.
+#
+# SAFETY: static fixture, nested under scenarios/ (Bitbucket runs only the root
+# bitbucket-pipelines.yml). See README.md.
+
+# DANGER — mutable tag. The fix is a digest pin: node@sha256:<...>.
+image: node:latest
+
+pipelines:
+  default:
+    - step:
+        name: build
+        script:
+          - npm ci
+          - npm run build

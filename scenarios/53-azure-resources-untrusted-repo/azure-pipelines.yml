@@ -1,0 +1,29 @@
+# scenarios/53-azure-resources-untrusted-repo
+# CICD-SEC-3 (Dependency Chain Abuse) · CICD-SEC-9 (Improper Artifact Integrity)
+#
+# Pattern: a `resources: repositories` entry references an EXTERNAL repo on a
+# MUTABLE ref (`refs/heads/main`), then checks it out and runs its template /
+# scripts. Whoever controls that branch (the upstream owner, or anyone who can
+# push to it) gets their code/templates executed in your pipeline with your
+# secrets. Azure analogue of the mutable-ref supply-chain class (scenario 03).
+#
+# SAFETY: static fixture, nested under scenarios/ (never auto-run). See README.md.
+
+trigger: none
+pr: none
+
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: third-party/ci-templates
+      # DANGER — external repo pinned to a mutable branch, not a tag/commit.
+      ref: refs/heads/main
+      endpoint: github-connection
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - checkout: templates
+  - template: deploy-steps.yml@templates
