@@ -506,4 +506,68 @@ Same source as the main matrix — auto-rebuilt from the latest
 | :-- | :-- | :-: |
 | pipeline&#x2011;check | **`JF-002`**, `JF-003`, `JF-011`, `JF-014`, `JF-015`, `JF-016`, `JF-028` | ✅ |
 | ciguard | _(none)_ | ❌ |
+
+### Scenario 41 — GitLab: `CI_JOB_TOKEN` cross-project access (GitLab CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `GL-015` | ❌ |
+| Checkov | `CKV_GITLABCI_1` | ❌ |
+| ciguard | `ART-003`, **`IAM-002`**, `SC-003` | ✅ |
+
+### Scenario 42 — GitLab: untrusted `include:` (remote / mutable ref) (GitLab CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`GL-005`**, `GL-015` | ✅ |
+| Checkov | _(none)_ | ❌ |
+| ciguard | `ART-003`, **`PIPE-002`**, `SC-002`, `SC-003` | ✅ |
+
+### Scenario 43 — GitLab: secret job on fork merge-request pipeline (GitLab CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, **`GL-004`**, `GL-015` | ✅ |
+| Checkov | _(none)_ | ❌ |
+| ciguard | `ART-003`, **`PIPE-004`**, `RUN-003`, `SC-003` | ✅ |
+
+### Scenario 44 — GitLab: hardcoded secret in `variables:` (GitLab CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, **`GL-003`**, `GL-004`, `GL-008`, `GL-015` | ✅ |
+| Checkov | _(none)_ | ❌ |
+| ciguard | `ART-003`, **`IAM-001`**, `IAM-003`, `PIPE-004`, `RUN-003`, `SC-003` | ✅ |
+
+### Scenario 45 — GitLab: `curl \| sh` in `before_script` (GitLab CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `GL-015`, **`GL-016`** | ✅ |
+| Checkov | _(none)_ | ❌ |
+| ciguard | `ART-003`, `PIPE-003`, **`SC-001`**, `SC-003` | ✅ |
+
+### Scenario 46 — GitLab: job `image:` mutable tag (GitLab CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`GL-001`**, `GL-009`, `GL-015`, `GL-034` | ✅ |
+| Checkov | _(none)_ | ❌ |
+| ciguard | `ART-003`, `PIPE-001`, `SC-003`, **`SCA-PIN-002`** | ✅ |
+
+### Scenario 47 — GitLab: OIDC `id_tokens` over-broad aud/sub (GitLab CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, `GL-004`, `GL-015`, **`GL-031`** | ✅ |
+| Checkov | _(none)_ | ❌ |
+| ciguard | `ART-003`, `PIPE-004`, `RUN-003`, `SC-003` | ❌ |
+
+### Scenario 48 — GitLab: untagged shared-runner + privileged dind (GitLab CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, `GL-004`, `GL-006`, `GL-007`, `GL-015`, `GL-019`, `GL-024` | ❌ |
+| Checkov | _(none)_ | ❌ |
+| ciguard | `ART-003`, **`RUN-002`**, `SC-003` | ✅ |
 <!-- /AUTOGEN:rule-firings -->

@@ -6,7 +6,7 @@
 [![scanner-comparison](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml/badge.svg)](https://github.com/greylag-ci/cicd-goat/actions/workflows/scanner-comparison.yml)
 [![License Apache 2.0](https://img.shields.io/badge/license-Apache_2.0-3a3a3a?style=flat-square)](LICENSE)
 [![CICD-SEC top 10](https://img.shields.io/badge/owasp-CICD--SEC_10%2F10-9c2b2b?style=flat-square)](https://owasp.org/www-project-top-10-ci-cd-security-risks/)
-[![scenarios 40](https://img.shields.io/badge/scenarios-40-1f6feb?style=flat-square)](scenarios/README.md)
+[![scenarios 48](https://img.shields.io/badge/scenarios-48-1f6feb?style=flat-square)](scenarios/README.md)
 [![providers 3](https://img.shields.io/badge/providers-3-1f6feb?style=flat-square)](docs/MATRIX.md)
 [![scanners 8](https://img.shields.io/badge/scanners-8-1f6feb?style=flat-square)](docs/MATRIX.md)
 <!-- /AUTOGEN:badges -->
@@ -60,13 +60,13 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 | KICS | **7 ✅** |
 | actionlint | **6 ✅** |
 
-### GitLab CI — 1 scenario
+### GitLab CI — 9 scenarios
 
-| Scanner | Scenarios caught (of 1) |
+| Scanner | Scenarios caught (of 9) |
 | :--- | :--- |
-| pipeline&#x2011;check | **1 ✅** |
+| pipeline&#x2011;check | **7 ✅** |
+| ciguard | **7 ✅** |
 | Checkov | **0 ✅** |
-| ciguard | **0 ✅** |
 
 ### Jenkins — 1 scenario
 
