@@ -1,0 +1,23 @@
+# scenarios/113-gitlab-debug-trace
+# CICD-SEC-10 (Insufficient Logging & Visibility) · CICD-SEC-6 — GitLab CI
+#
+# Pattern: `CI_DEBUG_TRACE: "true"` turns on full shell-trace logging for
+# every job. GitLab's job-trace masking is best-effort and debug trace dumps
+# the entire expanded environment — including masked CI/CD variables and
+# protected secrets — into the job log, where anyone with Reporter access (or
+# the trace API) can read them. A logging/visibility control inverted into a
+# secret-exfiltration channel: the audit log itself leaks the secrets.
+#
+# SAFETY: relies on NESTING (GitLab never auto-runs a nested .gitlab-ci.yml).
+# See README.md.
+
+variables:
+  # DANGER — dumps every variable (incl. masked secrets) to the job trace.
+  CI_DEBUG_TRACE: "true"
+
+stages: [build]
+
+build:
+  stage: build
+  script:
+    - make build

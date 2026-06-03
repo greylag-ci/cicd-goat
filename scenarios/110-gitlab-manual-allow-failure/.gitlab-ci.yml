@@ -1,0 +1,22 @@
+# scenarios/110-gitlab-manual-allow-failure
+# CICD-SEC-1 (Insufficient Flow Control Mechanisms) — GitLab CI
+#
+# Pattern: a production deploy job is `when: manual`, which LOOKS like an
+# approval gate in the UI. But manual jobs default to `allow_failure: true`,
+# so the pipeline reports success — and downstream jobs proceed — even when
+# nobody clicks the button. The "gate" enforces nothing: code flows to prod
+# without the human approval the manual step appears to require.
+#
+# SAFETY: relies on NESTING (GitLab never auto-runs a nested .gitlab-ci.yml).
+# See README.md.
+
+stages: [deploy]
+
+deploy-prod:
+  stage: deploy
+  # DANGER — manual job with no explicit `allow_failure: false`, so it
+  # inherits the dangerous default: the pipeline passes whether or not a
+  # human ever approves. Not a real flow-control gate.
+  when: manual
+  script:
+    - ./deploy.sh production

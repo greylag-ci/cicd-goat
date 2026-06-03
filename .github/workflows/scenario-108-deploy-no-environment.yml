@@ -1,0 +1,27 @@
+# scenarios/108-deploy-no-environment
+# CICD-SEC-1 (Insufficient Flow Control Mechanisms)
+# Pattern: a deploy job ships to production with no `environment:` binding.
+# Without it, GitHub can't require a reviewer, enforce a deployment-branch
+# policy, or apply a wait timer — so any commit that lands on main (a
+# self-merged PR, a typo'd hotfix, a push from a compromised contributor)
+# deploys straight to prod with no second pair of eyes.
+#
+# Safety: the job is gated with `if: false`.
+# See scenarios/108-deploy-no-environment/README.md.
+
+name: scenario-108-deploy-no-environment
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    if: false
+    runs-on: ubuntu-latest
+    # DANGER — no `environment:` binding, so no required-reviewer gate,
+    # no deployment-branch policy, no wait timer.
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+      - name: Deploy to production
+        run: aws s3 sync ./dist s3://prod-site-bucket --delete

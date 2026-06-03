@@ -1,6 +1,6 @@
 # Scenarios
 
-One hundred and four deliberately-vulnerable pipelines and IaC manifests, each
+One hundred and thirteen deliberately-vulnerable pipelines and IaC manifests, each
 demonstrating one canonical attack pattern from the modern threat landscape.
 **Scenarios 01–38 (and 89) are GitHub Actions** workflows; scenarios 30–33 are
 **variants** of scenario 02
@@ -37,6 +37,16 @@ pipelines build and deploy: **Dockerfile** (94–96), **Kubernetes** (97–99),
 **Terraform** (100–102), **CloudFormation** (103), and **Helm** (104). These are
 the corpus's richest multi-scanner rows: Checkov + KICS (the IaC specialists)
 score them alongside pipeline-check's Dockerfile/Kubernetes/Helm rules.
+
+**Scenarios 105–113 fill the thinnest OWASP categories** — the governance and
+visibility classes scanners rarely cover: **CICD-SEC-8** ungoverned 3rd-party
+services (Codecov-style remote uploader 105, GitLab remote `include:` 106, an
+org secret handed to an unpinned 3rd-party action 107), **CICD-SEC-1**
+insufficient flow control (deploy with no `environment:` gate 108, self-hosted
+ungated deploy 109, GitLab manual job that silently `allow_failure`s 110), and
+**CICD-SEC-10** insufficient logging/visibility (Terraform CloudTrail-off 111
+and no-flow-logs 112, GitLab `CI_DEBUG_TRACE` secret-to-log leak 113 — an
+all-miss next-gen target).
 
 See the per-provider leaderboards in the [README](../README.md) and the
 sectioned [matrix](../docs/MATRIX.md).
@@ -160,21 +170,30 @@ sectioned [matrix](../docs/MATRIX.md).
 | 102 | [Terraform — S3 public-access-block disabled](102-terraform-s3-public/README.md) | 7, 6 | **Terraform** — public bucket |
 | 103 | [CloudFormation — S3 bucket public read+write](103-cloudformation-s3-public/README.md) | 7, 6 | **CloudFormation** — public bucket |
 | 104 | [Helm — privileged container in chart template](104-helm-privileged-pod/README.md) | 7 | **Helm** 🔴 — privileged pod in chart |
+| 105 | [GHA — Codecov-style remote uploader piped to shell](105-codecov-bash-uploader/README.md) | 8, 3 | **GitHub Actions** — ungoverned 3rd-party (Codecov 2021) |
+| 106 | [GitLab — `include: remote:` unpinned template](106-gitlab-include-remote/README.md) | 8, 3 | **GitLab** — ungoverned 3rd-party include |
+| 107 | [GHA — org secret handed to unpinned 3rd-party action](107-thirdparty-action-broad-secret/README.md) | 8, 6 | **GitHub Actions** — over-scoped 3rd-party secret |
+| 108 | [GHA — deploy job missing environment binding](108-deploy-no-environment/README.md) | 1 | **GitHub Actions** — ungated deploy |
+| 109 | [GHA — self-hosted deploy without environment gate](109-selfhosted-deploy-no-gate/README.md) | 1, 7 | **GitHub Actions** 🔴 — ungated self-hosted deploy |
+| 110 | [GitLab — manual deploy defaults to `allow_failure`](110-gitlab-manual-allow-failure/README.md) | 1 | **GitLab** — fake approval gate |
+| 111 | [Terraform — CloudTrail logging disabled / single-region](111-terraform-cloudtrail-disabled/README.md) | 10 | **Terraform** — blind audit trail |
+| 112 | [Terraform — VPC flow logs + S3 access logging off](112-terraform-no-flow-logs/README.md) | 10 | **Terraform** — unobservable infra |
+| 113 | [GitLab — `CI_DEBUG_TRACE` leaks secrets to job log](113-gitlab-debug-trace/README.md) | 10, 6 | **GitLab** — secrets in the audit log |
 
 ## OWASP CICD-SEC top 10 — full coverage
 
 | Risk | Coverage | Scenarios |
 |:---|:---|:---|
-| CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25, 37, 43, 66, 68 |
+| CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25, 37, 43, 66, 68, 108, 109, 110 |
 | CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22, 36, 41, 47, 52, 76, 82, 85, 92, 100 |
-| CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29, 35, 38, 42, 45, 46, 53, 55, 58, 60, 63, 64, 69, 73, 78, 80, 81, 90, 95 |
+| CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29, 35, 38, 42, 45, 46, 53, 55, 58, 60, 63, 64, 69, 73, 78, 80, 81, 90, 95, 105, 106 |
 | CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33, 34, 38, 39, 40, 45, 48, 49, 50, 56, 62, 66, 67, 71, 74, 79, 85, 86, 87, 88, 89, 91 |
 | CICD-SEC-5: Insufficient Pipeline-Based Access Controls       | ✅ | 1, 4, 6, 25, 26, 36, 41, 68, 70, 92 |
-| CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17, 43, 44, 51, 52, 59, 61, 87, 88, 96, 102, 103 |
-| CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22, 47, 48, 54, 57, 65, 70, 72, 75, 77, 83, 84, 90, 93, 94, 97, 98, 99, 101, 102, 103, 104 |
-| CICD-SEC-8: Ungoverned Usage of Third-Party Services          | ✅ | 24 |
+| CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17, 43, 44, 51, 52, 59, 61, 87, 88, 96, 102, 103, 107, 113 |
+| CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22, 47, 48, 54, 57, 65, 70, 72, 75, 77, 83, 84, 90, 93, 94, 97, 98, 99, 101, 102, 103, 104, 109 |
+| CICD-SEC-8: Ungoverned Usage of Third-Party Services          | ✅ | 24, 105, 106, 107 |
 | CICD-SEC-9: Improper Artifact Integrity Validation            | ✅ | 5, 7, 9, 17, 19, 35, 42, 46, 53, 58, 64, 73, 78, 81, 95 |
-| CICD-SEC-10: Insufficient Logging and Visibility              | ✅ | 27, 61 |
+| CICD-SEC-10: Insufficient Logging and Visibility              | ✅ | 27, 61, 111, 112, 113 |
 
 Every risk in the top 10 has at least one scenario. See the
 [OWASP Top 10 CI/CD Security Risks](https://owasp.org/www-project-top-10-ci-cd-security-risks/)

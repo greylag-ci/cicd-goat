@@ -1,0 +1,28 @@
+# scenarios/109-selfhosted-deploy-no-gate
+# CICD-SEC-1 (Insufficient Flow Control Mechanisms) · CICD-SEC-7
+# Pattern: a deploy job runs on a self-hosted runner (persistent org
+# infrastructure holding standing prod credentials) with no `environment:`
+# gate. A low-privilege trigger — a push, a self-merged PR — reaches
+# persistent infrastructure that ships to production with standing
+# credentials and no human approval. Anyone who lands a commit, or who
+# compromises the shared runner, deploys at will.
+#
+# Safety: the job is gated with `if: false`.
+# See scenarios/109-selfhosted-deploy-no-gate/README.md.
+
+name: scenario-109-selfhosted-deploy-no-gate
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    if: false
+    # DANGER — self-hosted runner (standing creds, persists across jobs)
+    # AND no `environment:` gate.
+    runs-on: [self-hosted, production]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+      - name: Deploy to production cluster
+        run: kubectl apply -f k8s/ --context prod

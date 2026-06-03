@@ -16,7 +16,7 @@
 > Every CI/CD scanner has blind spots. The only honest way to measure them
 > is on a target where the bugs are catalogued in advance. This is that target.
 
-One hundred and four vulnerable pipelines and IaC manifests, each demonstrating
+One hundred and thirteen vulnerable pipelines and IaC manifests, each demonstrating
 one specific attack pattern drawn from named incident disclosures (tj-actions 2025, ArtiPACKED 2024,
 Codecov 2021, Birsan dependency confusion 2021,
 event-stream/ua-parser-js/node-ipc/Shai-Hulud npm lifecycle abuse,
@@ -37,11 +37,15 @@ Jenkins, Azure Pipelines, CircleCI, Bitbucket Pipelines, Tekton, Argo Workflows,
 Drone CI, Buildkite, and Google Cloud Build. **Scenarios 94–104 push past the
 pipeline file into the Infrastructure-as-Code the pipeline deploys** — Dockerfile,
 Kubernetes manifests, Terraform, CloudFormation, and Helm — the artifacts a CI/CD
-scanner increasingly has to read too. These all ship as static fixtures
-nested under `scenarios/NN-*/` (never at a provider's auto-run path), so they're
-readable by scanners but inert on every platform. Only the scanners that parse a
-given provider score those rows — and several are all-miss *next-gen targets* no
-scanner here catches yet. See the per-provider leaderboards below.
+scanner increasingly has to read too. **Scenarios 105–113 fill the thinnest OWASP
+categories** — the governance and visibility classes scanners rarely cover:
+ungoverned 3rd-party services (CICD-SEC-8), insufficient flow control
+(CICD-SEC-1), and insufficient logging/visibility (CICD-SEC-10). These all ship
+as static fixtures nested under `scenarios/NN-*/` (never at a provider's auto-run
+path), so they're readable by scanners but inert on every platform. Only the
+scanners that parse a given provider score those rows — and several are all-miss
+*next-gen targets* no scanner here catches yet. See the per-provider leaderboards
+below.
 
 ## Leaderboard
 
@@ -181,7 +185,9 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 > multi-provider expansion (GitLab CI, Jenkins, Azure Pipelines, CircleCI,
 > Bitbucket Pipelines, Tekton, Argo, Drone, Buildkite, Cloud Build); 94–104 are
 > the IaC/manifest layer the pipeline deploys (Dockerfile, Kubernetes, Terraform,
-> CloudFormation, Helm). Each scenario
+> CloudFormation, Helm); 105–113 fill the thinnest OWASP categories (ungoverned
+> 3rd-party services, flow control, logging/visibility) across GHA, GitLab, and
+> Terraform. Each scenario
 > is scored only by the scanners that actually parse its provider — a
 > GHA-only scanner (zizmor, KICS, actionlint, octoscan) shows `—`
 > (not-applicable), never a miss, on a GitLab or Jenkins row it was never
@@ -193,11 +199,11 @@ run on `main`. [How scoring works →](docs/FIELD-TEST.md)
 
 ## What's in this repo
 
-- **[Scenarios](scenarios/README.md)** — 104 vulnerable pipelines and IaC
-  manifests across 16 providers/formats (39 GitHub Actions + 11 GitLab CI +
+- **[Scenarios](scenarios/README.md)** — 113 vulnerable pipelines and IaC
+  manifests across 16 providers/formats (43 GitHub Actions + 14 GitLab CI +
   7 Azure + 7 CircleCI + 7 Bitbucket + 6 Jenkins + 4 Tekton + 5 Argo +
   3 Drone + 2 Buildkite + 2 Cloud Build + 3 Dockerfile + 3 Kubernetes +
-  3 Terraform + 1 CloudFormation + 1 Helm), each with its own writeup
+  5 Terraform + 1 CloudFormation + 1 Helm), each with its own writeup
   (exploitation walkthrough, per-scanner coverage, the fix). Indexed by
   attack class and CICD-SEC category.
 - **[Full matrix](docs/MATRIX.md)** — per-(scenario × scanner) verdict
