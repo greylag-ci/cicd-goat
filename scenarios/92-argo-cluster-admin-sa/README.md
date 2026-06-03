@@ -22,6 +22,11 @@ act as **cluster-admin**: read every secret in every namespace, schedule
 privileged pods on any node, create new role bindings. A single compromised
 step owns the whole cluster.
 
+> Note: the container's `securityContext` (`runAsNonRoot: true`) is irrelevant
+> here — the takeover comes from the **automounted ServiceAccount token** (a
+> Kubernetes API privilege), not from the container UID. Hardening the
+> container doesn't reduce the SA's RBAC.
+
 ## Expected scanner coverage
 
 | Scanner | Detection |
