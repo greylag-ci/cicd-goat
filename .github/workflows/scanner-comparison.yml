@@ -93,8 +93,12 @@ jobs:
           # runs it per manifest and rewrites every finding's URI to the file
           # path so regen-readme.py can attribute it. Output lands in the
           # artifact (consumed by the matrix) under tool.driver.name=pipeline_check.
+          # No `|| true`: the wrapper returns 0 whether or not findings exist,
+          # and non-zero ONLY on a hard failure (pipeline-check missing/crashed)
+          # — which must fail the job rather than silently drop all of
+          # Tekton/Argo/Dockerfile/K8s/Helm from the matrix.
           python tools/pipeline-check-resource-scan.py \
-            --output pc-sarif/pipeline-check-resource.sarif scenarios || true
+            --output pc-sarif/pipeline-check-resource.sarif scenarios
       - name: Upload pipeline-check (github) SARIF
         uses: github/codeql-action/upload-sarif@9e0d7b8d25671d64c341c19c0152d693099fb5ba  # v4
         if: always()

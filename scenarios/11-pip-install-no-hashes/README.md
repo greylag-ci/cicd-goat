@@ -32,7 +32,7 @@ the runner with the workflow's privileges.
 
 | Scanner   | Detection |
 |-----------|-----------|
-| zizmor    | n/a (not pip-aware) |
+| zizmor    | ❌ miss — parses the workflow but has no pip-hash rule |
 | poutine   | partial |
 | checkov   | "Ensure pip install uses --require-hashes" |
 | kics      | "Pip install without hash verification" |

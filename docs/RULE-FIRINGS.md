@@ -161,7 +161,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
 | pipeline&#x2011;check | `GHA-001`, `GHA-015`, `GHA-037`, **`GHA-060`** | ✅ |
-| zizmor | `zizmor/artipacked`, `zizmor/unpinned-uses` | — |
+| zizmor | `zizmor/artipacked`, `zizmor/unpinned-uses` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
 | Checkov | _(none)_ | ❌ |

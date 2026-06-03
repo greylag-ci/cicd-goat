@@ -1,5 +1,5 @@
-"""Safety invariant: every job in every scenario-*.yml (and every
-companion _reusable-*.yml) must have a top-level `if: false`.
+"""Safety invariant: every job in every scenario-*.yml/.yaml (and every
+companion _reusable-*.yml/.yaml) must have a top-level `if: false`.
 
 Why: scenarios are deliberately vulnerable. The only thing that keeps
 the patterns from actually executing is the job-level `if: false`.
@@ -16,8 +16,11 @@ import pathlib
 import yaml
 
 DEFAULT_WORKFLOWS = pathlib.Path(".github/workflows")
-SCENARIO_GLOB = "scenario-*.yml"
-REUSABLE_GLOB = "_reusable-*.yml"
+# GitHub Actions runs BOTH .yml and .yaml workflows, so both extensions
+# must be gated — globbing only .yml would let an un-gated `scenario-*.yaml`
+# slip through and actually execute (fail-open).
+SCENARIO_GLOBS = ("scenario-*.yml", "scenario-*.yaml")
+REUSABLE_GLOBS = ("_reusable-*.yml", "_reusable-*.yaml")
 
 
 def check_file(path: pathlib.Path) -> list[str]:
@@ -61,7 +64,9 @@ def main() -> int:
         print(f"error: {workflows} does not exist", file=sys.stderr)
         return 2
 
-    files = sorted(workflows.glob(SCENARIO_GLOB)) + sorted(workflows.glob(REUSABLE_GLOB))
+    files = sorted(
+        {p for pat in (*SCENARIO_GLOBS, *REUSABLE_GLOBS) for p in workflows.glob(pat)}
+    )
 
     if not files:
         print(f"error: no scenario files under {workflows}", file=sys.stderr)
