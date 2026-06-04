@@ -70,59 +70,59 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | #  | Scenario | pipeline&#x2011;check | Checkov | ciguard |
 | :-:| :--- | :-: | :-: | :-: |
 | 39 | GitLab CI: script injection via `$CI_*` / MR vars | ✅ | ❌ | ❌ |
-| 41 | GitLab: `CI_JOB_TOKEN` cross-project access | ❌ | ❌ | ✅ |
+| 41 | GitLab: `CI_JOB_TOKEN` cross-project access | ✅ | ❌ | ✅ |
 | 42 | GitLab: untrusted `include:` (remote / mutable ref) | ✅ | ❌ | ✅ |
 | 43 | GitLab: secret job on fork merge-request pipeline | ✅ | ❌ | ✅ |
 | 44 | GitLab: hardcoded secret in `variables:` | ✅ | ❌ | ✅ |
 | 45 | GitLab: `curl \| sh` in `before_script` | ✅ | ❌ | ✅ |
 | 46 | GitLab: job `image:` mutable tag | ✅ | ❌ | ✅ |
 | 47 | GitLab: OIDC `id_tokens` over-broad aud/sub | ✅ | ❌ | ❌ |
-| 48 | GitLab: untagged shared-runner + privileged dind | ❌ | ❌ | ✅ |
+| 48 | GitLab: untagged shared-runner + privileged dind | ✅ | ❌ | ✅ |
 | 85 | GitLab: fork MR pipeline mints cloud OIDC token | ✅ | ❌ | ✅ |
 | 91 | GitLab: `terraform apply` in a merge-request pipeline | ✅ | ❌ | ❌ |
 | 106 | GitLab: `include: remote:` unpinned 3rd-party template | ✅ | ❌ | ✅ |
 | 110 | GitLab: manual deploy defaults to allow_failure | ✅ | ❌ | ✅ |
-| 113 | GitLab: `CI_DEBUG_TRACE` leaks secrets to job log | ❌ | ❌ | ❌ |
-|    | **canonical bugs caught** | **11 ✅** | **0 ✅** | **10 ✅** |
+| 113 | GitLab: `CI_DEBUG_TRACE` leaks secrets to job log | ✅ | ❌ | ❌ |
+|    | **canonical bugs caught** | **14 ✅** | **0 ✅** | **10 ✅** |
 
 ### Azure Pipelines
 
 | #  | Scenario | pipeline&#x2011;check | Checkov |
 | :-:| :--- | :-: | :-: |
-| 49 | Azure: macro `$(...)` injection into Bash@3 | ❌ | ❌ |
-| 50 | Azure: `${{ parameters }}` template injection | ❌ | ❌ |
-| 51 | Azure: `checkout persistCredentials: true` | ❌ | ❌ |
+| 49 | Azure: macro `$(...)` injection into Bash@3 | ✅ | ❌ |
+| 50 | Azure: `${{ parameters }}` template injection | ✅ | ❌ |
+| 51 | Azure: `checkout persistCredentials: true` | ✅ | ❌ |
 | 52 | Azure: `addSpnToEnvironment` SP-secret exposure | ✅ | ❌ |
 | 53 | Azure: `resources: repositories` untrusted ref | ✅ | ❌ |
 | 54 | Azure: self-hosted pool for untrusted builds | ✅ | ❌ |
 | 90 | Azure: untrusted `resources` template on self-hosted agent | ✅ | ❌ |
-|    | **canonical bugs caught** | **4 ✅** | **0 ✅** |
+|    | **canonical bugs caught** | **7 ✅** | **0 ✅** |
 
 ### CircleCI
 
 | #  | Scenario | pipeline&#x2011;check | Checkov |
 | :-:| :--- | :-: | :-: |
 | 55 | CircleCI: orb pinned to `@volatile` | ✅ | ❌ |
-| 56 | CircleCI: `run:` injection via `<< pipeline.* >>` | ❌ | ❌ |
+| 56 | CircleCI: `run:` injection via `<< pipeline.* >>` | ✅ | ❌ |
 | 57 | CircleCI: `machine: true` privileged executor | ✅ | ❌ |
 | 58 | CircleCI: docker image mutable tag | ✅ | ✅ |
 | 59 | CircleCI: hardcoded secret in `environment:` | ✅ | ❌ |
 | 60 | CircleCI: uncertified third-party orb | ❌ | ❌ |
 | 87 | CircleCI: secrets passed to forked PRs | ✅ | ❌ |
-|    | **canonical bugs caught** | **5 ✅** | **1 ✅** |
+|    | **canonical bugs caught** | **6 ✅** | **1 ✅** |
 
 ### Bitbucket Pipelines
 
 | #  | Scenario | pipeline&#x2011;check | Checkov |
 | :-:| :--- | :-: | :-: |
-| 61 | Bitbucket: secret dumped to `artifacts:` (Mandiant) | ❌ | ❌ |
+| 61 | Bitbucket: secret dumped to `artifacts:` (Mandiant) | ✅ | ❌ |
 | 62 | Bitbucket: `$BITBUCKET_*` script injection | ✅ | ❌ |
 | 63 | Bitbucket: `pipe:` mutable tag | ✅ | ❌ |
-| 64 | Bitbucket: `image:` mutable tag | ❌ | ✅ |
-| 65 | Bitbucket: `clone: skip-ssl-verify: true` | ❌ | ❌ |
-| 66 | Bitbucket: custom-pipeline variable injection | ❌ | ❌ |
+| 64 | Bitbucket: `image:` mutable tag | ✅ | ✅ |
+| 65 | Bitbucket: `clone: skip-ssl-verify: true` | ✅ | ❌ |
+| 66 | Bitbucket: custom-pipeline variable injection | ✅ | ❌ |
 | 88 | Bitbucket: fork PR pipeline exposes secrets | ✅ | ❌ |
-|    | **canonical bugs caught** | **3 ✅** | **1 ✅** |
+|    | **canonical bugs caught** | **7 ✅** | **1 ✅** |
 
 ### Jenkins
 
@@ -140,11 +140,11 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 
 | #  | Scenario | pipeline&#x2011;check |
 | :-:| :--- | :-: |
-| 71 | Tekton: `$(params.*)` injected into step script | ❌ |
+| 71 | Tekton: `$(params.*)` injected into step script | ✅ |
 | 72 | Tekton: privileged / root step | ✅ |
 | 73 | Tekton: step `image:` not pinned to a digest | ✅ |
 | 83 | Tekton: privileged step + hostPath node escape | ✅ |
-|    | **canonical bugs caught** | **3 ✅** |
+|    | **canonical bugs caught** | **4 ✅** |
 
 ### Argo Workflows
 
@@ -154,8 +154,8 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 75 | Argo: privileged / root container | ✅ | ✅ |
 | 76 | Argo: default ServiceAccount + token automount | ✅ | ✅ |
 | 84 | Argo: hostPath mount → node filesystem escape | ✅ | ❌ |
-| 92 | Argo: cluster-admin ServiceAccount → cluster takeover | ❌ | ❌ |
-|    | **canonical bugs caught** | **4 ✅** | **2 ✅** |
+| 92 | Argo: cluster-admin ServiceAccount → cluster takeover | ✅ | ❌ |
+|    | **canonical bugs caught** | **5 ✅** | **2 ✅** |
 
 ### Drone CI
 

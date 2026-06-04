@@ -28,14 +28,11 @@ the logs by design.
 
 | Scanner | Detection |
 |---------|-----------|
-| pipeline-check | — (no `CI_DEBUG_TRACE` rule) |
+| pipeline-check | `GL-038` — `CI_DEBUG_TRACE` / debug logging dumps secrets to the job log |
 | ciguard | — |
 | Checkov | — |
 
-> **All-miss — a next-gen target.** `CI_DEBUG_TRACE: "true"` is a single
-> innocuous-looking variable with catastrophic logging/visibility impact, and no
-> scanner in this comparison flags it. It's exactly the kind of provider-specific
-> logging footgun static CI/CD scanners don't yet model.
+> pipeline-check 1.9.0 added `GL-038`, which flags `CI_DEBUG_TRACE` debug logging.
 
 ## Fix
 

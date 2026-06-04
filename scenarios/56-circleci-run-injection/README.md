@@ -24,12 +24,10 @@ executes on the executor — the same class as scenarios
 
 | Scanner | Detection |
 |---------|-----------|
-| pipeline-check | — (no CircleCI `run:` injection rule fires) |
+| pipeline-check | `CC-002` — script injection via untrusted context |
 | Checkov | — |
 
-> **All-miss — a next-gen target.** pipeline-check catches this injection class
-> on GitHub Actions / GitLab / Jenkins / Bitbucket, but not on CircleCI
-> pipeline values.
+> pipeline-check 1.9.0 added `CC-002`, which flags the `<< pipeline.* >>` splice into a `run:` step.
 
 ## Fix
 

@@ -39,10 +39,10 @@ other jobs' state and credentials.
 | Scanner | Detection |
 |---------|-----------|
 | ciguard | `RUN-002` — Privileged Docker-in-Docker (also flags shared-runner use) |
-| pipeline-check | — (no privileged-dind / shared-runner rule fires on this shape) |
+| pipeline-check | `GL-039` — Docker-in-Docker service exposes an unauthenticated daemon |
 | Checkov | — |
 
-> A solo catch by ciguard.
+> ciguard (`RUN-002`) names the privileged-dind / shared-runner combination. pipeline-check 1.9.0 now joins it from a different angle: `GL-039` flags the insecure dind daemon (TLS disabled on the exposed Docker socket), the exploitable core. It does not separately flag the untagged-shared-runner facet.
 
 ## Fix
 

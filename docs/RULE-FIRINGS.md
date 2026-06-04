@@ -76,7 +76,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `GHA-001`, **`GHA-004`**, `GHA-015`, `GHA-037`, `GHA-059`, `GHA-069` | ✅ |
+| pipeline&#x2011;check | `GHA-001`, **`GHA-004`**, `GHA-015`, `GHA-037`, `GHA-059`, `GHA-069`, `GHA-108` | ✅ |
 | zizmor | `zizmor/artipacked`, `zizmor/unpinned-uses` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
@@ -124,7 +124,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `GHA-001`, **`GHA-012`**, `GHA-015`, `GHA-037`, `GHA-059` | ✅ |
+| pipeline&#x2011;check | `GHA-001`, **`GHA-012`**, `GHA-015`, `GHA-037`, `GHA-059`, `GHA-105` | ✅ |
 | zizmor | `zizmor/artipacked`, `zizmor/unpinned-uses` | ❌ |
 | poutine | **`pr_runs_on_self_hosted`** | ✅ |
 | KICS | _(none)_ | ❌ |
@@ -148,7 +148,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-005`, `GHA-001`, `GHA-006`, `GHA-007`, `GHA-015`, `GHA-020`, `GHA-024`, `GHA-037`, **`GHA-062`**, `GHA-098` | ✅ |
+| pipeline&#x2011;check | `AC-005`, `GHA-001`, `GHA-006`, `GHA-007`, `GHA-015`, `GHA-020`, `GHA-024`, `GHA-037`, **`GHA-062`**, `GHA-098`, `GHA-108` | ✅ |
 | zizmor | `zizmor/artipacked`, `zizmor/unpinned-uses` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | `555ab8f9-2001-455e-a077-f2d0f41e2fb9` | ❌ |
@@ -292,7 +292,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-005`, `GHA-001`, `GHA-006`, `GHA-007`, `GHA-015`, `GHA-020`, `GHA-024`, `GHA-037`, **`GHA-062`**, `GHA-098` | ✅ |
+| pipeline&#x2011;check | `AC-005`, `GHA-001`, `GHA-006`, `GHA-007`, `GHA-015`, `GHA-020`, `GHA-024`, `GHA-037`, **`GHA-062`**, `GHA-098`, `GHA-108` | ✅ |
 | zizmor | `zizmor/artipacked`, `zizmor/unpinned-uses` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | `555ab8f9-2001-455e-a077-f2d0f41e2fb9` | ❌ |
@@ -328,7 +328,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `GHA-001`, `GHA-015`, `GHA-037`, `GHA-069`, **`GHA-086`**, `GHA-098` | ✅ |
+| pipeline&#x2011;check | `GHA-001`, `GHA-015`, `GHA-037`, `GHA-069`, **`GHA-086`**, `GHA-098`, `GHA-108` | ✅ |
 | zizmor | `zizmor/artipacked`, `zizmor/unpinned-uses` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
@@ -460,7 +460,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-005`, `AC-033`, `GHA-014`, `GHA-015`, `GHA-019`, `GHA-033`, `GHA-057`, `GHA-098`, `TAINT-009` | ❌ |
+| pipeline&#x2011;check | `AC-005`, `AC-033`, `GHA-014`, `GHA-015`, `GHA-019`, `GHA-033`, `GHA-057`, `GHA-098`, `GHA-108`, `TAINT-009` | ❌ |
 | zizmor | `zizmor/template-injection` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
@@ -511,7 +511,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `GL-015` | ❌ |
+| pipeline&#x2011;check | `GL-015`, **`GL-040`** | ✅ |
 | Checkov | `CKV_GITLABCI_1` | ❌ |
 | ciguard | `ART-003`, **`IAM-002`**, `SC-003` | ✅ |
 
@@ -567,7 +567,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-005`, `GL-004`, `GL-006`, `GL-007`, `GL-015`, `GL-019`, `GL-024` | ❌ |
+| pipeline&#x2011;check | `AC-005`, `GL-004`, `GL-006`, `GL-007`, `GL-015`, `GL-019`, `GL-024`, **`GL-039`** | ✅ |
 | Checkov | _(none)_ | ❌ |
 | ciguard | `ART-003`, **`RUN-002`**, `SC-003` | ✅ |
 
@@ -575,21 +575,21 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `ADO-001`, `ADO-015` | ❌ |
+| pipeline&#x2011;check | `ADO-001`, **`ADO-002`**, `ADO-015` | ✅ |
 | Checkov | _(none)_ | ❌ |
 
 ### Scenario 50 — Azure: `${{ parameters }}` template injection (Azure Pipelines)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `ADO-015` | ❌ |
+| pipeline&#x2011;check | **`ADO-002`**, `ADO-015` | ✅ |
 | Checkov | _(none)_ | ❌ |
 
 ### Scenario 51 — Azure: `checkout persistCredentials: true` (Azure Pipelines)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `ADO-015` | ❌ |
+| pipeline&#x2011;check | `ADO-015`, **`ADO-032`** | ✅ |
 | Checkov | _(none)_ | ❌ |
 
 ### Scenario 52 — Azure: `addSpnToEnvironment` SP-secret exposure (Azure Pipelines)
@@ -624,7 +624,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `CC-011`, `CC-014`, `CC-015` | ❌ |
+| pipeline&#x2011;check | **`CC-002`**, `CC-011`, `CC-014`, `CC-015` | ✅ |
 | Checkov | _(none)_ | ❌ |
 
 ### Scenario 57 — CircleCI: `machine: true` privileged executor (CircleCI)
@@ -659,7 +659,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `BB-005` | ❌ |
+| pipeline&#x2011;check | `BB-005`, **`BB-032`** | ✅ |
 | Checkov | _(none)_ | ❌ |
 
 ### Scenario 62 — Bitbucket: `$BITBUCKET_*` script injection (Bitbucket Pipelines)
@@ -680,21 +680,21 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `BB-005`, `BB-030` | ❌ |
+| pipeline&#x2011;check | `BB-005`, **`BB-029`**, `BB-030` | ✅ |
 | Checkov | **`CKV_BITBUCKETPIPELINES_1`** | ✅ |
 
 ### Scenario 65 — Bitbucket: `clone: skip-ssl-verify: true` (Bitbucket Pipelines)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `BB-005` | ❌ |
+| pipeline&#x2011;check | `BB-005`, **`BB-023`** | ✅ |
 | Checkov | _(none)_ | ❌ |
 
 ### Scenario 66 — Bitbucket: custom-pipeline variable injection (Bitbucket Pipelines)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-005`, `BB-004`, `BB-005` | ❌ |
+| pipeline&#x2011;check | `AC-005`, **`BB-002`**, `BB-004`, `BB-005` | ✅ |
 | Checkov | _(none)_ | ❌ |
 
 ### Scenario 67 — Jenkins: `@Grab` sandbox-bypass (CVE-2019-1003000) (Jenkins)
@@ -729,7 +729,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `TKN-002`, `TKN-012` | ❌ |
+| pipeline&#x2011;check | `AC-023`, `TKN-002`, **`TKN-003`**, `TKN-012` | ✅ |
 
 ### Scenario 72 — Tekton: privileged / root step (Tekton)
 
@@ -768,13 +768,13 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | **`DR-002`** | ✅ |
+| pipeline&#x2011;check | **`DR-002`**, `DR-013` | ✅ |
 
 ### Scenario 78 — Drone: step `image:` mutable tag (Drone CI)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | **`DR-001`** | ✅ |
+| pipeline&#x2011;check | **`DR-001`**, `DR-013` | ✅ |
 
 ### Scenario 79 — Buildkite: `$BUILDKITE_*` command injection (Buildkite)
 
@@ -846,7 +846,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-005`, `GHA-006`, `GHA-007`, `GHA-014`, `GHA-015`, `GHA-020`, `GHA-024`, `GHA-037`, `GHA-069`, `GHA-098` | ❌ |
+| pipeline&#x2011;check | `AC-005`, `GHA-006`, `GHA-007`, `GHA-014`, `GHA-015`, `GHA-020`, `GHA-024`, `GHA-037`, `GHA-069`, `GHA-098`, `GHA-108`, `GHA-117` | ❌ |
 | zizmor | `zizmor/artipacked` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
@@ -873,14 +873,14 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `ARGO-007`, `ARGO-009`, `ARGO-010`, `ARGO-011`, `ARGO-012`, `ARGO-013` | ❌ |
+| pipeline&#x2011;check | `ARGO-007`, `ARGO-009`, `ARGO-010`, `ARGO-011`, `ARGO-012`, `ARGO-013`, **`ARGO-016`** | ✅ |
 | Checkov | `CKV_ARGO_2` | ❌ |
 
 ### Scenario 93 — Drone: privileged step mounts host Docker socket (Drone CI)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `DR-002`, **`DR-007`** | ✅ |
+| pipeline&#x2011;check | `DR-002`, **`DR-007`**, `DR-013` | ✅ |
 
 ### Scenario 94 — Dockerfile: container runs as root (no USER) (Dockerfile)
 
@@ -1024,7 +1024,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-005`, `GHA-004`, `GHA-006`, `GHA-007`, **`GHA-012`**, **`GHA-014`**, `GHA-015`, `GHA-020`, `GHA-024`, `GHA-037`, `GHA-098` | ✅ |
+| pipeline&#x2011;check | `AC-005`, `GHA-004`, `GHA-006`, `GHA-007`, `GHA-012`, `GHA-014`, `GHA-015`, `GHA-020`, `GHA-024`, `GHA-037`, `GHA-098`, **`GHA-112`** | ✅ |
 | zizmor | `zizmor/artipacked`, `zizmor/excessive-permissions` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
@@ -1060,7 +1060,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `GL-015` | ❌ |
+| pipeline&#x2011;check | `GL-015`, **`GL-038`** | ✅ |
 | Checkov | _(none)_ | ❌ |
 | ciguard | `ART-003`, `SC-003` | ❌ |
 
@@ -1092,7 +1092,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `HELM-005`, `HELM-006`, **`K8S-006`**, **`K8S-007`**, `K8S-008`, `K8S-009`, `K8S-010`, `K8S-011`, `K8S-012`, `K8S-015`, `K8S-016`, `K8S-019`, `K8S-024`, `K8S-032`, `K8S-033` | ✅ |
+| pipeline&#x2011;check | `HELM-005`, `HELM-006`, `HELM-013`, **`K8S-006`**, **`K8S-007`**, `K8S-008`, `K8S-009`, `K8S-010`, `K8S-011`, `K8S-012`, `K8S-015`, `K8S-016`, `K8S-019`, `K8S-024`, `K8S-032`, `K8S-033` | ✅ |
 | Checkov | `CKV2_K8S_6`, `CKV_K8S_10`, `CKV_K8S_11`, `CKV_K8S_12`, `CKV_K8S_13`, **`CKV_K8S_20`**, `CKV_K8S_21`, `CKV_K8S_22`, `CKV_K8S_23`, `CKV_K8S_28`, `CKV_K8S_29`, `CKV_K8S_31`, `CKV_K8S_37`, `CKV_K8S_38`, `CKV_K8S_40`, `CKV_K8S_8`, `CKV_K8S_9` | ✅ |
 | Trivy | **`KSV-0001`**, `KSV-0003`, `KSV-0004`, `KSV-0011`, `KSV-0012`, `KSV-0014`, `KSV-0015`, `KSV-0016`, `KSV-0018`, `KSV-0020`, `KSV-0021`, `KSV-0030`, `KSV-0104`, `KSV-0106`, `KSV-0110`, `KSV-0118` | ✅ |
 
@@ -1100,7 +1100,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `HELM-005`, `HELM-006`, `K8S-006`, `K8S-007`, `K8S-008`, `K8S-009`, `K8S-010`, `K8S-011`, `K8S-012`, `K8S-013`, **`K8S-014`**, `K8S-015`, `K8S-016`, `K8S-019`, `K8S-024`, `K8S-032`, `K8S-033` | ✅ |
+| pipeline&#x2011;check | `HELM-005`, `HELM-006`, `HELM-013`, `K8S-006`, `K8S-007`, `K8S-008`, `K8S-009`, `K8S-010`, `K8S-011`, `K8S-012`, `K8S-013`, **`K8S-014`**, `K8S-015`, `K8S-016`, `K8S-019`, `K8S-024`, `K8S-032`, `K8S-033` | ✅ |
 | Checkov | `CKV2_K8S_6`, `CKV_K8S_10`, `CKV_K8S_11`, `CKV_K8S_12`, `CKV_K8S_13`, `CKV_K8S_20`, `CKV_K8S_21`, `CKV_K8S_22`, `CKV_K8S_23`, `CKV_K8S_28`, `CKV_K8S_29`, `CKV_K8S_30`, `CKV_K8S_31`, `CKV_K8S_37`, `CKV_K8S_38`, `CKV_K8S_40`, `CKV_K8S_8`, `CKV_K8S_9` | ❌ |
 | Trivy | `KSV-0001`, `KSV-0003`, `KSV-0004`, `KSV-0011`, `KSV-0012`, `KSV-0014`, `KSV-0015`, `KSV-0016`, `KSV-0018`, `KSV-0020`, `KSV-0021`, **`KSV-0023`**, `KSV-0030`, `KSV-0104`, `KSV-0106`, `KSV-0110`, `KSV-0118`, `KSV-0121` | ✅ |
 
