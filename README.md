@@ -63,7 +63,7 @@ Full catches per provider (`caught/total`; `—` = the scanner can't parse that 
 
 | Scanner | GHA | GitLab | Azure | CircleCI | Bitbucket | Jenkins | Tekton | Argo | Drone | Buildkite | CloudBuild | Docker | K8s | TF | CFN | Helm |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| pipeline&#x2011;check | 37/43 | 11/14 | 4/7 | 5/7 | 3/7 | 4/6 | 3/4 | 4/5 | 3/3 | 2/2 | 2/2 | 3/3 | 3/3 | — | — | 3/3 |
+| pipeline&#x2011;check | 37/43 | 14/14 | 7/7 | 6/7 | 7/7 | 4/6 | 4/4 | 5/5 | 3/3 | 2/2 | 2/2 | 3/3 | 3/3 | — | — | 3/3 |
 | Checkov | 10/43 | 0/14 | 0/7 | 1/7 | 1/7 | — | — | 2/5 | — | — | — | 2/3 | 2/3 | 7/7 | 4/4 | 2/3 |
 | KICS | 8/43 | — | — | — | — | — | — | — | — | — | — | 2/3 | 2/3 | 7/7 | 4/4 | — |
 | Trivy | — | — | — | — | — | — | — | — | — | — | — | 3/3 | 3/3 | 6/7 | 3/4 | 3/3 |
@@ -92,7 +92,7 @@ Full catches per provider (`caught/total`; `—` = the scanner can't parse that 
 
 | Scanner | Scenarios caught (of 14) |
 | :--- | :--- |
-| pipeline&#x2011;check | **11 ✅** |
+| pipeline&#x2011;check | **14 ✅** |
 | ciguard | **10 ✅** |
 | Checkov | **0 ✅** |
 
@@ -100,21 +100,21 @@ Full catches per provider (`caught/total`; `—` = the scanner can't parse that 
 
 | Scanner | Scenarios caught (of 7) |
 | :--- | :--- |
-| pipeline&#x2011;check | **4 ✅** |
+| pipeline&#x2011;check | **7 ✅** |
 | Checkov | **0 ✅** |
 
 #### CircleCI — 7 scenarios
 
 | Scanner | Scenarios caught (of 7) |
 | :--- | :--- |
-| pipeline&#x2011;check | **5 ✅** |
+| pipeline&#x2011;check | **6 ✅** |
 | Checkov | **1 ✅** |
 
 #### Bitbucket Pipelines — 7 scenarios
 
 | Scanner | Scenarios caught (of 7) |
 | :--- | :--- |
-| pipeline&#x2011;check | **3 ✅** |
+| pipeline&#x2011;check | **7 ✅** |
 | Checkov | **1 ✅** |
 
 #### Jenkins — 6 scenarios
@@ -128,13 +128,13 @@ Full catches per provider (`caught/total`; `—` = the scanner can't parse that 
 
 | Scanner | Scenarios caught (of 4) |
 | :--- | :--- |
-| pipeline&#x2011;check | **3 ✅** |
+| pipeline&#x2011;check | **4 ✅** |
 
 #### Argo Workflows — 5 scenarios
 
 | Scanner | Scenarios caught (of 5) |
 | :--- | :--- |
-| pipeline&#x2011;check | **4 ✅** |
+| pipeline&#x2011;check | **5 ✅** |
 | Checkov | **2 ✅** |
 
 #### Drone CI — 3 scenarios

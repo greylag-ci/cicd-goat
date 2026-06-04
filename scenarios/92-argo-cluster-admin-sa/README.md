@@ -31,13 +31,10 @@ step owns the whole cluster.
 
 | Scanner | Detection |
 |---------|-----------|
-| pipeline-check | — |
+| pipeline-check | `ARGO-016` — workflow bound to a cluster-admin / over-privileged ServiceAccount |
 | Checkov | — |
 
-> **All-miss — a next-gen target.** The over-privilege lives in the SA's
-> RBAC (`ClusterRoleBinding`), which is *config-spread* — not in the workflow.
-> No scanner here flags a workflow binding to a known over-privileged / admin
-> ServiceAccount by name.
+> pipeline-check 1.9.0 added `ARGO-016`, which flags a workflow bound to a cluster-admin or over-privileged ServiceAccount.
 
 ## Fix
 

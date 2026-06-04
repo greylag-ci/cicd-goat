@@ -21,10 +21,12 @@ pipelines live: **GitLab CI** (39, 41–48, 85), **Jenkins** (40, 67–70, 86),
 (61–66, 88), **Tekton** (71–73, 83), **Argo Workflows** (74–76, 84),
 **Drone CI** (77–78), **Buildkite** (79–80), and **Google Cloud Build** (81–82).
 Only the scanners that actually parse a given provider's files score those rows;
-the rest render `—` (not-applicable), and several rows are all-miss **next-gen
-targets** — canonical bugs (Azure/CircleCI injection, persist-credentials, the
-Mandiant secret-to-artifact leak, `skip-ssl-verify`, Jenkins `input`-without-submitter,
-and the configuration-spread fork-trust PPE) that no scanner here catches yet.
+the rest render `—` (not-applicable). A few rows are still all-miss **next-gen
+targets** — canonical bugs (the CircleCI uncertified-orb namespace, Jenkins
+`input`-without-submitter, and the configuration-spread fork-trust PPE) that no
+scanner here catches yet. pipeline-check 1.9.0 closed several earlier gaps in
+this band (Azure/CircleCI injection, persist-credentials, the Mandiant
+secret-to-artifact leak, `skip-ssl-verify`).
 **Scenarios 83–93 add critical examples**: container/cluster escape (hostPath →
 node takeover, Tekton/Argo 83/84; host Docker socket, Drone 93), fork-PR RCE /
 secret-theft (the "pwn request" class, GitLab/Jenkins/CircleCI/Bitbucket 85–88),
@@ -45,8 +47,8 @@ org secret handed to an unpinned 3rd-party action 107), **CICD-SEC-1**
 insufficient flow control (deploy with no `environment:` gate 108, self-hosted
 ungated deploy 109, GitLab manual job that silently `allow_failure`s 110), and
 **CICD-SEC-10** insufficient logging/visibility (Terraform CloudTrail-off 111
-and no-flow-logs 112, GitLab `CI_DEBUG_TRACE` secret-to-log leak 113 — an
-all-miss next-gen target).
+and no-flow-logs 112, GitLab `CI_DEBUG_TRACE` secret-to-log leak 113, caught by
+pipeline-check `GL-038` as of 1.9.0).
 
 **Scenarios 114–120 grow the thinnest IaC formats** alongside a 9th scanner,
 **Trivy** (the dedicated IaC/container misconfiguration scanner — it renders

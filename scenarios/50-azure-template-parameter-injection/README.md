@@ -30,11 +30,10 @@ verbatim as a script step and runs with full pipeline access.
 
 | Scanner | Detection |
 |---------|-----------|
-| pipeline-check | — |
+| pipeline-check | `ADO-002` — script injection via attacker-controllable context |
 | Checkov | — |
 
-> **All-miss — a next-gen target.** Distinguishing a dangerous compile-time
-> parameter splice wants template-expansion awareness no scanner here carries.
+> pipeline-check 1.9.0's `ADO-002` flags the `${{ parameters.* }}` splice into the script as attacker-controllable injection.
 
 ## Fix
 

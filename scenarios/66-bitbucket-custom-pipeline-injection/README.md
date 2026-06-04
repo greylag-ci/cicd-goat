@@ -31,12 +31,10 @@ A user with trigger rights supplies a `TARGET` value with shell metacharacters
 
 | Scanner | Detection |
 |---------|-----------|
-| pipeline-check | — (its `BB-002` injection rule keys on `$BITBUCKET_*` contexts, not custom-pipeline user vars) |
+| pipeline-check | `BB-002` — script injection via attacker-controllable context |
 | Checkov | — |
 
-> **All-miss — a next-gen target.** Injection through a *custom-pipeline
-> user-provided variable* (vs. a built-in `$BITBUCKET_*` context, scenario 62)
-> is not covered.
+> pipeline-check 1.9.0 expanded `BB-002` to flag injection through custom-pipeline user variables, not just `$BITBUCKET_*` contexts.
 
 ## Fix
 

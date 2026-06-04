@@ -38,10 +38,10 @@ full user session token.
 | Scanner | Detection |
 |---------|-----------|
 | ciguard | `IAM-002` — Unrestricted `CI_JOB_TOKEN` usage |
-| pipeline-check | — (no job-token-scope rule fires on this shape) |
+| pipeline-check | `GL-040` — `CI_JOB_TOKEN` used for cross-project / remote access |
 | Checkov | — (fires only an adjacent `CKV_GITLABCI_1` "curl with CI var", not the token-scope bug) |
 
-> A solo catch by ciguard. Reconciled against real `scanner-comparison` SARIF.
+> ciguard (`IAM-002`) has always named this, and pipeline-check 1.9.0 now joins it: `GL-040` flags a job using `CI_JOB_TOKEN` for cross-project or remote access.
 
 ## Fix
 

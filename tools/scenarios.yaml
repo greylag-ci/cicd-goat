@@ -162,7 +162,7 @@ scenarios:
   # an `expected:` entry. Rule IDs were reconciled against real scanner
   # output (pipeline-check 1.0.4, Checkov 3.2.532, ciguard 0.11.2 run
   # against the nested fixtures), same process as the GHA rows. CI pins
-  # pipeline-check 1.4.0; if a rule ID shifted there, the weekly
+  # pipeline-check 1.9.0; if a rule ID shifted there, the weekly
   # `regen-readme --verify` drift report flags it (it never blocks).
   #
   # GitLab CI analogue of scenarios 02 / 30-33: an attacker-controlled
@@ -186,13 +186,14 @@ scenarios:
   # ── Wave 1: GitLab CI full set (41-48) ───────────────────────────────
   # Rule IDs grounded against pipeline-check 1.0.4 / Checkov 3.2.532 /
   # ciguard 0.11.2 over the nested fixtures, then reconciled to CI's
-  # pipeline-check 1.5.0 SARIF. Checkov's gitlab_ci ruleset is thin — it
+  # pipeline-check 1.9.0 SARIF. Checkov's gitlab_ci ruleset is thin — it
   # fires no canonical-bug rule on any of these (0/9 GitLab), so every
   # checkov entry is [] (a real miss, not na).
   #
   # CI_JOB_TOKEN used for cross-project access (issue #243703 / CVE-2024-8641).
-  # ciguard IAM-002 names it; pipeline-check has no job-token-scope rule here.
-  - {id: 41, title: "GitLab: `CI_JOB_TOKEN` cross-project access",       provider: gitlab, cicd_sec: [2, 5], severity: high,     slug: 41-gitlab-ci-job-token-cross-project, expected: {pipeline-check: [], checkov: [], ciguard: [IAM-002]}}
+  # ciguard IAM-002 names it; pipeline-check 1.9.0 added GL-040 (CI_JOB_TOKEN
+  # cross-project / remote access).
+  - {id: 41, title: "GitLab: `CI_JOB_TOKEN` cross-project access",       provider: gitlab, cicd_sec: [2, 5], severity: high,     slug: 41-gitlab-ci-job-token-cross-project, expected: {pipeline-check: [GL-040], checkov: [], ciguard: [IAM-002]}}
   # include: remote + project pinned to a mutable ref (supply chain).
   - {id: 42, title: "GitLab: untrusted `include:` (remote / mutable ref)", provider: gitlab, cicd_sec: [3, 9], severity: high,   slug: 42-gitlab-include-remote-untrusted,   expected: {pipeline-check: [GL-005], checkov: [], ciguard: [PIPE-002]}}
   # Secret-bearing deploy job gated only on merge_request_event -> fork-MR
@@ -209,54 +210,57 @@ scenarios:
   # ciguard has no OIDC rule.
   - {id: 47, title: "GitLab: OIDC `id_tokens` over-broad aud/sub",      provider: gitlab, cicd_sec: [2, 7], severity: critical, slug: 47-gitlab-oidc-broad-aud-sub,          expected: {pipeline-check: [GL-031], checkov: [], ciguard: []}}
   # Untagged (shared-runner) job spinning privileged docker:dind with TLS
-  # off. ciguard RUN-002 names it; pipeline-check has no equivalent rule.
-  - {id: 48, title: "GitLab: untagged shared-runner + privileged dind", provider: gitlab, cicd_sec: [7, 4], severity: high,     slug: 48-gitlab-shared-runner-privileged,   expected: {pipeline-check: [], checkov: [], ciguard: [RUN-002]}}
+  # off. ciguard RUN-002 names it; pipeline-check 1.9.0 added GL-039
+  # (insecure dind daemon: TLS disabled on the exposed Docker socket).
+  - {id: 48, title: "GitLab: untagged shared-runner + privileged dind", provider: gitlab, cicd_sec: [7, 4], severity: high,     slug: 48-gitlab-shared-runner-privileged,   expected: {pipeline-check: [GL-039], checkov: [], ciguard: [RUN-002]}}
 
   # ── Wave 2: Azure Pipelines / CircleCI / Bitbucket (49-66) ───────────
   # Applicable scanners for these providers: pipeline-check + Checkov only
   # (ciguard/poutine/etc. auto-resolve to —). Rule IDs grounded against
-  # pipeline-check 1.0.4 + Checkov 3.2.532, reconciled to CI 1.5.0 SARIF.
-  # Several rows are all-miss "next-gen targets": pipeline-check has no
-  # Azure/CircleCI injection rule, no persist-credentials / addSpn / secret-
-  # to-artifact / skip-ssl-verify / custom-pipeline-injection rule, and no
-  # uncertified-orb-publisher rule; Checkov's per-provider rulesets are thin.
+  # pipeline-check 1.0.4 + Checkov 3.2.532, reconciled to CI 1.9.0 SARIF.
+  # pipeline-check 1.9.0 closed most of the former "all-miss" rows here:
+  # ADO-002 (Azure injection), CC-002 (CircleCI injection), ADO-032
+  # (persist-credentials), BB-032 (secret dumped via env/printenv), BB-023
+  # (skip-ssl-verify), BB-029 (image mutable tag), BB-002 (custom-pipeline
+  # injection). Scenario 60 (uncertified third-party orb) stays the lone
+  # next-gen target here; Checkov's per-provider rulesets are thin.
   #
   # Azure Pipelines (49-54)
-  - {id: 49, title: "Azure: macro `$(...)` injection into Bash@3",        provider: azure,     cicd_sec: [4],    severity: high,     slug: 49-azure-macro-injection,             expected: {pipeline-check: [], checkov: []}}
-  - {id: 50, title: "Azure: `${{ parameters }}` template injection",      provider: azure,     cicd_sec: [4],    severity: high,     slug: 50-azure-template-parameter-injection, expected: {pipeline-check: [], checkov: []}}
-  - {id: 51, title: "Azure: `checkout persistCredentials: true`",         provider: azure,     cicd_sec: [6],    severity: high,     slug: 51-azure-persist-credentials,         expected: {pipeline-check: [], checkov: []}}
+  - {id: 49, title: "Azure: macro `$(...)` injection into Bash@3",        provider: azure,     cicd_sec: [4],    severity: high,     slug: 49-azure-macro-injection,             expected: {pipeline-check: [ADO-002], checkov: []}}
+  - {id: 50, title: "Azure: `${{ parameters }}` template injection",      provider: azure,     cicd_sec: [4],    severity: high,     slug: 50-azure-template-parameter-injection, expected: {pipeline-check: [ADO-002], checkov: []}}
+  - {id: 51, title: "Azure: `checkout persistCredentials: true`",         provider: azure,     cicd_sec: [6],    severity: high,     slug: 51-azure-persist-credentials,         expected: {pipeline-check: [ADO-032], checkov: []}}
   # ADO-029 flags the ungated service-connection job that addSpnToEnvironment makes worse.
   - {id: 52, title: "Azure: `addSpnToEnvironment` SP-secret exposure",    provider: azure,     cicd_sec: [2, 6], severity: high,     slug: 52-azure-spn-to-environment,          expected: {pipeline-check: [ADO-029], checkov: []}}
   - {id: 53, title: "Azure: `resources: repositories` untrusted ref",     provider: azure,     cicd_sec: [3, 9], severity: high,     slug: 53-azure-resources-untrusted-repo,    expected: {pipeline-check: [ADO-025], checkov: []}}
   - {id: 54, title: "Azure: self-hosted pool for untrusted builds",       provider: azure,     cicd_sec: [7],    severity: critical, slug: 54-azure-self-hosted-untrusted,       expected: {pipeline-check: [ADO-013], checkov: []}}
   # CircleCI (55-60)
   - {id: 55, title: "CircleCI: orb pinned to `@volatile`",                provider: circleci,  cicd_sec: [3],    severity: high,     slug: 55-circleci-orb-volatile,             expected: {pipeline-check: [CC-001], checkov: []}}
-  - {id: 56, title: "CircleCI: `run:` injection via `<< pipeline.* >>`",  provider: circleci,  cicd_sec: [4],    severity: high,     slug: 56-circleci-run-injection,            expected: {pipeline-check: [], checkov: []}}
+  - {id: 56, title: "CircleCI: `run:` injection via `<< pipeline.* >>`",  provider: circleci,  cicd_sec: [4],    severity: high,     slug: 56-circleci-run-injection,            expected: {pipeline-check: [CC-002], checkov: []}}
   # CC-029 fires specifically on the machine: true executor.
   - {id: 57, title: "CircleCI: `machine: true` privileged executor",      provider: circleci,  cicd_sec: [7],    severity: medium,   slug: 57-circleci-machine-privileged,       expected: {pipeline-check: [CC-029], checkov: []}}
   - {id: 58, title: "CircleCI: docker image mutable tag",                 provider: circleci,  cicd_sec: [3, 9], severity: medium,   slug: 58-circleci-image-mutable-tag,        expected: {pipeline-check: [CC-003], checkov: [CKV_CIRCLECIPIPELINES_1]}}
   - {id: 59, title: "CircleCI: hardcoded secret in `environment:`",       provider: circleci,  cicd_sec: [6],    severity: high,     slug: 59-circleci-secret-in-environment,    expected: {pipeline-check: [CC-004], checkov: []}}
   - {id: 60, title: "CircleCI: uncertified third-party orb",              provider: circleci,  cicd_sec: [3],    severity: medium,   slug: 60-circleci-uncertified-orb,          expected: {pipeline-check: [], checkov: []}}
   # Bitbucket Pipelines (61-66)
-  - {id: 61, title: "Bitbucket: secret dumped to `artifacts:` (Mandiant)", provider: bitbucket, cicd_sec: [6, 10], severity: high,   slug: 61-bitbucket-secret-to-artifact,      expected: {pipeline-check: [], checkov: []}}
+  - {id: 61, title: "Bitbucket: secret dumped to `artifacts:` (Mandiant)", provider: bitbucket, cicd_sec: [6, 10], severity: high,   slug: 61-bitbucket-secret-to-artifact,      expected: {pipeline-check: [BB-032], checkov: []}}
   - {id: 62, title: "Bitbucket: `$BITBUCKET_*` script injection",         provider: bitbucket, cicd_sec: [4],    severity: high,     slug: 62-bitbucket-var-injection,           expected: {pipeline-check: [BB-002], checkov: []}}
   - {id: 63, title: "Bitbucket: `pipe:` mutable tag",                     provider: bitbucket, cicd_sec: [3],    severity: medium,   slug: 63-bitbucket-pipe-mutable-tag,        expected: {pipeline-check: [BB-001], checkov: []}}
-  # Checkov solo catch — pipeline-check has no Bitbucket image-tag rule.
-  - {id: 64, title: "Bitbucket: `image:` mutable tag",                    provider: bitbucket, cicd_sec: [3, 9], severity: medium,   slug: 64-bitbucket-image-mutable-tag,       expected: {pipeline-check: [], checkov: [CKV_BITBUCKETPIPELINES_1]}}
-  - {id: 65, title: "Bitbucket: `clone: skip-ssl-verify: true`",          provider: bitbucket, cicd_sec: [7],    severity: medium,   slug: 65-bitbucket-clone-skip-ssl-verify,   expected: {pipeline-check: [], checkov: []}}
-  - {id: 66, title: "Bitbucket: custom-pipeline variable injection",      provider: bitbucket, cicd_sec: [4, 1], severity: high,     slug: 66-bitbucket-custom-pipeline-injection, expected: {pipeline-check: [], checkov: []}}
+  # Both catch the mutable image tag: pipeline-check BB-029 (added 1.9.0)
+  # and Checkov CKV_BITBUCKETPIPELINES_1.
+  - {id: 64, title: "Bitbucket: `image:` mutable tag",                    provider: bitbucket, cicd_sec: [3, 9], severity: medium,   slug: 64-bitbucket-image-mutable-tag,       expected: {pipeline-check: [BB-029], checkov: [CKV_BITBUCKETPIPELINES_1]}}
+  - {id: 65, title: "Bitbucket: `clone: skip-ssl-verify: true`",          provider: bitbucket, cicd_sec: [7],    severity: medium,   slug: 65-bitbucket-clone-skip-ssl-verify,   expected: {pipeline-check: [BB-023], checkov: []}}
+  - {id: 66, title: "Bitbucket: custom-pipeline variable injection",      provider: bitbucket, cicd_sec: [4, 1], severity: high,     slug: 66-bitbucket-custom-pipeline-injection, expected: {pipeline-check: [BB-002], checkov: []}}
 
   # ── Wave 3: Jenkins (more) + Tekton + Argo + Drone + Buildkite + Cloud Build (67-82) ──
   # Mostly single-scanner: pipeline-check scores all six; ciguard adds Jenkins;
   # Checkov adds Argo (CKV_ARGO_*). Rule IDs grounded against pipeline-check
-  # 1.0.4 / Checkov 3.2.532 / ciguard 0.11.2, reconciled to CI 1.5.0 SARIF.
+  # 1.0.4 / Checkov 3.2.532 / ciguard 0.11.2, reconciled to CI 1.9.0 SARIF.
   # NOTE: pipeline-check's tekton/argo discovery is single-manifest per path, so
   # scanner-comparison.yml routes those two providers through
   # tools/pipeline-check-resource-scan.py.
-  # NOTE: scenario 71 (Tekton param injection) is an all-miss next-gen target:
-  # pipeline-check 1.5.0's TKN-003 fired on the quoted-echo `$(params.*)` shape
-  # in 1.0.4 but no longer does in 1.5.0 (a quoting carve-out, like GHA-003) —
-  # a completeness probe, same spirit as the GHA injection-context variants.
+  # NOTE: scenario 71 (Tekton param injection) flipped to a catch in 1.9.0:
+  # TKN-003 fires on the quoted-echo `$(params.*)` shape again (the 1.5.0
+  # quoting carve-out was lifted), and AC-023 corroborates the injection chain.
   #
   # Jenkins (67-70)
   - {id: 67, title: "Jenkins: `@Grab` sandbox-bypass (CVE-2019-1003000)",  provider: jenkins, cicd_sec: [4],    severity: critical, slug: 67-jenkins-grab-sandbox-bypass,    expected: {pipeline-check: [JF-019], ciguard: []}}
@@ -264,7 +268,7 @@ scenarios:
   - {id: 69, title: "Jenkins: shared library on a mutable `@master` ref",  provider: jenkins, cicd_sec: [3],    severity: high,     slug: 69-jenkins-library-mutable-ref,   expected: {pipeline-check: [JF-001], ciguard: []}}
   - {id: 70, title: "Jenkins: `agent any` (controller exposure)",         provider: jenkins, cicd_sec: [7, 5], severity: high,     slug: 70-jenkins-agent-any,             expected: {pipeline-check: [JF-003], ciguard: [JKN-RUN-001]}}
   # Tekton (71-73) — pipeline-check only
-  - {id: 71, title: "Tekton: `$(params.*)` injected into step script",    provider: tekton,  cicd_sec: [4],    severity: high,     slug: 71-tekton-param-injection,        expected: {pipeline-check: []}}
+  - {id: 71, title: "Tekton: `$(params.*)` injected into step script",    provider: tekton,  cicd_sec: [4],    severity: high,     slug: 71-tekton-param-injection,        expected: {pipeline-check: [TKN-003]}}
   - {id: 72, title: "Tekton: privileged / root step",                     provider: tekton,  cicd_sec: [7],    severity: high,     slug: 72-tekton-privileged-step,        expected: {pipeline-check: [TKN-002]}}
   - {id: 73, title: "Tekton: step `image:` not pinned to a digest",       provider: tekton,  cicd_sec: [3, 9], severity: medium,   slug: 73-tekton-image-unpinned,         expected: {pipeline-check: [TKN-001]}}
   # Argo Workflows (74-76) — pipeline-check + Checkov
@@ -285,7 +289,7 @@ scenarios:
   # Two marquee critical classes the corpus lacked outside GitHub Actions:
   # container/cluster escape (hostPath -> node takeover) and fork-PR RCE /
   # secret-theft ("pwn request"). Rule IDs grounded against pipeline-check
-  # 1.0.4 / Checkov 3.2.532 / ciguard 0.11.2, reconciled to CI 1.5.0 SARIF.
+  # 1.0.4 / Checkov 3.2.532 / ciguard 0.11.2, reconciled to CI 1.9.0 SARIF.
   #
   # Container/cluster escape (CICD-SEC-7) — escalation of the privileged-step
   # scenarios 72 / 75; pipeline-check has dedicated hostPath/host-namespace rules.
@@ -309,7 +313,7 @@ scenarios:
   # untrusted PR/MR input runs attacker code at apply time), untrusted external
   # template on a persistent self-hosted agent, K8s RBAC takeover, and host-
   # socket escape. Grounded against pipeline-check 1.0.4 / Checkov 3.2.532 /
-  # ciguard 0.11.2, reconciled to CI 1.5.0 SARIF.
+  # ciguard 0.11.2, reconciled to CI 1.9.0 SARIF.
   #
   # 89 (GHA) IaC apply on pull_request — expected reconciled from the first CI
   # run across all 7 GHA scanners (no scanner here is known to flag apply-on-PR
@@ -321,10 +325,10 @@ scenarios:
   # 91 (GitLab) terraform apply in an MR pipeline — GitLab twin of 89; caught as
   # an ungated MR-triggered deploy (GL-004); the apply-RCE specifics are a gap.
   - {id: 91, title: "GitLab: `terraform apply` in a merge-request pipeline", provider: gitlab, cicd_sec: [4], severity: critical, slug: 91-gitlab-iac-apply-mr, expected: {pipeline-check: [GL-004], checkov: [], ciguard: []}}
-  # 92 (Argo) workflow bound to a cluster-admin ServiceAccount — cluster
-  # takeover. All-miss next-gen: the over-privilege lives in RBAC (config-spread),
-  # not the workflow; no scanner here flags a named over-privileged SA.
-  - {id: 92, title: "Argo: cluster-admin ServiceAccount → cluster takeover", provider: argo, cicd_sec: [2, 5], severity: critical, slug: 92-argo-cluster-admin-sa, expected: {pipeline-check: [], checkov: []}}
+  # 92 (Argo) workflow bound to a cluster-admin ServiceAccount (cluster
+  # takeover). pipeline-check 1.9.0 added ARGO-016, which flags a workflow
+  # bound to a cluster-admin / over-privileged ServiceAccount.
+  - {id: 92, title: "Argo: cluster-admin ServiceAccount → cluster takeover", provider: argo, cicd_sec: [2, 5], severity: critical, slug: 92-argo-cluster-admin-sa, expected: {pipeline-check: [ARGO-016], checkov: []}}
   # 93 (Drone) privileged step mounting the host Docker socket — host takeover;
   # DR-007 (sensitive host path) names it (DR-002 privileged also fires).
   - {id: 93, title: "Drone: privileged step mounts host Docker socket", provider: drone, cicd_sec: [7], severity: critical, slug: 93-drone-host-socket, expected: {pipeline-check: [DR-007]}}
@@ -387,10 +391,10 @@ scenarios:
   - {id: 107, title: "GHA: org secret handed to unpinned 3rd-party action", cicd_sec: [8, 6], severity: high, slug: 107-thirdparty-action-broad-secret, expected: {pipeline-check: [GHA-072], zizmor: [zizmor/unpinned-uses], poutine: [github_action_from_unverified_creator_used], kics: [555ab8f9-2001-455e-a077-f2d0f41e2fb9], checkov: [], actionlint: [], octoscan: [repo-jacking]}}
   # SEC-1 — Insufficient flow control mechanisms.
   - {id: 108, title: "GHA: deploy job missing environment binding",        cicd_sec: [1],    severity: medium, slug: 108-deploy-no-environment,         expected: {pipeline-check: [GHA-014], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
-  # 109 self-hosted ungated deploy. pinned CI (pipeline-check 1.5.0) has no
-  # GHA-112 yet; it names both facets via GHA-014 (ungated deploy) + GHA-012
-  # (self-hosted runner without ephemeral marker).
-  - {id: 109, title: "GHA: self-hosted deploy without environment gate",   cicd_sec: [1, 7], severity: high,   slug: 109-selfhosted-deploy-no-gate,     expected: {pipeline-check: [GHA-014, GHA-012], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
+  # 109 self-hosted ungated deploy. pipeline-check 1.9.0 ships GHA-112
+  # (self-hosted deploy job not gated by a protected environment), the
+  # dedicated rule naming both facets; GHA-014 + GHA-012 also fire.
+  - {id: 109, title: "GHA: self-hosted deploy without environment gate",   cicd_sec: [1, 7], severity: high,   slug: 109-selfhosted-deploy-no-gate,     expected: {pipeline-check: [GHA-112], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
   # 110 manual deploy relies on GitLab's allow_failure default. pipeline-check
   # GL-029 names the exact bug; ciguard PIPE-004 (UnprotectedDeployJob) names
   # the same flow-control gap (the deploy job is ungated).
@@ -401,9 +405,9 @@ scenarios:
   # f861041c=S3 Bucket Logging Disabled.
   - {id: 111, title: "Terraform: CloudTrail logging disabled / single-region", provider: terraform, cicd_sec: [10], severity: high, slug: 111-terraform-cloudtrail-disabled, expected: {checkov: [CKV_AWS_67], kics: [4bb76f17-3d63-4529-bdca-2b454529d774], trivy: [AWS-0014]}}
   - {id: 112, title: "Terraform: VPC flow logs + S3 access logging off",   provider: terraform, cicd_sec: [10], severity: medium, slug: 112-terraform-no-flow-logs,        expected: {checkov: [CKV_AWS_18], kics: [f83121ea-03da-434f-9277-9cd247ab3047, f861041c-8c9f-4156-acfc-5e6e524f5884], trivy: [AWS-0178]}}
-  # 113 GitLab CI_DEBUG_TRACE dumps masked secrets to the job log. No scanner
-  # here carries a rule for it -> honest all-miss next-gen target.
-  - {id: 113, title: "GitLab: `CI_DEBUG_TRACE` leaks secrets to job log",  provider: gitlab, cicd_sec: [10, 6], severity: medium, slug: 113-gitlab-debug-trace,           expected: {pipeline-check: [], checkov: [], ciguard: []}}
+  # 113 GitLab CI_DEBUG_TRACE dumps masked secrets to the job log.
+  # pipeline-check 1.9.0 added GL-038, which flags CI_DEBUG_TRACE logging.
+  - {id: 113, title: "GitLab: `CI_DEBUG_TRACE` leaks secrets to job log",  provider: gitlab, cicd_sec: [10, 6], severity: medium, slug: 113-gitlab-debug-trace,           expected: {pipeline-check: [GL-038], checkov: [], ciguard: []}}
 
   # ── Wave 8: Trivy (9th scanner) + grow the thinnest IaC formats (CFN 1->4,
   #            Helm 1->3, Terraform 5->7). Scenarios 114-120. All expected lists

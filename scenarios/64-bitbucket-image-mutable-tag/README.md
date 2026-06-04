@@ -23,12 +23,10 @@ analogue of scenarios 09 / 46 / 58.
 
 | Scanner | Detection |
 |---------|-----------|
-| pipeline-check | — (no Bitbucket image-tag rule fires) |
+| pipeline-check | `BB-029` — `image:` not pinned by sha256 digest |
 | Checkov | `CKV_BITBUCKETPIPELINES_1` — image uses a non-latest version tag |
 
-> **Checkov solo catch.** pipeline-check flags Bitbucket `pipe:` pinning
-> (scenario 63) but not the top-level `image:` tag — so Checkov is the only
-> scanner that covers this row.
+> Both pipeline-check (`BB-029`, added in 1.9.0) and Checkov flag the mutable `image:` tag.
 
 ## Fix
 

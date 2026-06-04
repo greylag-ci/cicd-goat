@@ -165,7 +165,7 @@ whole story. Pipeline-check also ships an **absence-of-control** rule
 family that the other six scanners in this comparison don't carry at
 all: rules that fire when a
 workflow *lacks* an expected step (SBOM, SLSA, signing, vuln-scan,
-etc.). Pipeline-check 1.4.0 carries **78 rules** across the `GHA-*`,
+etc.). Pipeline-check 1.9.0 carries **153 rules** across the `GHA-*`,
 `TAINT-*`, and `AC-*` (attack-chain) families. The hygiene subset
 fires on every workflow file regardless of canonical bug; the verbatim
 list from the latest run:
