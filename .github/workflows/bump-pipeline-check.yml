@@ -1,0 +1,94 @@
+name: bump-pipeline-check
+
+# Keeps the pinned `pipeline-check` version + wheel sha256 in
+# scanner-comparison.yml current with PyPI. This automates ONLY the
+# mechanical half of a bump (the pin line + its comment) via
+# tools/bump-pipeline-check.py and opens a PR. A human still reviews the
+# regenerated leaderboard (regen-readme.yml) and decides any scenario
+# `expected:` reclassifications — the regen-readme drift report is the
+# worklist for that. See tools/bump-pipeline-check.py for the rationale.
+#
+# Triggers:
+#   schedule            — weekly poll of PyPI.
+#   workflow_dispatch   — manual; optional `version` input forces a target.
+#   repository_dispatch — type `pipeline-check-release`; pipeline-check's
+#                         release workflow can fire this with
+#                         client_payload.version right after a PyPI publish.
+
+on:
+  schedule:
+    - cron: '11 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Target pipeline-check version (default: latest on PyPI)'
+        required: false
+        default: ''
+  repository_dispatch:
+    types: [pipeline-check-release]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    name: bump pin + open PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      # Empty for the scheduled poll (script picks the latest PyPI release);
+      # set by the manual input or the repository_dispatch payload otherwise.
+      TARGET_VERSION: ${{ github.event.inputs.version || github.event.client_payload.version }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+        with:
+          persist-credentials: true     # we push the bump branch from this job
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5
+        with:
+          python-version: '3.12'
+      - name: Rewrite the pin (if a newer release exists)
+        id: bump
+        # The script reads the current pin from scanner-comparison.yml, looks
+        # up PyPI, and rewrites only the `pipeline-check==` line + its comment
+        # when the target is newer. It needs no third-party deps (stdlib only).
+        run: |
+          set -euo pipefail
+          if [ -n "${TARGET_VERSION}" ]; then
+            python tools/bump-pipeline-check.py --version "${TARGET_VERSION}"
+          else
+            python tools/bump-pipeline-check.py
+          fi
+      - name: Push branch + surface PR URL
+        if: steps.bump.outputs.changed == 'true'
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          cur="${{ steps.bump.outputs.current }}"
+          new="${{ steps.bump.outputs.latest }}"
+          branch="chore/bump-pipeline-check-${new}"
+          # `-B` recreates the branch from the current HEAD each run (idempotent
+          # across repeated weekly polls), carrying the working-tree bump.
+          git checkout -B "$branch"
+          git add .github/workflows/scanner-comparison.yml
+          git commit -m "chore: bump pipeline-check ${cur} -> ${new}
+
+          Pin + wheel sha256 only, written by tools/bump-pipeline-check.py.
+          Review the regenerated leaderboard (regen-readme workflow) and any
+          scenario expected: reclassifications before merging."
+          git push -u origin "$branch" --force-with-lease
+          {
+            echo "### pipeline-check ${cur} -> ${new}"
+            echo
+            echo "Pin bumped on branch \`${branch}\`."
+            echo
+            echo "Open the PR: <https://github.com/${{ github.repository }}/compare/main...${branch}?expand=1>"
+            echo
+            echo "After merge, scanner-comparison + regen-readme refresh the docs."
+            echo "Check the regen-readme drift report for new scenario catches to reclassify."
+          } >> "$GITHUB_STEP_SUMMARY"
