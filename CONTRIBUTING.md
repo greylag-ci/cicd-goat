@@ -166,3 +166,28 @@ CI does this automatically:
 runs weekly (`cron: '23 7 * * 1'`) and on `workflow_dispatch`, and
 opens a PR titled _"auto: regen README stats"_ whenever the regenerated
 files differ from `main`.
+
+## Bump the pinned `pipeline-check`
+
+`scanner-comparison.yml` pins `pipeline-check` to an exact version + wheel
+sha256. [`tools/bump-pipeline-check.py`](tools/bump-pipeline-check.py)
+rewrites that pin (and only that pin) from PyPI:
+
+```bash
+python tools/bump-pipeline-check.py --check       # report; exit 10 if newer
+python tools/bump-pipeline-check.py               # rewrite to the latest release
+python tools/bump-pipeline-check.py --version X.Y.Z
+```
+
+CI runs it automatically:
+[`.github/workflows/bump-pipeline-check.yml`](.github/workflows/bump-pipeline-check.yml)
+polls PyPI weekly (also `workflow_dispatch`, or a `pipeline-check-release`
+`repository_dispatch` fired by the upstream release) and opens a
+`chore/bump-pipeline-check-X.Y.Z` PR when a newer release exists.
+
+The script touches the pin only. It does **not** change `scenarios.yaml`
+`expected:` lists, the grounding comments, or the per-scenario READMEs —
+deciding whether a newly-firing rule is the canonical catch for a scenario
+is a human call. After the pin merges, `scanner-comparison` + `regen-readme`
+refresh the docs and the `--verify` drift report flags the scenarios worth
+reclassifying.
