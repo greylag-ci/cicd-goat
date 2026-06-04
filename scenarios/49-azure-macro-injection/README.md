@@ -31,12 +31,10 @@ Security demonstrated this with low-privilege "run pipeline" users.
 
 | Scanner | Detection |
 |---------|-----------|
-| pipeline-check | — (no Azure macro-injection rule fires) |
+| pipeline-check | `ADO-002` — script injection via attacker-controllable context |
 | Checkov | — |
 
-> **All-miss — a next-gen target.** pipeline-check catches this injection class
-> on GitHub Actions, GitLab, Jenkins and Bitbucket, but has no Azure macro
-> rule; Checkov's `azure_pipelines` set doesn't cover it either.
+> pipeline-check 1.9.0 added `ADO-002`, which flags the macro `$(...)` splice into the Bash task as attacker-controllable script injection.
 
 ## Fix
 

@@ -28,12 +28,10 @@ by attackers. The "secured" flag gave false confidence.
 
 | Scanner | Detection |
 |---------|-----------|
-| pipeline-check | — |
+| pipeline-check | `BB-032` — secret-named variable / env dump printed in a script |
 | Checkov | — |
 
-> **All-miss — a next-gen target.** The `env`-dump → `artifacts:` masking
-> bypass is a clean static signature (env/printenv redirect to a file that an
-> `artifacts:` clause then captures) that no scanner here flags yet.
+> pipeline-check 1.9.0's `BB-032` flags the `printenv` env dump that writes secured variables to the file. It catches the leak at its source (the dump) rather than reasoning about the `artifacts:` exfil channel specifically.
 
 ## Fix
 

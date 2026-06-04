@@ -26,12 +26,10 @@ repos. The Azure equivalent of the ArtiPACKED / persist-credentials leak
 
 | Scanner | Detection |
 |---------|-----------|
-| pipeline-check | — |
+| pipeline-check | `ADO-032` — `persistCredentials` leaves the pipeline token in `.git/config` |
 | Checkov | — |
 
-> **All-miss — a next-gen target.** No scanner here flags the Azure
-> `persistCredentials: true` shape (zizmor/poutine catch the GitHub-Actions
-> equivalent, but those don't read Azure YAML).
+> pipeline-check 1.9.0 added `ADO-032`, which flags `checkout persistCredentials: true`.
 
 ## Fix
 

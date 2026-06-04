@@ -27,11 +27,10 @@ which then runs with the pipeline's privileges and secrets.
 
 | Scanner | Detection |
 |---------|-----------|
-| pipeline-check | — |
+| pipeline-check | `BB-023` — TLS / certificate verification bypass |
 | Checkov | — |
 
-> **All-miss — a next-gen target.** `clone: { skip-ssl-verify: true }` is a
-> clean single-key static signature that no scanner here flags yet.
+> pipeline-check 1.9.0 added `BB-023`, which flags `clone: { skip-ssl-verify: true }`.
 
 ## Fix
 
