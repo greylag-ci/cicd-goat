@@ -160,7 +160,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `GHA-001`, `GHA-015`, `GHA-037`, **`GHA-060`** | ✅ |
+| pipeline&#x2011;check | `GHA-001`, `GHA-015`, `GHA-037`, **`GHA-060`**, `PYPI-001`, `PYPI-002` | ✅ |
 | zizmor | `zizmor/artipacked`, `zizmor/unpinned-uses` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
@@ -436,7 +436,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `GHA-001`, `GHA-015`, `GHA-037`, `GHA-038` | ❌ |
+| pipeline&#x2011;check | `GHA-001`, `GHA-015`, `GHA-037`, **`GHA-038`** | ✅ |
 | zizmor | `zizmor/artipacked`, `zizmor/insecure-commands`, `zizmor/unpinned-uses` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | **`60fd272d-15f4-4d8f-afe4-77d9c6cc0453`** | ✅ |
@@ -448,7 +448,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-005`, `AC-018`, `AC-032`, `GHA-001`, `GHA-014`, `GHA-015`, `GHA-037`, `GHA-098`, `GHA-100` | ❌ |
+| pipeline&#x2011;check | `AC-005`, `AC-018`, `AC-032`, `GHA-001`, `GHA-014`, `GHA-015`, `GHA-037`, `GHA-098`, **`GHA-100`** | ✅ |
 | zizmor | `zizmor/artipacked`, `zizmor/unpinned-uses` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | `555ab8f9-2001-455e-a077-f2d0f41e2fb9` | ❌ |
@@ -460,7 +460,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-005`, `AC-033`, `GHA-014`, `GHA-015`, `GHA-019`, `GHA-033`, `GHA-057`, `GHA-098`, `GHA-108`, `TAINT-009` | ❌ |
+| pipeline&#x2011;check | `AC-005`, `AC-033`, `GHA-014`, `GHA-015`, `GHA-019`, `GHA-033`, `GHA-057`, `GHA-098`, `GHA-108`, **`TAINT-009`** | ✅ |
 | zizmor | `zizmor/template-injection` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
@@ -484,7 +484,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-034`, `GHA-001`, `GHA-015`, `GHA-037`, `GHA-059`, `GHA-060`, `GHA-102` | ❌ |
+| pipeline&#x2011;check | `AC-034`, `GHA-001`, `GHA-015`, `GHA-037`, `GHA-059`, `GHA-060`, **`GHA-102`** | ✅ |
 | zizmor | `zizmor/artipacked`, `zizmor/unpinned-uses` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
@@ -708,7 +708,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `JF-011`, `JF-014`, `JF-015`, `JF-024`, `JF-028` | ❌ |
+| pipeline&#x2011;check | `JF-011`, `JF-014`, `JF-015`, **`JF-024`**, `JF-028` | ✅ |
 | ciguard | _(none)_ | ❌ |
 
 ### Scenario 69 — Jenkins: shared library on a mutable `@master` ref (Jenkins)
@@ -846,7 +846,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-005`, `GHA-006`, `GHA-007`, `GHA-014`, `GHA-015`, `GHA-020`, `GHA-024`, `GHA-037`, `GHA-069`, `GHA-098`, `GHA-108`, `GHA-117` | ❌ |
+| pipeline&#x2011;check | `AC-005`, `GHA-006`, `GHA-007`, `GHA-014`, `GHA-015`, `GHA-020`, `GHA-024`, `GHA-037`, `GHA-069`, `GHA-098`, `GHA-108`, **`GHA-117`** | ✅ |
 | zizmor | `zizmor/artipacked` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
@@ -1119,4 +1119,198 @@ Same source as the main matrix — auto-rebuilt from the latest
 | KICS | **`08bd0760-8752-44e1-9779-7bb369b2b4e4`**, `1dc73fb4-5b51-430c-8c5f-25dcf9090b02`, `2a153952-2544-4687-bcc9-cc8fea814a9b`, **`35113e6f-2c6b-414d-beec-7a9482d3b2d1`**, `6d3dead4-c6b2-4db7-81bd-3a83eae8f255`, `88fd05e0-ac0e-43d2-ba6d-fc0ba60ae1a6`, `8d7f7b8c-6c7c-40f8-baa6-62006c6c7b56`, `e38a8e0a-b88b-4902-b3fe-b0fcb17d5c10`, `e592a0c5-5bdb-414c-9066-5dba7cdea370` | ✅ |
 | Checkov | `CKV2_AWS_30`, `CKV2_AWS_60`, `CKV_AWS_118`, `CKV_AWS_129`, `CKV_AWS_157`, **`CKV_AWS_16`**, `CKV_AWS_161`, **`CKV_AWS_17`**, `CKV_AWS_226`, `CKV_AWS_293`, `CKV_AWS_353` | ✅ |
 | Trivy | `AWS-0077`, **`AWS-0080`**, `AWS-0133`, `AWS-0176`, `AWS-0177`, `AWS-0180` | ✅ |
+
+### Scenario 121 — GHA: untrusted context -> agentic AI CLI (prompt injection) (GitHub Actions)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-035`, `GHA-003`, `GHA-004`, `GHA-013`, `GHA-015`, `GHA-037`, `GHA-103`, `GHA-106`, **`GHA-119`** | ✅ |
+| zizmor | _(none)_ | ❌ |
+| poutine | _(none)_ | ❌ |
+| KICS | _(none)_ | ❌ |
+| Checkov | _(none)_ | ❌ |
+| actionlint | _(none)_ | ❌ |
+| octoscan | _(none)_ | ❌ |
+
+### Scenario 122 — GHA: ML model `trust_remote_code=True` (code execution) (GitHub Actions)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `GHA-015`, `GHA-021`, `GHA-037`, `GHA-060`, **`GHA-120`** | ✅ |
+| zizmor | _(none)_ | ❌ |
+| poutine | _(none)_ | ❌ |
+| KICS | _(none)_ | ❌ |
+| Checkov | _(none)_ | ❌ |
+| actionlint | _(none)_ | ❌ |
+| octoscan | _(none)_ | ❌ |
+
+### Scenario 123 — Bitbucket: `terraform apply` on a pull-request pipeline (Bitbucket Pipelines)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, `BB-004`, `BB-005`, `BB-006`, `BB-007`, `BB-015`, `BB-024`, `BB-028`, **`BB-033`** | ✅ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 124 — Bitbucket: production deploy on a pull-request pipeline (Bitbucket Pipelines)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `BB-005`, **`BB-034`** | ✅ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 125 — GitLab: native security scanner explicitly disabled (GitLab CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, `GL-003`, `GL-004`, `GL-015`, **`GL-043`** | ✅ |
+| Checkov | _(none)_ | ❌ |
+| ciguard | _(none)_ | ❌ |
+
+### Scenario 126 — GitLab: auto production deploy on a merge-request pipeline (GitLab CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `GL-015`, **`GL-044`** | ✅ |
+| Checkov | _(none)_ | ❌ |
+| ciguard | _(none)_ | ❌ |
+
+### Scenario 127 — Azure: IaC apply on a PR-validated pipeline (Azure Pipelines)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-005`, `ADO-004`, `ADO-006`, `ADO-007`, `ADO-015`, `ADO-020`, `ADO-024`, **`ADO-033`** | ✅ |
+| Checkov | _(none)_ | ❌ |
+
+### Scenario 128 — Jenkins: shell step interpolates `params.*` (injection) (Jenkins)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `JF-003`, `JF-006`, `JF-007`, `JF-011`, `JF-015`, `JF-020`, `JF-028`, **`JF-036`** | ✅ |
+| ciguard | _(none)_ | ❌ |
+
+### Scenario 129 — Drone: dangerous shell idiom (`eval`/`sh -c`) in command (Drone CI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `DR-013`, **`DR-017`** | ✅ |
+
+### Scenario 130 — Buildkite: dangerous shell idiom (`eval`/`sh -c`) in command (Buildkite)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `BK-006`, `BK-012`, **`BK-016`** | ✅ |
+
+### Scenario 131 — Cloud Build: config has indicators of malicious activity (Cloud Build)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `GCB-001`, `GCB-002`, `GCB-005`, `GCB-008`, `GCB-021`, `GCB-025`, **`GCB-027`** | ✅ |
+
+### Scenario 132 — PyPI: dependency confusion via `--extra-index-url` (PyPI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `PYPI-001`, **`PYPI-002`**, **`PYPI-005`** | ✅ |
+
+### Scenario 133 — PyPI: plain-HTTP index + TLS verification disabled (PyPI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `PYPI-002`, **`PYPI-003`**, **`PYPI-011`** | ✅ |
+
+### Scenario 134 — PyPI: floating `build-system.requires` + HTTP source (PyPI)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`PYPI-012`**, **`PYPI-014`** | ✅ |
+
+### Scenario 135 — Maven: plain-HTTP repository + mutable `SNAPSHOT` (Maven)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`MVN-002`**, **`MVN-003`**, `MVN-005` | ✅ |
+
+### Scenario 136 — Maven: build plugin bound to lifecycle (build-time RCE) (Maven)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`MVN-015`** | ✅ |
+
+### Scenario 137 — NuGet: plain-HTTP feed + private feed without `<clear/>` (NuGet)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`NUGET-004`**, `NUGET-012`, **`NUGET-016`** | ✅ |
+
+### Scenario 138 — NuGet: multiple sources without `packageSourceMapping` (NuGet)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`NUGET-007`**, `NUGET-012`, `NUGET-017` | ✅ |
+
+### Scenario 139 — Cargo: git dep on a mutable ref + compile-time `build.rs` (Cargo)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `CARGO-001`, **`CARGO-002`**, `CARGO-003`, `CARGO-010`, **`CARGO-011`**, `CARGO-014` | ✅ |
+
+### Scenario 140 — Cargo: alternate registry + `.cargo/config.toml` override (Cargo)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `CARGO-001`, `CARGO-003`, **`CARGO-005`**, `CARGO-010`, **`CARGO-012`**, `CARGO-014` | ✅ |
+
+### Scenario 141 — Go modules: `replace` substitution + missing `go.sum` (Go modules)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`GOMOD-001`**, **`GOMOD-003`** | ✅ |
+
+### Scenario 142 — Go modules: non-canonical host (bare IP / host:port) (Go modules)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `GOMOD-001`, `GOMOD-003`, **`GOMOD-012`** | ✅ |
+
+### Scenario 143 — Composer: `scripts` hook pipes a remote download to a shell (Composer)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `COMPOSER-001`, `COMPOSER-002`, **`COMPOSER-006`**, **`COMPOSER-008`** | ✅ |
+
+### Scenario 144 — Composer: plain-HTTP repository + `secure-http: false` (Composer)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `COMPOSER-001`, `COMPOSER-002`, **`COMPOSER-003`**, **`COMPOSER-010`**, `COMPOSER-011` | ✅ |
+
+### Scenario 145 — OCI: foreign-layer URL + legacy `schemaVersion 1` (OCI / SLSA)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `OCI-001`, `OCI-002`, `OCI-003`, **`OCI-004`**, `OCI-005`, **`OCI-007`**, `OCI-009` | ✅ |
+
+### Scenario 146 — OCI: SLSA provenance attests untrusted builder + unbound subject (OCI / SLSA)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`ATTEST-001`**, `ATTEST-002`, `ATTEST-004`, **`ATTEST-005`**, `OCI-001`, `OCI-003`, `OCI-005`, `OCI-009` | ✅ |
+
+### Scenario 147 — Argo CD: wildcard RBAC policy + anonymous access (Argo CD)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | `AC-030`, **`ARGOCD-004`**, **`ARGOCD-009`** | ✅ |
+
+### Scenario 148 — Argo CD: web terminal enabled (`exec.enabled`) (Argo CD)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`ARGOCD-014`** | ✅ |
+
+### Scenario 149 — Argo CD: plaintext repo credentials + any-source AppProject (Argo CD)
+
+| Scanner | Rules fired | Verdict |
+| :-- | :-- | :-: |
+| pipeline&#x2011;check | **`ARGOCD-001`**, `ARGOCD-002`, **`ARGOCD-005`** | ✅ |
 <!-- /AUTOGEN:rule-firings -->

@@ -1,0 +1,37 @@
+# scenarios/121-ai-prompt-injection
+# CICD-SEC-4 (Poisoned Pipeline Execution)
+# Pattern: an attacker-controlled context (a PR / issue / comment body, a fork
+# branch name) is fed into an *agentic* AI CLI's prompt. Unlike a shell, an LLM
+# ingests an `env:`-routed value as prompt text, so the classic "route through
+# env" mitigation (GHA-003) does NOT apply — a fork PR can smuggle instructions
+# the agent then executes with the job's token and tool access. The AI analogue
+# of script injection (scenario 02).
+#
+# Safety: every job is gated with `if: false`. See
+# scenarios/121-ai-prompt-injection/README.md for details.
+
+name: scenario-121-ai-prompt-injection
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  triage:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+      - name: Let the agent triage the comment (DANGER)
+        env:
+          # DANGER — attacker-controlled comment body routed into the prompt.
+          # `env:` does not sanitize a prompt the way it sanitizes a shell arg.
+          COMMENT: ${{ github.event.comment.body }}
+        run: |
+          claude -p "Triage this issue comment, then apply the right label and
+          reply to the user. Comment body follows:
+          $COMMENT"

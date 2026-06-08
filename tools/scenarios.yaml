@@ -25,9 +25,12 @@
 #                   defaults to `github` when omitted (the original 38
 #                   GHA scenarios).  One of: github | gitlab | azure |
 #                   circleci | bitbucket | jenkins | tekton | argo |
-#                   drone | buildkite | cloudbuild.  Drives which scanner
-#                   columns apply (see scanners[].providers) and which
-#                   per-provider leaderboard / matrix the row lands in.
+#                   drone | buildkite | cloudbuild | dockerfile |
+#                   kubernetes | terraform | cloudformation | helm |
+#                   pypi | maven | nuget | cargo | gomod | composer |
+#                   oci | argocd.  Drives which scanner columns apply
+#                   (see scanners[].providers) and which per-provider
+#                   leaderboard / matrix the row lands in.
 #     cicd_sec    : list of OWASP CICD-SEC category numbers
 #     severity    : one of critical | high | medium | low
 #     expected    : per-scanner expected canonical rule IDs.  Only fill in
@@ -65,8 +68,16 @@
 #   - pipeline-check : + dockerfile / kubernetes / helm (rich DF-/K8S-/HELM-
 #                      rules). NOT terraform (its TF provider needs a plan JSON,
 #                      not raw .tf) or cloudformation (thin/non-attributable).
+#
+# Package & supply-chain families (scenarios 132+): the dependencies a pipeline
+# installs and the artifacts it ships.  pipeline-check is the ONLY scanner in
+# this comparison that parses these, so every such row is pipeline-check-solo
+# (all other scanners auto-resolve to — na):
+#   - pipeline-check : + pypi / maven / nuget / cargo / gomod / composer
+#                      (dependency-manifest rules) and oci / argocd (image
+#                      manifest + SLSA attestation; GitOps control plane).
 scanners:
-  - {id: pipeline-check, sarif_tool: pipeline_check, label: "pipeline&#x2011;check", providers: [github, gitlab, azure, circleci, bitbucket, jenkins, tekton, argo, drone, buildkite, cloudbuild, dockerfile, kubernetes, helm]}
+  - {id: pipeline-check, sarif_tool: pipeline_check, label: "pipeline&#x2011;check", providers: [github, gitlab, azure, circleci, bitbucket, jenkins, tekton, argo, drone, buildkite, cloudbuild, dockerfile, kubernetes, helm, pypi, maven, nuget, cargo, gomod, composer, oci, argocd]}
   - {id: zizmor,         sarif_tool: zizmor,         label: zizmor,                  providers: [github]}
   - {id: poutine,        sarif_tool: poutine,        label: poutine,                 providers: [github]}
   - {id: kics,           sarif_tool: KICS,           label: KICS,                    providers: [github, dockerfile, kubernetes, terraform, cloudformation]}
@@ -145,16 +156,16 @@ scenarios:
   # kics: 20f14e1a demoted on #32 — same shape as #31; KICS's Run Block Injection regex doesn't tag `github.event.head_commit.message` (or `github.event.commits.*.message`) as untrusted. Commit-message-driven injection is one of the most-overlooked entries on a scanner's untrusted-input list.
   - {id: 32, title: "Script injection via commit message",           cicd_sec: [4],    severity: high,     slug: 32-script-injection-commit-message,         expected: {pipeline-check: [GHA-003], zizmor: [zizmor/template-injection], poutine: [injection], kics: [], checkov: [CKV_GHA_2], actionlint: [expression], octoscan: [expression-injection]}}
   - {id: 33, title: "Script injection via comment body",             cicd_sec: [4],    severity: high,     slug: 33-script-injection-comment-body,           expected: {pipeline-check: [GHA-003], zizmor: [zizmor/template-injection], poutine: [injection], kics: [20f14e1a-a899-4e79-9f09-b6a84cd4649b], checkov: [CKV_GHA_2], actionlint: [expression], octoscan: [expression-injection]}}
-  # KICS / Checkov / octoscan all ship rules for ACTIONS_ALLOW_UNSECURE_COMMANDS=true — this is the only scenario in the corpus that exercises them. Project Zero bug 2070 was the disclosing vulnerability. Workflow shape matters: KICS's rule does a strict `env == true` Rego comparison (YAML bool, not string), and Checkov's CKV_GHA_1 only inspects `('jobs', 'jobs.*.steps[]')` — so the env block must be on the job (or step), and the value must be unquoted YAML `true`.  Pipeline-check fires its own rule for this anti-pattern; the rule ID will surface via the first post-merge regen.
-  - {id: 34, title: "`ACTIONS_ALLOW_UNSECURE_COMMANDS` re-enabled",   cicd_sec: [4],    severity: high,     slug: 34-actions-allow-unsecure-commands,         expected: {pipeline-check: [], zizmor: [], poutine: [], kics: [60fd272d-15f4-4d8f-afe4-77d9c6cc0453], checkov: [CKV_GHA_1], actionlint: [], octoscan: [unsecure-commands]}}
-  # Signed-but-not-bound: a hard case for the current field. No scanner in the comparison ships a rule that distinguishes `cosign verify` with `--certificate-identity*` + `--certificate-oidc-issuer` from one without. Target for next-gen rules; matches the #10 / #22 / #19 shape.
-  - {id: 35, title: "`cosign verify` without identity binding",      cicd_sec: [3, 9], severity: high,     slug: 35-cosign-verify-no-identity-binding,       expected: {pipeline-check: [], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
-  # Cross-job environment-secret leak via needs.<>.outputs.* — the `mint` job binds `environment: production` and gets the protection-rule gate; the `deploy` job consumes the secret with no binding of its own. Requires cross-job dataflow analysis no scanner here currently carries.
-  - {id: 36, title: "Environment secret read without consumer binding", cicd_sec: [5, 2], severity: high,  slug: 36-environment-secret-no-binding,           expected: {pipeline-check: [], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
+  # KICS / Checkov / octoscan all ship rules for ACTIONS_ALLOW_UNSECURE_COMMANDS=true — this is the only scenario in the corpus that exercises them. Project Zero bug 2070 was the disclosing vulnerability. Workflow shape matters: KICS's rule does a strict `env == true` Rego comparison (YAML bool, not string), and Checkov's CKV_GHA_1 only inspects `('jobs', 'jobs.*.steps[]')` — so the env block must be on the job (or step), and the value must be unquoted YAML `true`.  pipeline-check fires GHA-038 (re-enables retired ::set-env / ::add-path commands) on this anti-pattern — confirmed firing in 1.12.0.
+  - {id: 34, title: "`ACTIONS_ALLOW_UNSECURE_COMMANDS` re-enabled",   cicd_sec: [4],    severity: high,     slug: 34-actions-allow-unsecure-commands,         expected: {pipeline-check: [GHA-038], zizmor: [], poutine: [], kics: [60fd272d-15f4-4d8f-afe4-77d9c6cc0453], checkov: [CKV_GHA_1], actionlint: [], octoscan: [unsecure-commands]}}
+  # Signed-but-not-bound: no other scanner in the comparison distinguishes `cosign verify` with `--certificate-identity*` + `--certificate-oidc-issuer` from one without. pipeline-check 1.12.0 catches it via GHA-100 (`cosign verify` without certificate identity binding) — pipeline-check-solo. Matches the #10 / #22 / #19 shape.
+  - {id: 35, title: "`cosign verify` without identity binding",      cicd_sec: [3, 9], severity: high,     slug: 35-cosign-verify-no-identity-binding,       expected: {pipeline-check: [GHA-100], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
+  # Cross-job environment-secret leak via needs.<>.outputs.* — the `mint` job binds `environment: production` and gets the protection-rule gate; the `deploy` job consumes the secret with no binding of its own. pipeline-check 1.12.0's taint engine traces this end-to-end and fires TAINT-009 (environment-protected secret flows to unprotected job) — pipeline-check-solo; no other scanner here carries cross-job dataflow.
+  - {id: 36, title: "Environment secret read without consumer binding", cicd_sec: [5, 2], severity: high,  slug: 36-environment-secret-no-binding,           expected: {pipeline-check: [TAINT-009], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
   # poutine: confused_deputy_auto_merge demoted — the rule (opa/rego/rules/confused_deputy_auto_merge.rego) regex-matches `job["if"]` for `github.(actor|triggering_actor) == 'dependabot[bot]'` (and renovate / github-actions / dependabot-preview variants). This corpus gates every scenario job with literal `if: false` per the SAFETY MODEL — making the unsafe pattern textually invisible to any scanner that inspects `if:`. The bot-actor check survives as a comment for human readers (see the workflow file's safety note) but is no longer in the YAML AST. There's no clean workaround that preserves the if:-false safety invariant AND triggers if:-condition-based rules.
   - {id: 37, title: "Confused-deputy auto-merge via bot-identity gate", cicd_sec: [1],  severity: high,    slug: 37-confused-deputy-auto-merge,              expected: {pipeline-check: [], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
-  # `submodules: recursive` from a PR trigger trusts arbitrary URLs in the PR head's .gitmodules; any post-checkout build step that touches the workspace runs attacker code. No scanner here flags this shape today — pair-detection (checkout-with-submodules + run:/uses: in same job) is the candidate rule.
-  - {id: 38, title: "Recursive submodule checkout from PR",          cicd_sec: [3, 4], severity: high,     slug: 38-submodule-trust-from-pr,                 expected: {pipeline-check: [], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
+  # `submodules: recursive` from a PR trigger trusts arbitrary URLs in the PR head's .gitmodules; any post-checkout build step that touches the workspace runs attacker code. pipeline-check 1.12.0 flags this via GHA-102 (`actions/checkout` with submodule fetch on a PR trigger) — pipeline-check-solo; no other scanner here flags the shape.
+  - {id: 38, title: "Recursive submodule checkout from PR",          cicd_sec: [3, 4], severity: high,     slug: 38-submodule-trust-from-pr,                 expected: {pipeline-check: [GHA-102], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
 
   # ── Multi-provider expansion (Wave 0 pilots) ──────────────────────────
   # Non-github scenarios. Scanners whose `providers:` list omits the row's
@@ -264,7 +275,8 @@ scenarios:
   #
   # Jenkins (67-70)
   - {id: 67, title: "Jenkins: `@Grab` sandbox-bypass (CVE-2019-1003000)",  provider: jenkins, cicd_sec: [4],    severity: critical, slug: 67-jenkins-grab-sandbox-bypass,    expected: {pipeline-check: [JF-019], ciguard: []}}
-  - {id: 68, title: "Jenkins: `input` step without `submitter`",          provider: jenkins, cicd_sec: [1, 5], severity: high,     slug: 68-jenkins-input-no-submitter,    expected: {pipeline-check: [], ciguard: []}}
+  # pipeline-check 1.12.0 fires JF-024 (`input` approval step missing submitter restriction) — the canonical bug. ciguard ships no equivalent. Previously recorded as an all-miss next-gen target before the rule landed.
+  - {id: 68, title: "Jenkins: `input` step without `submitter`",          provider: jenkins, cicd_sec: [1, 5], severity: high,     slug: 68-jenkins-input-no-submitter,    expected: {pipeline-check: [JF-024], ciguard: []}}
   - {id: 69, title: "Jenkins: shared library on a mutable `@master` ref",  provider: jenkins, cicd_sec: [3],    severity: high,     slug: 69-jenkins-library-mutable-ref,   expected: {pipeline-check: [JF-001], ciguard: []}}
   - {id: 70, title: "Jenkins: `agent any` (controller exposure)",         provider: jenkins, cicd_sec: [7, 5], severity: high,     slug: 70-jenkins-agent-any,             expected: {pipeline-check: [JF-003], ciguard: [JKN-RUN-001]}}
   # Tekton (71-73) — pipeline-check only
@@ -315,10 +327,11 @@ scenarios:
   # socket escape. Grounded against pipeline-check 1.0.4 / Checkov 3.2.532 /
   # ciguard 0.11.2, reconciled to CI 1.9.0 SARIF.
   #
-  # 89 (GHA) IaC apply on pull_request — expected reconciled from the first CI
-  # run across all 7 GHA scanners (no scanner here is known to flag apply-on-PR
-  # specifically; left [] and reconciled).
-  - {id: 89, title: "GHA: `terraform apply` on untrusted PR (IaC RCE)", cicd_sec: [4], severity: critical, slug: 89-iac-apply-untrusted, expected: {pipeline-check: [], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
+  # 89 (GHA) IaC apply on pull_request — pipeline-check 1.11.0 added GHA-117
+  # (unattended IaC apply on an untrusted pull_request trigger) and 1.12.0
+  # widened its apply/destroy vocabulary; confirmed firing in 1.12.0. The other
+  # 6 GHA scanners still ship no apply-on-PR rule, so this is pipeline-check-solo.
+  - {id: 89, title: "GHA: `terraform apply` on untrusted PR (IaC RCE)", cicd_sec: [4], severity: critical, slug: 89-iac-apply-untrusted, expected: {pipeline-check: [GHA-117], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
   # 90 (Azure) untrusted external template (mutable ref) on a persistent self-
   # hosted agent — supply-chain RCE with a foothold; ADO-025 names the bug.
   - {id: 90, title: "Azure: untrusted `resources` template on self-hosted agent", provider: azure, cicd_sec: [3, 7], severity: critical, slug: 90-azure-untrusted-template-selfhosted, expected: {pipeline-check: [ADO-025], checkov: []}}
@@ -429,3 +442,56 @@ scenarios:
   # 35113e6f=RDS Publicly Accessible.
   - {id: 119, title: "Terraform: S3 bucket unencrypted + unversioned",       provider: terraform, cicd_sec: [7], severity: high, slug: 119-terraform-s3-unencrypted,      expected: {checkov: [CKV_AWS_145], kics: [568a4d22-3517-44a6-a7ad-6a7eed88722c], trivy: [AWS-0132]}}
   - {id: 120, title: "Terraform: RDS publicly accessible + unencrypted",     provider: terraform, cicd_sec: [7, 2], severity: high, slug: 120-terraform-rds-public,       expected: {checkov: [CKV_AWS_16, CKV_AWS_17], kics: [08bd0760-8752-44e1-9779-7bb369b2b4e4, 35113e6f-2c6b-414d-beec-7a9482d3b2d1], trivy: [AWS-0080]}}
+
+  # ── Wave 9: new pipeline-check 1.12.0 rules on already-wired providers ──
+  # 121-131 exercise rules added/widened in 1.12.0. The non-pipeline-check
+  # scanners' `expected` are baselined to [] (expected miss) and reconciled
+  # against the first scanner-comparison run — flip any that actually fire.
+  # 121-122 are GitHub Actions (AI/LLM rule pack); the rest land on the
+  # provider their fixture targets.
+  - {id: 121, title: "GHA: untrusted context -> agentic AI CLI (prompt injection)", cicd_sec: [4], severity: high, slug: 121-ai-prompt-injection,       expected: {pipeline-check: [GHA-119], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
+  - {id: 122, title: "GHA: ML model `trust_remote_code=True` (code execution)", cicd_sec: [4, 3], severity: high, slug: 122-trust-remote-code,            expected: {pipeline-check: [GHA-120], zizmor: [], poutine: [], kics: [], checkov: [], actionlint: [], octoscan: []}}
+  - {id: 123, title: "Bitbucket: `terraform apply` on a pull-request pipeline", provider: bitbucket, cicd_sec: [4], severity: critical, slug: 123-bitbucket-iac-apply-pr,    expected: {pipeline-check: [BB-033], checkov: []}}
+  - {id: 124, title: "Bitbucket: production deploy on a pull-request pipeline", provider: bitbucket, cicd_sec: [1], severity: critical, slug: 124-bitbucket-prod-deploy-pr,  expected: {pipeline-check: [BB-034], checkov: []}}
+  - {id: 125, title: "GitLab: native security scanner explicitly disabled",   provider: gitlab, cicd_sec: [7], severity: medium, slug: 125-gitlab-sast-disabled,             expected: {pipeline-check: [GL-043], checkov: [], ciguard: []}}
+  - {id: 126, title: "GitLab: auto production deploy on a merge-request pipeline", provider: gitlab, cicd_sec: [1], severity: critical, slug: 126-gitlab-auto-prod-deploy-mr, expected: {pipeline-check: [GL-044], checkov: [], ciguard: []}}
+  - {id: 127, title: "Azure: IaC apply on a PR-validated pipeline",           provider: azure, cicd_sec: [4], severity: critical, slug: 127-azure-iac-apply-pr,               expected: {pipeline-check: [ADO-033], checkov: []}}
+  - {id: 128, title: "Jenkins: shell step interpolates `params.*` (injection)", provider: jenkins, cicd_sec: [4], severity: high, slug: 128-jenkins-params-injection,        expected: {pipeline-check: [JF-036], ciguard: []}}
+  - {id: 129, title: "Drone: dangerous shell idiom (`eval`/`sh -c`) in command", provider: drone, cicd_sec: [4], severity: high, slug: 129-drone-eval-injection,            expected: {pipeline-check: [DR-017]}}
+  - {id: 130, title: "Buildkite: dangerous shell idiom (`eval`/`sh -c`) in command", provider: buildkite, cicd_sec: [4], severity: high, slug: 130-buildkite-eval-injection, expected: {pipeline-check: [BK-016]}}
+  - {id: 131, title: "Cloud Build: config has indicators of malicious activity", provider: cloudbuild, cicd_sec: [4], severity: critical, slug: 131-cloudbuild-malicious-indicators, expected: {pipeline-check: [GCB-027]}}
+
+  # ── Wave 9: new pipeline-check-only provider families (package / supply-chain) ──
+  # 132-149 open 8 ecosystems no other scanner in this comparison parses, so every
+  # row is pipeline-check-solo (all other scanners auto-resolve to — na). Expected
+  # rule IDs reconciled from a local 1.12.0 scan (local == CI version). These need
+  # the CI wiring added in scanner-comparison.yml: pypi/maven/cargo/gomod/composer
+  # are direct `--<p>-path scenarios` dir scans; nuget/oci/argocd run through
+  # tools/pipeline-check-resource-scan.py (nuget emits bare NN-/ URIs; oci needs
+  # the per-layout blobs tree; argocd attaches a synthetic resource:/// URI).
+  # PyPI (132-134)
+  - {id: 132, title: "PyPI: dependency confusion via `--extra-index-url`",      provider: pypi, cicd_sec: [3], severity: high, slug: 132-pypi-dependency-confusion,   expected: {pipeline-check: [PYPI-005, PYPI-002]}}
+  - {id: 133, title: "PyPI: plain-HTTP index + TLS verification disabled",      provider: pypi, cicd_sec: [3], severity: high, slug: 133-pypi-http-index,            expected: {pipeline-check: [PYPI-003, PYPI-011]}}
+  - {id: 134, title: "PyPI: floating `build-system.requires` + HTTP source",    provider: pypi, cicd_sec: [3], severity: medium, slug: 134-pypi-pyproject-build-system, expected: {pipeline-check: [PYPI-012, PYPI-014]}}
+  # Maven (135-136)
+  - {id: 135, title: "Maven: plain-HTTP repository + mutable `SNAPSHOT`",       provider: maven, cicd_sec: [3], severity: medium, slug: 135-maven-http-repo-snapshot,  expected: {pipeline-check: [MVN-003, MVN-002]}}
+  - {id: 136, title: "Maven: build plugin bound to lifecycle (build-time RCE)", provider: maven, cicd_sec: [4], severity: high, slug: 136-maven-build-plugin-rce,     expected: {pipeline-check: [MVN-015]}}
+  # NuGet (137-138)
+  - {id: 137, title: "NuGet: plain-HTTP feed + private feed without `<clear/>`", provider: nuget, cicd_sec: [3], severity: high, slug: 137-nuget-http-source,         expected: {pipeline-check: [NUGET-004, NUGET-016]}}
+  - {id: 138, title: "NuGet: multiple sources without `packageSourceMapping`",  provider: nuget, cicd_sec: [3], severity: high, slug: 138-nuget-source-confusion,     expected: {pipeline-check: [NUGET-007]}}
+  # Cargo (139-140)
+  - {id: 139, title: "Cargo: git dep on a mutable ref + compile-time `build.rs`", provider: cargo, cicd_sec: [3], severity: high, slug: 139-cargo-git-buildrs,        expected: {pipeline-check: [CARGO-002, CARGO-011]}}
+  - {id: 140, title: "Cargo: alternate registry + `.cargo/config.toml` override", provider: cargo, cicd_sec: [3], severity: high, slug: 140-cargo-alt-registry,       expected: {pipeline-check: [CARGO-005, CARGO-012]}}
+  # Go modules (141-142)
+  - {id: 141, title: "Go modules: `replace` substitution + missing `go.sum`",   provider: gomod, cicd_sec: [3], severity: high, slug: 141-gomod-replace-substitution,  expected: {pipeline-check: [GOMOD-003, GOMOD-001]}}
+  - {id: 142, title: "Go modules: non-canonical host (bare IP / host:port)",    provider: gomod, cicd_sec: [3], severity: high, slug: 142-gomod-insecure-host,        expected: {pipeline-check: [GOMOD-012]}}
+  # Composer (143-144)
+  - {id: 143, title: "Composer: `scripts` hook pipes a remote download to a shell", provider: composer, cicd_sec: [4], severity: high, slug: 143-composer-scripts-curl-sh, expected: {pipeline-check: [COMPOSER-006, COMPOSER-008]}}
+  - {id: 144, title: "Composer: plain-HTTP repository + `secure-http: false`",  provider: composer, cicd_sec: [3], severity: high, slug: 144-composer-http-repo,       expected: {pipeline-check: [COMPOSER-003, COMPOSER-010]}}
+  # OCI / SLSA (145-146)
+  - {id: 145, title: "OCI: foreign-layer URL + legacy `schemaVersion 1`",       provider: oci, cicd_sec: [9], severity: high, slug: 145-oci-foreign-layer-schema1,     expected: {pipeline-check: [OCI-004, OCI-007]}}
+  - {id: 146, title: "OCI: SLSA provenance attests untrusted builder + unbound subject", provider: oci, cicd_sec: [9], severity: high, slug: 146-oci-slsa-untrusted-builder, expected: {pipeline-check: [ATTEST-001, ATTEST-005]}}
+  # Argo CD (147-149)
+  - {id: 147, title: "Argo CD: wildcard RBAC policy + anonymous access",        provider: argocd, cicd_sec: [2, 5], severity: critical, slug: 147-argocd-rbac-anonymous, expected: {pipeline-check: [ARGOCD-004, ARGOCD-009]}}
+  - {id: 148, title: "Argo CD: web terminal enabled (`exec.enabled`)",          provider: argocd, cicd_sec: [7], severity: critical, slug: 148-argocd-web-terminal,    expected: {pipeline-check: [ARGOCD-014]}}
+  - {id: 149, title: "Argo CD: plaintext repo credentials + any-source AppProject", provider: argocd, cicd_sec: [6, 5], severity: critical, slug: 149-argocd-plaintext-repo-creds, expected: {pipeline-check: [ARGOCD-005, ARGOCD-001]}}

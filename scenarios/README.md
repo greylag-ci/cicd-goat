@@ -1,6 +1,7 @@
 # Scenarios
 
-One hundred and twenty deliberately-vulnerable pipelines and IaC manifests, each
+One hundred and forty-nine deliberately-vulnerable pipelines, IaC manifests, and
+package/supply-chain artifacts, each
 demonstrating one canonical attack pattern from the modern threat landscape.
 **Scenarios 01–38 (and 89) are GitHub Actions** workflows; scenarios 30–33 are
 **variants** of scenario 02
@@ -22,11 +23,14 @@ pipelines live: **GitLab CI** (39, 41–48, 85), **Jenkins** (40, 67–70, 86),
 **Drone CI** (77–78), **Buildkite** (79–80), and **Google Cloud Build** (81–82).
 Only the scanners that actually parse a given provider's files score those rows;
 the rest render `—` (not-applicable). A few rows are still all-miss **next-gen
-targets** — canonical bugs (the CircleCI uncertified-orb namespace, Jenkins
-`input`-without-submitter, and the configuration-spread fork-trust PPE) that no
-scanner here catches yet. pipeline-check 1.9.0 closed several earlier gaps in
-this band (Azure/CircleCI injection, persist-credentials, the Mandiant
-secret-to-artifact leak, `skip-ssl-verify`).
+targets** — canonical bugs (the CircleCI uncertified-orb namespace, the
+confused-deputy auto-merge, and the configuration-spread fork-trust PPE) that no
+scanner here catches yet. pipeline-check 1.12.0 closed several earlier gaps in
+this band (Jenkins `input`-without-submitter via `JF-024`, the
+unsecure-commands revival via `GHA-038`, the signed-but-not-bound `cosign verify`
+via `GHA-100`, the cross-job environment-secret leak via `TAINT-009`, the
+recursive-submodule-from-PR via `GHA-102`, and the IaC-apply-on-untrusted-PR
+class via `GHA-117`).
 **Scenarios 83–93 add critical examples**: container/cluster escape (hostPath →
 node takeover, Tekton/Argo 83/84; host Docker socket, Drone 93), fork-PR RCE /
 secret-theft (the "pwn request" class, GitLab/Jenkins/CircleCI/Bitbucket 85–88),
@@ -58,6 +62,24 @@ Helm charts and parses Dockerfile/Kubernetes/Terraform/CloudFormation): more
 unencrypted 119, RDS public+unencrypted 120). These IaC rows are now scored by
 **four** tools — Trivy + Checkov + KICS + pipeline-check — the corpus's richest
 cross-scanner comparison.
+
+**Scenarios 121–131 add newer rule classes on the platforms already in the
+range** — an **AI/LLM rule pack** (prompt injection from a PR/issue body into an
+agentic CLI 121, `trust_remote_code` model-load RCE 122), **IaC-apply /
+production-deploy on untrusted PRs** (Bitbucket 123/124, Azure 127, GitLab 126),
+a disabled native scanner (GitLab 125), build-parameter injection (Jenkins 128),
+the dangerous-`eval` shell idiom (Drone 129, Buildkite 130), and Cloud Build
+compromise indicators (131). These slot into the existing provider leaderboards.
+
+**Scenarios 132–149 open the package & supply-chain layer** — the dependencies a
+pipeline installs and the artifacts / control plane it ships. **PyPI** (132–134),
+**Maven** (135–136), **NuGet** (137–138), **Cargo** (139–140), **Go modules**
+(141–142), and **Composer** (143–144) cover dependency-confusion and
+build-time-execution manifests; **OCI / SLSA** (145–146) covers image-manifest
+and attestation integrity; **Argo CD** (147–149) covers the GitOps control
+plane. These eight families are read **only by `pipeline-check`** in this
+comparison, so every row is pipeline-check-solo and renders in its own
+*Package & supply-chain* leaderboard band.
 
 See the per-provider leaderboards in the [README](../README.md) and the
 sectioned [matrix](../docs/MATRIX.md).
@@ -197,20 +219,49 @@ sectioned [matrix](../docs/MATRIX.md).
 | 118 | [Helm — hostPath mount of node root in chart](118-helm-hostpath/README.md) | 7 | **Helm** 🔴 — node escape in chart |
 | 119 | [Terraform — S3 bucket unencrypted + unversioned](119-terraform-s3-unencrypted/README.md) | 7 | **Terraform** — unencrypted bucket |
 | 120 | [Terraform — RDS publicly accessible + unencrypted](120-terraform-rds-public/README.md) | 7, 2 | **Terraform** — exposed/unencrypted DB |
+| 121 | [GHA — untrusted context → agentic AI CLI](121-ai-prompt-injection/README.md) | 4 | **GitHub Actions** — AI prompt injection |
+| 122 | [GHA — ML model `trust_remote_code=True`](122-trust-remote-code/README.md) | 4, 3 | **GitHub Actions** — model-load RCE |
+| 123 | [Bitbucket — `terraform apply` on PR pipeline](123-bitbucket-iac-apply-pr/README.md) | 4 | **Bitbucket** 🔴 — IaC apply on untrusted PR |
+| 124 | [Bitbucket — production deploy on PR pipeline](124-bitbucket-prod-deploy-pr/README.md) | 1 | **Bitbucket** 🔴 — prod deploy before review |
+| 125 | [GitLab — native security scanner disabled](125-gitlab-sast-disabled/README.md) | 7 | **GitLab** — `*_DISABLED` control erosion |
+| 126 | [GitLab — auto prod deploy on MR pipeline](126-gitlab-auto-prod-deploy-mr/README.md) | 1 | **GitLab** 🔴 — ungated prod deploy on MR |
+| 127 | [Azure — IaC apply on PR-validated pipeline](127-azure-iac-apply-pr/README.md) | 4 | **Azure** 🔴 — IaC apply on untrusted PR |
+| 128 | [Jenkins — shell step interpolates `params.*`](128-jenkins-params-injection/README.md) | 4 | **Jenkins** — build-parameter injection |
+| 129 | [Drone — dangerous `eval` / `sh -c` idiom](129-drone-eval-injection/README.md) | 4 | **Drone** — command injection idiom |
+| 130 | [Buildkite — dangerous `eval` / `sh -c` idiom](130-buildkite-eval-injection/README.md) | 4 | **Buildkite** — command injection idiom |
+| 131 | [Cloud Build — indicators of malicious activity](131-cloudbuild-malicious-indicators/README.md) | 4 | **Cloud Build** 🔴 — compromise evidence |
+| 132 | [PyPI — dependency confusion via `--extra-index-url`](132-pypi-dependency-confusion/README.md) | 3 | **PyPI** — dependency confusion |
+| 133 | [PyPI — plain-HTTP index + TLS off](133-pypi-http-index/README.md) | 3 | **PyPI** — insecure index transport |
+| 134 | [PyPI — floating `build-system.requires` + HTTP source](134-pypi-pyproject-build-system/README.md) | 3 | **PyPI** — build-time dep abuse |
+| 135 | [Maven — plain-HTTP repo + `SNAPSHOT`](135-maven-http-repo-snapshot/README.md) | 3 | **Maven** — mutable/insecure dep |
+| 136 | [Maven — build plugin bound to lifecycle](136-maven-build-plugin-rce/README.md) | 4 | **Maven** — build-time RCE plugin |
+| 137 | [NuGet — HTTP feed + private feed without `<clear/>`](137-nuget-http-source/README.md) | 3 | **NuGet** — insecure / confusable feed |
+| 138 | [NuGet — multiple sources without `packageSourceMapping`](138-nuget-source-confusion/README.md) | 3 | **NuGet** — dependency confusion |
+| 139 | [Cargo — git mutable ref + compile-time `build.rs`](139-cargo-git-buildrs/README.md) | 3 | **Cargo** — build-time execution |
+| 140 | [Cargo — alternate registry + source override](140-cargo-alt-registry/README.md) | 3 | **Cargo** — registry redirect |
+| 141 | [Go modules — `replace` substitution + no `go.sum`](141-gomod-replace-substitution/README.md) | 3 | **Go modules** — module substitution |
+| 142 | [Go modules — non-canonical host (bare IP / port)](142-gomod-insecure-host/README.md) | 3 | **Go modules** — insecure module host |
+| 143 | [Composer — `scripts` hook pipes remote → shell](143-composer-scripts-curl-sh/README.md) | 4 | **Composer** — install-time RCE |
+| 144 | [Composer — plain-HTTP repo + `secure-http: false`](144-composer-http-repo/README.md) | 3 | **Composer** — insecure repo transport |
+| 145 | [OCI — foreign-layer URL + legacy `schemaVersion 1`](145-oci-foreign-layer-schema1/README.md) | 9 | **OCI** — image integrity |
+| 146 | [OCI — SLSA provenance: untrusted builder + unbound subject](146-oci-slsa-untrusted-builder/README.md) | 9 | **OCI / SLSA** — attestation integrity |
+| 147 | [Argo CD — wildcard RBAC + anonymous access](147-argocd-rbac-anonymous/README.md) | 2, 5 | **Argo CD** 🔴 — control-plane takeover |
+| 148 | [Argo CD — web terminal enabled](148-argocd-web-terminal/README.md) | 7 | **Argo CD** 🔴 — pod exec via UI |
+| 149 | [Argo CD — plaintext repo creds + any-source project](149-argocd-plaintext-repo-creds/README.md) | 6, 5 | **Argo CD** 🔴 — credential / source hygiene |
 
 ## OWASP CICD-SEC top 10 — full coverage
 
 | Risk | Coverage | Scenarios |
 |:---|:---|:---|
-| CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25, 37, 43, 66, 68, 108, 109, 110 |
-| CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22, 36, 41, 47, 52, 76, 82, 85, 92, 100, 115, 116, 120 |
-| CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29, 35, 38, 42, 45, 46, 53, 55, 58, 60, 63, 64, 69, 73, 78, 80, 81, 90, 95, 105, 106 |
-| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33, 34, 38, 39, 40, 45, 48, 49, 50, 56, 62, 66, 67, 71, 74, 79, 85, 86, 87, 88, 89, 91 |
-| CICD-SEC-5: Insufficient Pipeline-Based Access Controls       | ✅ | 1, 4, 6, 25, 26, 36, 41, 68, 70, 92 |
-| CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17, 43, 44, 51, 52, 59, 61, 87, 88, 96, 102, 103, 107, 113 |
-| CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22, 47, 48, 54, 57, 65, 70, 72, 75, 77, 83, 84, 90, 93, 94, 97, 98, 99, 101, 102, 103, 104, 109, 114, 116, 117, 118, 119, 120 |
+| CICD-SEC-1: Insufficient Flow Control Mechanisms              | ✅ | 23, 25, 37, 43, 66, 68, 108, 109, 110, 124, 126 |
+| CICD-SEC-2: Inadequate Identity and Access Management         | ✅ | 10, 22, 36, 41, 47, 52, 76, 82, 85, 92, 100, 115, 116, 120, 147 |
+| CICD-SEC-3: Dependency Chain Abuse                            | ✅ | 3, 9, 11, 12, 16, 19, 20, 29, 35, 38, 42, 45, 46, 53, 55, 58, 60, 63, 64, 69, 73, 78, 80, 81, 90, 95, 105, 106, 122, 132, 133, 134, 135, 137, 138, 139, 140, 141, 142, 144 |
+| CICD-SEC-4: Poisoned Pipeline Execution                       | ✅ | 1, 2, 5, 7, 13, 14, 18, 21, 28, 30, 31, 32, 33, 34, 38, 39, 40, 45, 48, 49, 50, 56, 62, 66, 67, 71, 74, 79, 85, 86, 87, 88, 89, 91, 121, 122, 123, 127, 128, 129, 130, 131, 136, 143 |
+| CICD-SEC-5: Insufficient Pipeline-Based Access Controls       | ✅ | 1, 4, 6, 25, 26, 36, 41, 68, 70, 92, 147, 149 |
+| CICD-SEC-6: Insufficient Credential Hygiene                   | ✅ | 6, 12, 15, 17, 43, 44, 51, 52, 59, 61, 87, 88, 96, 102, 103, 107, 113, 149 |
+| CICD-SEC-7: Insecure System Configuration                     | ✅ | 8, 10, 22, 47, 48, 54, 57, 65, 70, 72, 75, 77, 83, 84, 90, 93, 94, 97, 98, 99, 101, 102, 103, 104, 109, 114, 116, 117, 118, 119, 120, 125, 148 |
 | CICD-SEC-8: Ungoverned Usage of Third-Party Services          | ✅ | 24, 105, 106, 107 |
-| CICD-SEC-9: Improper Artifact Integrity Validation            | ✅ | 5, 7, 9, 17, 19, 35, 42, 46, 53, 58, 64, 73, 78, 81, 95 |
+| CICD-SEC-9: Improper Artifact Integrity Validation            | ✅ | 5, 7, 9, 17, 19, 35, 42, 46, 53, 58, 64, 73, 78, 81, 95, 145, 146 |
 | CICD-SEC-10: Insufficient Logging and Visibility              | ✅ | 27, 61, 111, 112, 113 |
 
 Every risk in the top 10 has at least one scenario. See the

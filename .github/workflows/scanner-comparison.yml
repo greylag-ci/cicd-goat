@@ -87,7 +87,19 @@ jobs:
           # the install scripts) and emits scenarios/NN- URIs for attribution —
           # restoring NPM-001 (floating range) / NPM-004 (install lifecycle).
           python -m pipeline_check --pipeline npm       --npm-path scenarios         --output sarif > pc-sarif/pipeline-check-npm.sarif       || [ $? -eq 1 ]
-          # Tekton + Argo: pipeline-check's discovery is single-manifest per
+          # Package & supply-chain families (scenarios 132+). pipeline-check is
+          # the only scanner here that reads these. pypi / maven / cargo / gomod
+          # / composer recurse the tree and emit `scenarios/NN-.../` URIs, so they
+          # are direct dir scans like npm. (nuget / oci / argocd need per-manifest
+          # handling — bare-NN URIs / blob-layout / synthetic URIs — so they run
+          # through tools/pipeline-check-resource-scan.py below, alongside
+          # tekton/argo/dockerfile/k8s/helm.)
+          python -m pipeline_check --pipeline pypi      --pypi-path scenarios        --output sarif > pc-sarif/pipeline-check-pypi.sarif      || [ $? -eq 1 ]
+          python -m pipeline_check --pipeline maven     --maven-path scenarios       --output sarif > pc-sarif/pipeline-check-maven.sarif     || [ $? -eq 1 ]
+          python -m pipeline_check --pipeline cargo     --cargo-path scenarios       --output sarif > pc-sarif/pipeline-check-cargo.sarif     || [ $? -eq 1 ]
+          python -m pipeline_check --pipeline gomod     --gomod-path scenarios       --output sarif > pc-sarif/pipeline-check-gomod.sarif     || [ $? -eq 1 ]
+          python -m pipeline_check --pipeline composer  --composer-path scenarios    --output sarif > pc-sarif/pipeline-check-composer.sarif  || [ $? -eq 1 ]
+          # Tekton + Argo + NuGet + OCI + Argo CD: pipeline-check's discovery is single-manifest per
           # path AND it attaches some findings to a synthetic `resource:///`
           # URI rather than the file path. tools/pipeline-check-resource-scan.py
           # runs it per manifest and rewrites every finding's URI to the file

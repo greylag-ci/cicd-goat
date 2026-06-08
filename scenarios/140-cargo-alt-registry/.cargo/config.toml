@@ -1,0 +1,16 @@
+# scenarios/140-cargo-alt-registry/.cargo/config.toml
+# DANGER — defines an alternate registry AND replaces the crates-io source with
+# it, so every dependency (including ones that look like crates.io) resolves from
+# the attacker-influenceable index. The injected rustflags run for every build.
+
+[registries.internal]
+index = "sparse+http://crates.internal.example.com/index/"
+
+[source.crates-io]
+replace-with = "internal"
+
+[source.internal]
+registry = "sparse+http://crates.internal.example.com/index/"
+
+[build]
+rustflags = ["-C", "link-arg=-Wl,-rpath,/opt/internal/lib"]

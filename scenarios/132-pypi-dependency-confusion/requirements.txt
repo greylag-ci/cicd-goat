@@ -1,0 +1,19 @@
+# scenarios/132-pypi-dependency-confusion
+# CICD-SEC-3 (Dependency Chain Abuse) — PyPI / requirements.txt
+#
+# Pattern: --extra-index-url adds a SECOND index alongside PyPI. pip queries all
+# indexes and installs the highest version found on ANY of them, so an attacker
+# who publishes `internal-billing 99.0` to public PyPI shadows the private
+# package (Birsan dependency confusion, 2021). No hash pinning means whatever pip
+# resolves is installed unverified.
+#
+# SAFETY: static fixture nested under scenarios/. pip is never invoked on this
+# tree; pipeline-check parses it statically. See README.md.
+
+# DANGER (1) — second index; highest version on any index wins (confusion).
+--extra-index-url https://pypi.internal.example.com/simple
+
+# DANGER (2) — private-looking names, unpinned-ish, no --hash (no integrity gate).
+internal-billing>=1.0
+acme-auth-helpers>=2.3
+requests==2.31.0

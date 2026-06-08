@@ -1,0 +1,27 @@
+# scenarios/134-pypi-pyproject-build-system
+# CICD-SEC-3 (Dependency Chain Abuse) — PyPI / pyproject.toml
+#
+# Pattern: [build-system].requires lists the packages pip installs and IMPORTS to
+# build the project (PEP 517 backend) — they run code at build time. Floating
+# versions there mean a yanked-and-republished or newly-compromised build
+# dependency executes in CI on the next build. A custom [[tool.*]] / index source
+# over plain HTTP compounds it.
+#
+# SAFETY: static fixture nested under scenarios/. The build is never invoked on
+# this tree; pipeline-check parses it statically. See README.md.
+
+[build-system]
+# DANGER (1) — build backend deps are unpinned; they run at build time.
+requires = ["setuptools>=61", "wheel", "cython"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "acme-widget"
+version = "0.1.0"
+dependencies = ["requests>=2"]
+
+# DANGER (2) — custom package source over plain HTTP.
+[[tool.pdm.source]]
+name = "internal"
+url = "http://pkgs.internal.example.com/simple"
+verify_ssl = false

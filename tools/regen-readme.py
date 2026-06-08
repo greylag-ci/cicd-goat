@@ -82,8 +82,34 @@ PROVIDER_LABELS = {
     "terraform":      "Terraform",
     "cloudformation": "CloudFormation",
     "helm":           "Helm",
+    # Package & supply-chain families (the deps a pipeline installs / the
+    # artifacts and GitOps control plane it ships). pipeline-check-only.
+    "pypi":       "PyPI",
+    "maven":      "Maven",
+    "nuget":      "NuGet",
+    "cargo":      "Cargo",
+    "gomod":      "Go modules",
+    "composer":   "Composer",
+    "oci":        "OCI / SLSA",
+    "argocd":     "Argo CD",
 }
 PROVIDER_ORDER = list(PROVIDER_LABELS)
+
+# Provider bands for the at-a-glance leaderboard. The corpus now spans 24
+# providers — too wide for one grid — so the headline renders one compact grid
+# per band. Each band lists only the providers actually in use.
+PROVIDER_GROUPS = [
+    ("CI/CD pipelines", [
+        "github", "gitlab", "azure", "circleci", "bitbucket", "jenkins",
+        "tekton", "argo", "drone", "buildkite", "cloudbuild",
+    ]),
+    ("IaC / manifests", [
+        "dockerfile", "kubernetes", "terraform", "cloudformation", "helm",
+    ]),
+    ("Package & supply-chain", [
+        "pypi", "maven", "nuget", "cargo", "gomod", "composer", "oci", "argocd",
+    ]),
+]
 
 # Compact column headers for the at-a-glance grid (full labels are too wide
 # across 16 columns).
@@ -104,6 +130,14 @@ PROVIDER_SHORT = {
     "terraform":      "TF",
     "cloudformation": "CFN",
     "helm":           "Helm",
+    "pypi":       "PyPI",
+    "maven":      "Maven",
+    "nuget":      "NuGet",
+    "cargo":      "Cargo",
+    "gomod":      "Go",
+    "composer":   "Composer",
+    "oci":        "OCI",
+    "argocd":     "ArgoCD",
 }
 
 
@@ -283,31 +317,41 @@ def render_leaderboard(data: dict, sarif_data: dict) -> str:
     def short(p: str) -> str:
         return PROVIDER_SHORT.get(p, provider_label(p))
 
+    def grid_cell(s: dict, p: str) -> str:
+        if not scanner_supports(s, p):
+            return "—"
+        t = prov_totals[p][s["id"]]
+        appl = t[VERDICT_FULL] + t[VERDICT_PARTIAL] + t[VERDICT_MISS]
+        return f"{t[VERDICT_FULL]}/{appl}" if appl else "—"
+
     out: list[str] = []
-    # ── At-a-glance grid ──────────────────────────────────────────────────
+    # ── At-a-glance grids, one per provider band ──────────────────────────
+    # 24 providers is too wide for one table, so the headline is split into
+    # bands (CI/CD pipelines · IaC/manifests · Package & supply-chain). Each
+    # grid shows only the band's in-use providers and only scanners that score
+    # at least one applicable cell in that band.
     out.append("### At a glance — scanners × providers")
     out.append("")
     out.append(
         "Full catches per provider (`caught/total`; `—` = the scanner can't "
-        "parse that provider's files). Ranked by total catches across the "
-        "corpus. Expand the section below for the ranked per-provider tables, "
-        "or see the [full per-scenario matrix](docs/MATRIX.md)."
+        "parse that provider's files), grouped into bands. Ranked by total "
+        "catches across the corpus. Expand the section below for the ranked "
+        "per-provider tables, or see the [full per-scenario matrix](docs/MATRIX.md)."
     )
     out.append("")
-    out.append("| Scanner | " + " | ".join(short(p) for p in provs) + " |")
-    out.append("| :--- | " + " | ".join(":---:" for _ in provs) + " |")
-    for s in ranked:
-        cells: list[str] = []
-        for p in provs:
-            if not scanner_supports(s, p):
-                cells.append("—")
-                continue
-            t = prov_totals[p][s["id"]]
-            appl = t[VERDICT_FULL] + t[VERDICT_PARTIAL] + t[VERDICT_MISS]
-            cells.append(f"{t[VERDICT_FULL]}/{appl}" if appl else "—")
-        if any(c != "—" for c in cells):  # skip scanners that score nothing
-            out.append(f"| {s['label']} | " + " | ".join(cells) + " |")
-    out.append("")
+    for band_name, band_provs in PROVIDER_GROUPS:
+        cols = [p for p in band_provs if p in provs]
+        if not cols:
+            continue
+        out.append(f"**{band_name}**")
+        out.append("")
+        out.append("| Scanner | " + " | ".join(short(p) for p in cols) + " |")
+        out.append("| :--- | " + " | ".join(":---:" for _ in cols) + " |")
+        for s in ranked:
+            cells = [grid_cell(s, p) for p in cols]
+            if any(c != "—" for c in cells):  # skip scanners blank in this band
+                out.append(f"| {s['label']} | " + " | ".join(cells) + " |")
+        out.append("")
     # ── Collapsed per-provider detail ─────────────────────────────────────
     out.append("<details>")
     out.append(f"<summary><strong>Per-provider leaderboards</strong> — {len(provs)} ranked tables</summary>")

@@ -1,0 +1,25 @@
+# scenarios/126-gitlab-auto-prod-deploy-mr
+# CICD-SEC-1 (Insufficient Flow Control) — GitLab CI — CRITICAL
+#
+# Pattern: a job reachable on a merge-request pipeline binds a production-tier
+# `environment:` and is NOT gated by `when: manual`. A merge-request pipeline
+# runs the MR branch's code, so every MR ships unreviewed (and on fork MRs,
+# untrusted) changes to production with the environment's scoped credentials,
+# before review or merge. GL-004 stays silent because the job has an
+# `environment:`; GL-044 names this automatic-deploy shape and raises it.
+#
+# SAFETY: static fixture, nested under scenarios/ — GitLab runs only the
+# `.gitlab-ci.yml` at the repository root, never a nested one. See README.md.
+
+stages:
+  - deploy
+
+deploy_prod:
+  stage: deploy
+  # DANGER — production environment, deployed automatically on every MR
+  # pipeline with no `when: manual` gate and no protected-branch rule.
+  environment: production
+  script:
+    - ./deploy.sh
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'

@@ -33,15 +33,15 @@ overall (a scenario in two categories counts once in each row).
 <!-- AUTOGEN:cicd-sec-coverage -->
 | # | Category | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard | Trivy |
 | :-: | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| 1 | Insufficient flow control | 9 | 7/9 | 0/5 | 0/5 | 0/5 | 0/8 | 0/5 | 0/5 | 2/3 | — |
-| 2 | Inadequate IAM | 14 | 9/10 | 0/3 | 0/3 | 4/7 | 6/13 | 0/3 | 0/3 | 2/3 | 2/4 |
-| 3 | Dependency chain abuse | 28 | 25/28 | 3/11 | 4/11 | 3/12 | 3/23 | 0/11 | 0/11 | 4/5 | 1/1 |
-| 4 | Poisoned pipeline execution | 34 | 30/34 | 10/16 | 8/16 | 4/16 | 8/29 | 6/16 | 10/16 | 3/8 | — |
-| 5 | Insufficient PBAC | 10 | 8/10 | 3/6 | 1/6 | 0/6 | 1/8 | 0/6 | 1/6 | 2/3 | — |
-| 6 | Insufficient credential hygiene | 17 | 15/15 | 4/5 | 2/5 | 5/8 | 2/17 | 0/5 | 2/5 | 2/3 | 3/3 |
-| 7 | Insecure system configuration | 31 | 24/24 | 0/4 | 1/4 | 10/15 | 14/26 | 0/4 | 1/4 | 2/3 | 14/14 |
+| 1 | Insufficient flow control | 11 | 10/11 | 0/5 | 0/5 | 0/5 | 0/10 | 0/5 | 0/5 | 2/4 | — |
+| 2 | Inadequate IAM | 15 | 11/11 | 0/3 | 0/3 | 4/7 | 6/13 | 0/3 | 0/3 | 2/3 | 2/4 |
+| 3 | Dependency chain abuse | 40 | 39/40 | 3/12 | 4/12 | 3/13 | 3/24 | 0/12 | 0/12 | 4/5 | 1/1 |
+| 4 | Poisoned pipeline execution | 44 | 43/44 | 10/18 | 8/18 | 4/18 | 8/33 | 6/18 | 10/18 | 3/9 | — |
+| 5 | Insufficient PBAC | 12 | 12/12 | 3/6 | 1/6 | 0/6 | 1/8 | 0/6 | 1/6 | 2/3 | — |
+| 6 | Insufficient credential hygiene | 18 | 16/16 | 4/5 | 2/5 | 5/8 | 2/17 | 0/5 | 2/5 | 2/3 | 3/3 |
+| 7 | Insecure system configuration | 33 | 26/26 | 0/4 | 1/4 | 10/15 | 14/27 | 0/4 | 1/4 | 2/4 | 14/14 |
 | 8 | Ungoverned 3rd-party services | 4 | 4/4 | 1/3 | 2/3 | 1/3 | 0/4 | 0/3 | 1/3 | 1/1 | — |
-| 9 | Improper artifact integrity validation | 15 | 14/15 | 3/6 | 1/6 | 1/7 | 3/12 | 0/6 | 1/6 | 2/2 | 1/1 |
+| 9 | Improper artifact integrity validation | 17 | 17/17 | 3/6 | 1/6 | 1/7 | 3/12 | 0/6 | 1/6 | 2/2 | 1/1 |
 | 10 | Insufficient logging & visibility | 5 | 3/3 | 0/1 | 0/1 | 2/3 | 2/5 | 0/1 | 0/1 | 0/1 | 2/2 |
 <!-- /AUTOGEN:cicd-sec-coverage -->
 
@@ -62,9 +62,9 @@ assign to each scenario in
 <!-- AUTOGEN:severity-coverage -->
 | Severity | Scenarios | pipeline&#x2011;check | zizmor | poutine | KICS | Checkov | actionlint | octoscan | ciguard | Trivy |
 | :-- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
-| 🔴 critical | 29 | 25/27 | 3/10 | 3/10 | 3/14 | 5/25 | 0/10 | 3/10 | 1/5 | 4/6 |
-| 🟠 high | 66 | 52/58 | 11/26 | 10/26 | 18/37 | 20/58 | 6/26 | 10/26 | 7/11 | 12/12 |
-| 🟡 medium | 25 | 23/24 | 3/7 | 1/7 | 2/9 | 6/20 | 0/7 | 0/7 | 3/4 | 2/2 |
+| 🔴 critical | 37 | 34/35 | 3/10 | 3/10 | 3/14 | 5/29 | 0/10 | 3/10 | 1/6 | 4/6 |
+| 🟠 high | 84 | 75/76 | 11/28 | 10/28 | 18/39 | 20/60 | 6/28 | 10/28 | 7/12 | 12/12 |
+| 🟡 medium | 28 | 26/27 | 3/7 | 1/7 | 2/9 | 6/21 | 0/7 | 0/7 | 3/5 | 2/2 |
 <!-- /AUTOGEN:severity-coverage -->
 
 > If a scanner's critical-row fraction is meaningfully lower than its
@@ -95,6 +95,9 @@ scenarios from the field tested here.
 | 27 | [Secret leak in workflow logs](../scenarios/27-secret-leak-in-logs/README.md) | **pipeline&#x2011;check** |
 | 28 | [Reusable workflow `${{ inputs.* }}` injection](../scenarios/28-reusable-workflow-input-injection/README.md) | **pipeline&#x2011;check** |
 | 29 | [npm lifecycle-script RCE](../scenarios/29-npm-lifecycle-script-rce/README.md) | **pipeline&#x2011;check** |
+| 35 | [`cosign verify` without identity binding](../scenarios/35-cosign-verify-no-identity-binding/README.md) | **pipeline&#x2011;check** |
+| 36 | [Environment secret read without consumer binding](../scenarios/36-environment-secret-no-binding/README.md) | **pipeline&#x2011;check** |
+| 38 | [Recursive submodule checkout from PR](../scenarios/38-submodule-trust-from-pr/README.md) | **pipeline&#x2011;check** |
 | 39 | [GitLab CI: script injection via `$CI_*` / MR vars](../scenarios/39-gitlab-ci-script-injection/README.md) | **pipeline&#x2011;check** |
 | 40 | [Jenkins: `sh` string-interpolation injection](../scenarios/40-jenkins-shell-injection/README.md) | **pipeline&#x2011;check** |
 | 47 | [GitLab: OIDC `id_tokens` over-broad aud/sub](../scenarios/47-gitlab-oidc-broad-aud-sub/README.md) | **pipeline&#x2011;check** |
@@ -114,6 +117,7 @@ scenarios from the field tested here.
 | 65 | [Bitbucket: `clone: skip-ssl-verify: true`](../scenarios/65-bitbucket-clone-skip-ssl-verify/README.md) | **pipeline&#x2011;check** |
 | 66 | [Bitbucket: custom-pipeline variable injection](../scenarios/66-bitbucket-custom-pipeline-injection/README.md) | **pipeline&#x2011;check** |
 | 67 | [Jenkins: `@Grab` sandbox-bypass (CVE-2019-1003000)](../scenarios/67-jenkins-grab-sandbox-bypass/README.md) | **pipeline&#x2011;check** |
+| 68 | [Jenkins: `input` step without `submitter`](../scenarios/68-jenkins-input-no-submitter/README.md) | **pipeline&#x2011;check** |
 | 69 | [Jenkins: shared library on a mutable `@master` ref](../scenarios/69-jenkins-library-mutable-ref/README.md) | **pipeline&#x2011;check** |
 | 71 | [Tekton: `$(params.*)` injected into step script](../scenarios/71-tekton-param-injection/README.md) | **pipeline&#x2011;check** |
 | 72 | [Tekton: privileged / root step](../scenarios/72-tekton-privileged-step/README.md) | **pipeline&#x2011;check** |
@@ -129,6 +133,7 @@ scenarios from the field tested here.
 | 84 | [Argo: hostPath mount → node filesystem escape](../scenarios/84-argo-hostpath-escape/README.md) | **pipeline&#x2011;check** |
 | 87 | [CircleCI: secrets passed to forked PRs](../scenarios/87-circleci-forked-pr-secrets/README.md) | **pipeline&#x2011;check** |
 | 88 | [Bitbucket: fork PR pipeline exposes secrets](../scenarios/88-bitbucket-forked-pr-secrets/README.md) | **pipeline&#x2011;check** |
+| 89 | [GHA: `terraform apply` on untrusted PR (IaC RCE)](../scenarios/89-iac-apply-untrusted/README.md) | **pipeline&#x2011;check** |
 | 90 | [Azure: untrusted `resources` template on self-hosted agent](../scenarios/90-azure-untrusted-template-selfhosted/README.md) | **pipeline&#x2011;check** |
 | 91 | [GitLab: `terraform apply` in a merge-request pipeline](../scenarios/91-gitlab-iac-apply-mr/README.md) | **pipeline&#x2011;check** |
 | 92 | [Argo: cluster-admin ServiceAccount → cluster takeover](../scenarios/92-argo-cluster-admin-sa/README.md) | **pipeline&#x2011;check** |
@@ -136,12 +141,41 @@ scenarios from the field tested here.
 | 108 | [GHA: deploy job missing environment binding](../scenarios/108-deploy-no-environment/README.md) | **pipeline&#x2011;check** |
 | 109 | [GHA: self-hosted deploy without environment gate](../scenarios/109-selfhosted-deploy-no-gate/README.md) | **pipeline&#x2011;check** |
 | 113 | [GitLab: `CI_DEBUG_TRACE` leaks secrets to job log](../scenarios/113-gitlab-debug-trace/README.md) | **pipeline&#x2011;check** |
+| 121 | [GHA: untrusted context -> agentic AI CLI (prompt injection)](../scenarios/121-ai-prompt-injection/README.md) | **pipeline&#x2011;check** |
+| 122 | [GHA: ML model `trust_remote_code=True` (code execution)](../scenarios/122-trust-remote-code/README.md) | **pipeline&#x2011;check** |
+| 123 | [Bitbucket: `terraform apply` on a pull-request pipeline](../scenarios/123-bitbucket-iac-apply-pr/README.md) | **pipeline&#x2011;check** |
+| 124 | [Bitbucket: production deploy on a pull-request pipeline](../scenarios/124-bitbucket-prod-deploy-pr/README.md) | **pipeline&#x2011;check** |
+| 125 | [GitLab: native security scanner explicitly disabled](../scenarios/125-gitlab-sast-disabled/README.md) | **pipeline&#x2011;check** |
+| 126 | [GitLab: auto production deploy on a merge-request pipeline](../scenarios/126-gitlab-auto-prod-deploy-mr/README.md) | **pipeline&#x2011;check** |
+| 127 | [Azure: IaC apply on a PR-validated pipeline](../scenarios/127-azure-iac-apply-pr/README.md) | **pipeline&#x2011;check** |
+| 128 | [Jenkins: shell step interpolates `params.*` (injection)](../scenarios/128-jenkins-params-injection/README.md) | **pipeline&#x2011;check** |
+| 129 | [Drone: dangerous shell idiom (`eval`/`sh -c`) in command](../scenarios/129-drone-eval-injection/README.md) | **pipeline&#x2011;check** |
+| 130 | [Buildkite: dangerous shell idiom (`eval`/`sh -c`) in command](../scenarios/130-buildkite-eval-injection/README.md) | **pipeline&#x2011;check** |
+| 131 | [Cloud Build: config has indicators of malicious activity](../scenarios/131-cloudbuild-malicious-indicators/README.md) | **pipeline&#x2011;check** |
+| 132 | [PyPI: dependency confusion via `--extra-index-url`](../scenarios/132-pypi-dependency-confusion/README.md) | **pipeline&#x2011;check** |
+| 133 | [PyPI: plain-HTTP index + TLS verification disabled](../scenarios/133-pypi-http-index/README.md) | **pipeline&#x2011;check** |
+| 134 | [PyPI: floating `build-system.requires` + HTTP source](../scenarios/134-pypi-pyproject-build-system/README.md) | **pipeline&#x2011;check** |
+| 135 | [Maven: plain-HTTP repository + mutable `SNAPSHOT`](../scenarios/135-maven-http-repo-snapshot/README.md) | **pipeline&#x2011;check** |
+| 136 | [Maven: build plugin bound to lifecycle (build-time RCE)](../scenarios/136-maven-build-plugin-rce/README.md) | **pipeline&#x2011;check** |
+| 137 | [NuGet: plain-HTTP feed + private feed without `<clear/>`](../scenarios/137-nuget-http-source/README.md) | **pipeline&#x2011;check** |
+| 138 | [NuGet: multiple sources without `packageSourceMapping`](../scenarios/138-nuget-source-confusion/README.md) | **pipeline&#x2011;check** |
+| 139 | [Cargo: git dep on a mutable ref + compile-time `build.rs`](../scenarios/139-cargo-git-buildrs/README.md) | **pipeline&#x2011;check** |
+| 140 | [Cargo: alternate registry + `.cargo/config.toml` override](../scenarios/140-cargo-alt-registry/README.md) | **pipeline&#x2011;check** |
+| 141 | [Go modules: `replace` substitution + missing `go.sum`](../scenarios/141-gomod-replace-substitution/README.md) | **pipeline&#x2011;check** |
+| 142 | [Go modules: non-canonical host (bare IP / host:port)](../scenarios/142-gomod-insecure-host/README.md) | **pipeline&#x2011;check** |
+| 143 | [Composer: `scripts` hook pipes a remote download to a shell](../scenarios/143-composer-scripts-curl-sh/README.md) | **pipeline&#x2011;check** |
+| 144 | [Composer: plain-HTTP repository + `secure-http: false`](../scenarios/144-composer-http-repo/README.md) | **pipeline&#x2011;check** |
+| 145 | [OCI: foreign-layer URL + legacy `schemaVersion 1`](../scenarios/145-oci-foreign-layer-schema1/README.md) | **pipeline&#x2011;check** |
+| 146 | [OCI: SLSA provenance attests untrusted builder + unbound subject](../scenarios/146-oci-slsa-untrusted-builder/README.md) | **pipeline&#x2011;check** |
+| 147 | [Argo CD: wildcard RBAC policy + anonymous access](../scenarios/147-argocd-rbac-anonymous/README.md) | **pipeline&#x2011;check** |
+| 148 | [Argo CD: web terminal enabled (`exec.enabled`)](../scenarios/148-argocd-web-terminal/README.md) | **pipeline&#x2011;check** |
+| 149 | [Argo CD: plaintext repo credentials + any-source AppProject](../scenarios/149-argocd-plaintext-repo-creds/README.md) | **pipeline&#x2011;check** |
 
 **Solo catches per scanner** — scenarios where this is the only ✅ on the row:
 
 | Scanner | Solo catches |
 | :-- | :-: |
-| pipeline&#x2011;check | **52** |
+| pipeline&#x2011;check | **86** |
 | zizmor | **0** |
 | poutine | **0** |
 | KICS | **0** |

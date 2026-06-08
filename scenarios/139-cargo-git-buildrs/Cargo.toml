@@ -1,0 +1,21 @@
+# scenarios/139-cargo-git-buildrs
+# CICD-SEC-3 (Dependency Chain Abuse) — Cargo / Cargo.toml + build.rs
+#
+# Pattern: a git dependency is pinned to a mutable ref (branch, no `rev`), so the
+# resolved commit can change under you, AND the crate ships a build.rs that makes
+# network / process calls at COMPILE time. `cargo build` runs build.rs before the
+# app ever runs — the Rust analogue of an npm install script.
+#
+# SAFETY: static fixture nested under scenarios/. `cargo build` is never invoked
+# on this tree; pipeline-check parses Cargo.toml + build.rs statically. See README.md.
+
+[package]
+name = "acme-agent"
+version = "0.1.0"
+edition = "2021"
+build = "build.rs"
+
+[dependencies]
+# DANGER (1) — git dependency on a mutable branch (no rev = no integrity pin).
+telemetry = { git = "https://github.com/acme-internal/telemetry", branch = "main" }
+serde = "1"

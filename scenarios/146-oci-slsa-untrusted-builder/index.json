@@ -1,0 +1,23 @@
+{
+  "_comment_scenario": "scenarios/146-oci-slsa-untrusted-builder — CICD-SEC-9 (Improper Artifact Integrity Validation) — OCI image-index + SLSA in-toto attestation. This is an OCI image-layout: index.json references a runtime manifest plus a BuildKit attestation manifest, whose in-toto Statement blob lives under blobs/sha256/. DANGER (1): the SLSA provenance attests a self-hosted builder identity the SLSA contract cannot vouch for (a compromised self-hosted runner can mint a signature-valid attestation for a tampered image). DANGER (2): the Statement subject carries no digest, so the attestation binds to no actual image bytes. SAFETY: static fixture nested under scenarios/; nothing pulls this image, pipeline-check parses the layout statically. See README.md.",
+  "schemaVersion": 2,
+  "mediaType": "application/vnd.oci.image.index.v1+json",
+  "manifests": [
+    {
+      "mediaType": "application/vnd.oci.image.manifest.v1+json",
+      "digest": "sha256:ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "size": 1024,
+      "platform": {"architecture": "amd64", "os": "linux"}
+    },
+    {
+      "mediaType": "application/vnd.oci.image.manifest.v1+json",
+      "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "size": 2048,
+      "annotations": {
+        "vnd.docker.reference.type": "attestation-manifest",
+        "vnd.docker.reference.digest": "sha256:ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+      },
+      "platform": {"architecture": "unknown", "os": "unknown"}
+    }
+  ]
+}

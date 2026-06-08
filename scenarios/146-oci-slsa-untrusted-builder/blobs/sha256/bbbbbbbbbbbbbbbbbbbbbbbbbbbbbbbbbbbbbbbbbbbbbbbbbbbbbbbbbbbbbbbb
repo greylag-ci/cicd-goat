@@ -1,0 +1,25 @@
+{
+  "_type": "https://in-toto.io/Statement/v1",
+  "subject": [
+    {
+      "name": "acme/app",
+      "digest": {}
+    }
+  ],
+  "predicateType": "https://slsa.dev/provenance/v1",
+  "predicate": {
+    "buildDefinition": {
+      "buildType": "https://internal.example.com/custom-builder@v1",
+      "externalParameters": {},
+      "internalParameters": {}
+    },
+    "runDetails": {
+      "builder": {
+        "id": "https://self-hosted.internal.example.com/agents/runner-7"
+      },
+      "metadata": {
+        "invocationId": "build-1234"
+      }
+    }
+  }
+}

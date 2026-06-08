@@ -1,0 +1,30 @@
+# scenarios/127-azure-iac-apply-pr
+# CICD-SEC-4 (Poisoned Pipeline Execution) — Azure Pipelines — CRITICAL
+#
+# Pattern: a pipeline opts into PR validation (`pr:` set to a real branch list)
+# and a `script:` step runs `terraform apply`. A `pr:`-validated pipeline runs
+# the PR branch's YAML and scripts, so the apply executes untrusted IaC — an
+# `external` data source / `local-exec` provisioner / hijacked provider runs
+# arbitrary code on the agent with the service-connection role before review.
+# Azure DevOps analogue of GHA scenario 89 / GitLab 91 / Bitbucket 123.
+#
+# SAFETY: static fixture, nested under scenarios/ (Azure runs only a YAML a
+# pipeline is configured to point at; nothing here does). See README.md.
+
+trigger:
+  - main
+
+# DANGER (1) — PR validation enabled: the PR branch's scripts run.
+pr:
+  - main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - script: |
+      terraform init
+      # DANGER (2) — applies the PR branch's Terraform on the agent with the
+      # federated service-connection credentials, before the change is merged.
+      terraform apply -auto-approve
+    displayName: terraform apply

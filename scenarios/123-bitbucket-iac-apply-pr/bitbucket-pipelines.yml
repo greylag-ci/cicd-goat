@@ -1,0 +1,26 @@
+# scenarios/123-bitbucket-iac-apply-pr
+# CICD-SEC-4 (Poisoned Pipeline Execution) — Bitbucket — CRITICAL
+#
+# Pattern: a step under the `pull-requests:` section runs `terraform apply`. The
+# pull-request pipeline runs the PR branch's IaC, so a malicious `external` data
+# source / `local-exec` provisioner / hijacked provider executes arbitrary code
+# on the runner with the OIDC cloud role the apply uses — before review or merge.
+# Bitbucket analogue of GHA scenario 89 / GitLab scenario 91.
+#
+# SAFETY: static fixture, nested under scenarios/ (Bitbucket runs only the root
+# bitbucket-pipelines.yml). See README.md.
+
+image: atlassian/default-image@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+
+pipelines:
+  pull-requests:
+    '**':
+      - step:
+          name: terraform
+          oidc: true            # federated cloud credentials in scope
+          script:
+            - terraform init
+            # DANGER — applies the PR branch's Terraform; an `external` data
+            # source or `local-exec` provisioner runs on the runner with the
+            # OIDC cloud role before the change is reviewed.
+            - terraform apply -auto-approve

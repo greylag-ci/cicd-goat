@@ -1,0 +1,21 @@
+# scenarios/140-cargo-alt-registry
+# CICD-SEC-3 (Dependency Chain Abuse) — Cargo / Cargo.toml + .cargo/config.toml
+#
+# Pattern: a dependency is sourced from an ALTERNATE registry (not crates.io), and
+# .cargo/config.toml overrides the registry source / injects build flags. Cargo
+# trusts whatever the alternate registry serves, and a source override can silently
+# redirect even crates.io lookups to an attacker-controlled index.
+#
+# SAFETY: static fixture nested under scenarios/. `cargo build` is never invoked
+# on this tree; pipeline-check parses Cargo.toml + .cargo/config.toml statically.
+# See README.md.
+
+[package]
+name = "acme-cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# DANGER (1) — dependency pulled from an alternate registry, not crates.io.
+acme-secrets = { version = "1.2", registry = "internal" }
+serde = "1"

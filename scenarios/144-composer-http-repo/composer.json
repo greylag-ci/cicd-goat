@@ -1,0 +1,17 @@
+{
+  "_comment_scenario": "scenarios/144-composer-http-repo — CICD-SEC-3 (Dependency Chain Abuse) — Composer. DANGER (1): a custom repository is declared over plain HTTP, so packages resolve with no TLS. DANGER (2): config.secure-http is false, which disables Composer's HTTPS enforcement globally and silences the protection that would otherwise refuse the HTTP repo. SAFETY: static fixture nested under scenarios/; composer is never invoked here, pipeline-check parses composer.json statically. See README.md.",
+  "name": "acme/site",
+  "require": {
+    "php": ">=8.1",
+    "acme/internal-sdk": "^2.0"
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "http://packages.internal.example.com"
+    }
+  ],
+  "config": {
+    "secure-http": false
+  }
+}

