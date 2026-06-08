@@ -1125,11 +1125,11 @@ Same source as the main matrix — auto-rebuilt from the latest
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
 | pipeline&#x2011;check | `AC-035`, `GHA-003`, `GHA-004`, `GHA-013`, `GHA-015`, `GHA-037`, `GHA-103`, `GHA-106`, **`GHA-119`** | ✅ |
-| zizmor | _(none)_ | ❌ |
+| zizmor | `zizmor/artipacked` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
 | Checkov | _(none)_ | ❌ |
-| actionlint | _(none)_ | ❌ |
+| actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
 ### Scenario 122 — GHA: ML model `trust_remote_code=True` (code execution) (GitHub Actions)
@@ -1137,11 +1137,11 @@ Same source as the main matrix — auto-rebuilt from the latest
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
 | pipeline&#x2011;check | `GHA-015`, `GHA-021`, `GHA-037`, `GHA-060`, **`GHA-120`** | ✅ |
-| zizmor | _(none)_ | ❌ |
+| zizmor | `zizmor/artipacked` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
 | Checkov | _(none)_ | ❌ |
-| actionlint | _(none)_ | ❌ |
+| actionlint | `if-cond` | ❌ |
 | octoscan | _(none)_ | ❌ |
 
 ### Scenario 123 — Bitbucket: `terraform apply` on a pull-request pipeline (Bitbucket Pipelines)
@@ -1164,7 +1164,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | :-- | :-- | :-: |
 | pipeline&#x2011;check | `AC-005`, `GL-003`, `GL-004`, `GL-015`, **`GL-043`** | ✅ |
 | Checkov | _(none)_ | ❌ |
-| ciguard | _(none)_ | ❌ |
+| ciguard | `ART-003`, `IAM-003`, `PIPE-004`, `RUN-003`, `SC-003` | ❌ |
 
 ### Scenario 126 — GitLab: auto production deploy on a merge-request pipeline (GitLab CI)
 
@@ -1172,7 +1172,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | :-- | :-- | :-: |
 | pipeline&#x2011;check | `GL-015`, **`GL-044`** | ✅ |
 | Checkov | _(none)_ | ❌ |
-| ciguard | _(none)_ | ❌ |
+| ciguard | `ART-003`, `DEP-001`, `DEP-003`, `RUN-003`, `SC-003` | ❌ |
 
 ### Scenario 127 — Azure: IaC apply on a PR-validated pipeline (Azure Pipelines)
 
@@ -1186,7 +1186,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
 | pipeline&#x2011;check | `JF-003`, `JF-006`, `JF-007`, `JF-011`, `JF-015`, `JF-020`, `JF-028`, **`JF-036`** | ✅ |
-| ciguard | _(none)_ | ❌ |
+| ciguard | `JKN-RUN-001` | ❌ |
 
 ### Scenario 129 — Drone: dangerous shell idiom (`eval`/`sh -c`) in command (Drone CI)
 
