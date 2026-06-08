@@ -504,7 +504,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | **`JF-002`**, `JF-003`, `JF-011`, `JF-014`, `JF-015`, `JF-016`, `JF-028` | ✅ |
+| pipeline&#x2011;check | **`JF-002`**, `JF-003`, `JF-011`, `JF-014`, `JF-015`, `JF-016`, `JF-028`, `JF-036` | ✅ |
 | ciguard | _(none)_ | ❌ |
 
 ### Scenario 41 — GitLab: `CI_JOB_TOKEN` cross-project access (GitLab CI)
@@ -865,7 +865,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `AC-005`, **`GL-004`**, `GL-006`, `GL-007`, `GL-015`, `GL-019`, `GL-024` | ✅ |
+| pipeline&#x2011;check | `AC-005`, **`GL-004`**, `GL-006`, `GL-007`, `GL-015`, `GL-019`, `GL-024`, `GL-041` | ✅ |
 | Checkov | _(none)_ | ❌ |
 | ciguard | `ART-003`, `SC-003` | ❌ |
 
