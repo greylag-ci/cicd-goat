@@ -1,0 +1,18 @@
+{
+  "_comment_scenario": "scenarios/145-oci-foreign-layer-schema1 — CICD-SEC-9 (Improper Artifact Integrity Validation) — OCI image manifest. DANGER (1): a layer carries a urls: (foreign layer) field, so the blob is fetched from an arbitrary URL the manifest declares, not the registry the image was pulled from — the URL owner can serve client-specific content or take pulls offline. DANGER (2): schemaVersion 1 is the legacy Docker manifest format with no content-addressable config, so there is no digest binding the image to its bytes. SAFETY: static fixture nested under scenarios/; nothing pulls this image, pipeline-check parses the manifest JSON statically. See README.md.",
+  "schemaVersion": 1,
+  "mediaType": "application/vnd.oci.image.manifest.v1+json",
+  "config": {
+    "mediaType": "application/vnd.oci.image.config.v1+json",
+    "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "size": 1024
+  },
+  "layers": [
+    {
+      "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+      "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "size": 4096,
+      "urls": ["http://layers.internal.example.com/blobs/sha256:1111"]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+# scenarios/129-drone-eval-injection
+# CICD-SEC-4 (Poisoned Pipeline Execution) — Drone CI — HIGH
+#
+# Pattern: a step `commands:` entry uses a dangerous shell idiom — `eval "$VAR"`
+# / `sh -c $RAW` / backtick exec — which hands the value full shell-grammar
+# reach regardless of whether its source is currently trusted. Completes the
+# dangerous-shell-idiom family across providers (GHA-028 / GL-026 / BB-026 /
+# ADO-027 / CC-027 / BK-016). The `eval "$(ssh-agent -s)"` literal-bootstrap
+# form is intentionally out of scope.
+#
+# SAFETY: static fixture, nested under scenarios/ — Drone only runs the
+# `.drone.yml` at the REPOSITORY ROOT, never a nested one. See README.md.
+
+kind: pipeline
+type: docker
+name: build
+
+steps:
+  - name: build
+    image: alpine@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+    commands:
+      # DANGER — eval / sh -c on a variable: full shell-grammar reach.
+      - eval "$BUILD_CMD"
+      - sh -c $RAW_HOOK

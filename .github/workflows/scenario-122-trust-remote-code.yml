@@ -1,0 +1,34 @@
+# scenarios/122-trust-remote-code
+# CICD-SEC-4 (Poisoned Pipeline Execution) · CICD-SEC-3 (Dependency Chain Abuse)
+# Pattern: a `run:` step loads an ML model with `trust_remote_code=True`
+# (transformers / huggingface_hub). The loader executes the model repo's OWN
+# Python at load time, so an untrusted or unpinned model is arbitrary code
+# execution in CI with the job's secrets and token. The ML-supply-chain
+# analogue of `curl | sh` (scenario 16).
+#
+# Safety: every job is gated with `if: false`. See
+# scenarios/122-trust-remote-code/README.md for details.
+
+name: scenario-122-trust-remote-code
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  evaluate:
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5
+        with:
+          python-version: '3.12'
+      - name: Load the candidate model (DANGER)
+        run: |
+          pip install transformers
+          # DANGER — trust_remote_code=True runs the model repo's own Python at
+          # load time. An unpinned / untrusted repo == RCE on the runner.
+          python -c "from transformers import AutoModel; AutoModel.from_pretrained('community/candidate-model', trust_remote_code=True)"

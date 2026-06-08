@@ -1,0 +1,20 @@
+# scenarios/148-argocd-web-terminal
+# CICD-SEC-7 (Insecure System Configuration) — Argo CD — CRITICAL
+#
+# Pattern: argocd-cm enables the web terminal (`exec.enabled: true`). The Argo CD
+# UI then offers an interactive shell INTO the running workload pods of any
+# Application a user can reach — a powerful lateral-movement and data-access
+# primitive that turns a UI session into pod exec on the target cluster.
+#
+# SAFETY: static fixture nested under scenarios/ — this is the Argo CD argocd-cm
+# ConfigMap; nothing applies it to a cluster here. pipeline-check parses it
+# statically. See README.md.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  # DANGER — web terminal enabled: the UI offers a shell into workload pods.
+  exec.enabled: "true"
+  url: https://argocd.internal.example.com

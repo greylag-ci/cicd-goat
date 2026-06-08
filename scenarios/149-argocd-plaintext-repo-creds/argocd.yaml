@@ -1,0 +1,37 @@
+# scenarios/149-argocd-plaintext-repo-creds
+# CICD-SEC-6 (Insufficient Credential Hygiene) · CICD-SEC-5 — Argo CD — CRITICAL
+#
+# Pattern: argocd-cm stores a repository credential as a LITERAL password
+# (instead of the documented passwordSecret indirection), and an AppProject
+# permits ANY source repository (`sourceRepos: ['*']`). The plaintext token is
+# committed in cluster config, and the wide-open project lets an Application sync
+# from a repo the platform team never vetted.
+#
+# SAFETY: static fixture nested under scenarios/ — these are Argo CD manifests;
+# nothing applies them to a cluster here. The "password" below is a fake literal.
+# pipeline-check parses them statically. See README.md.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  # DANGER (1) — plaintext repository credential committed in cluster config.
+  repositories: |
+    - url: https://git.internal.example.com/acme/deploy
+      username: ci-bot
+      password: gh_FAKE_pat_literal_do_not_use_0123456789
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: default
+  namespace: argocd
+spec:
+  description: default project
+  # DANGER (2) — any source repository is permitted.
+  sourceRepos:
+    - '*'
+  destinations:
+    - server: '*'
+      namespace: '*'

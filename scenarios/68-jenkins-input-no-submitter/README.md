@@ -25,11 +25,11 @@ privileged deploy proceeds — defeating the control. Analogue of scenario 37
 
 | Scanner | Detection |
 |---------|-----------|
-| pipeline-check | — |
+| pipeline-check | `JF-024` — _`input` approval step missing submitter restriction_ |
 | ciguard | — |
 
-> **All-miss — a next-gen target.** An `input` step lacking a `submitter:`
-> field is a clean static signature that no scanner here flags yet.
+> pipeline-check is **solo**: an `input` step lacking a `submitter:` field is a
+> clean static signature, and `JF-024` flags it. ciguard ships no equivalent.
 
 ## Fix
 

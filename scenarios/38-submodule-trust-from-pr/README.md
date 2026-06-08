@@ -63,13 +63,13 @@ exfil is on the table — same shape as scenarios 01 / 07.
 
 | Scanner | Detection |
 |---|---|
-| _all 7_ | ❌ — none of the scanners in this comparison currently inspect `submodules: true` / `recursive` paired with PR triggers |
+| pipeline-check | `GHA-102` — _`actions/checkout` with submodule fetch on a PR trigger_ |
+| others | ❌ — no other scanner here inspects `submodules: true` / `recursive` paired with PR triggers |
 
-A reasonable next-generation rule shape: pair `actions/checkout`
-with `submodules: <true|recursive>` and any non-trivial `run:` /
-`uses:` step in the same job. The recursive flag alone is a strong
-signal that the workflow trusts arbitrary URLs in the PR head's
-`.gitmodules`.
+pipeline-check is **solo**, with exactly the signature the older writeup
+anticipated: `actions/checkout` carrying `submodules: <true|recursive>` on a
+PR-triggered workflow. The recursive flag alone is a strong signal that the
+workflow trusts arbitrary URLs in the PR head's `.gitmodules`.
 
 ## Fix
 

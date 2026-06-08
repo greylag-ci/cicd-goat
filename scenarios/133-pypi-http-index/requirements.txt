@@ -1,0 +1,18 @@
+# scenarios/133-pypi-http-index
+# CICD-SEC-3 (Dependency Chain Abuse) — PyPI / requirements.txt
+#
+# Pattern: --index-url repoints pip's PRIMARY index to a non-PyPI host over plain
+# HTTP. Every dependency now resolves from that mirror with no TLS, so a
+# network-position attacker (or whoever controls the mirror) serves arbitrary
+# packages. --trusted-host then suppresses pip's own TLS warning, removing the
+# last guardrail.
+#
+# SAFETY: static fixture nested under scenarios/. pip is never invoked on this
+# tree; pipeline-check parses it statically. See README.md.
+
+# DANGER — primary index repointed to a plain-HTTP mirror, TLS verification off.
+--index-url http://mirror.internal.example.com/simple
+--trusted-host mirror.internal.example.com
+
+flask==2.3.3
+gunicorn==21.2.0

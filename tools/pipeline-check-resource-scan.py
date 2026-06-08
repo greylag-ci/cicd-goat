@@ -1,17 +1,24 @@
 """Run pipeline-check over each non-pipeline manifest under a tree (Tekton,
-Argo, Dockerfile, Kubernetes, Helm), normalise every finding's SARIF artifact
-URI to the real file path, and merge into one SARIF document on stdout
-(or --output).
+Argo, Dockerfile, Kubernetes, Helm, NuGet, OCI, Argo CD), normalise every
+finding's SARIF artifact URI to the real file path, and merge into one SARIF
+document on stdout (or --output).
 
 Why a wrapper (cf. tools/ciguard-scan-tree.py):
   * pipeline-check's discovery for these manifest types is single-manifest per
     --<type>-path, so one invocation over scenarios/ only scans one file — we
     invoke it per discovered manifest instead.
   * It attaches some findings to a SYNTHETIC URI (`resource:///tekton`,
-    `kubernetes/manifests`, …) rather than the file path, which can't be
-    attributed to a scenario (regen-readme.py's SCENARIO_RE keys on
-    `scenario-NN-` / `scenarios/NN-` in the URI). Each invocation scans exactly
-    one scenario's manifest, so we rewrite every finding's URI to that file.
+    `resource:///argocd`, `kubernetes/manifests`, …) rather than the file path,
+    which can't be attributed to a scenario (regen-readme.py's SCENARIO_RE keys
+    on `scenario-NN-` / `scenarios/NN-` in the URI). Each invocation scans
+    exactly one scenario's manifest, so we rewrite every finding's URI to that
+    file.
+  * Some providers emit a path RELATIVE to the scanned dir with no `scenarios/`
+    prefix (NuGet: `NN-slug/NuGet.config`), which SCENARIO_RE also won't match;
+    the per-file rewrite fixes that too.
+  * OCI attestation parsing (ATTEST-*) needs the whole image-layout directory
+    (`index.json` + the `blobs/sha256/` tree), so we point --oci-manifest at the
+    layout dir and attribute findings to its index.json / manifest.json.
 
 Terraform and CloudFormation are intentionally NOT handled here: pipeline-check's
 Terraform provider needs a `terraform show -json` plan (not raw .tf), and its
@@ -38,12 +45,32 @@ FLAG = {
     "dockerfile": "--dockerfile-path",
     "kubernetes": "--k8s-path",
     "helm":       "--helm-path",
+    "nuget":      "--nuget-path",
+    "oci":        "--oci-manifest",
+    "argocd":     "--argocd-path",
 }
 # content markers for the YAML CI-native resource types (priority order)
 YAML_MARKERS = [("tekton", "tekton.dev/"), ("argo", "argoproj.io/")]
 K8S_KINDS = ("Pod", "Deployment", "DaemonSet", "StatefulSet", "Job", "CronJob",
              "ReplicaSet", "ReplicationController")
+# Argo CD resource shapes. These must be detected BEFORE the argoproj.io/ argo
+# (Workflows) marker, because an AppProject / ApplicationSet also carries
+# `argoproj.io/` but is an Argo CD object, not a Workflow. The argocd-cm /
+# argocd-rbac-cm ConfigMaps are plain v1 ConfigMaps (no argoproj.io/ marker) and
+# would otherwise be missed entirely.
+ARGOCD_KIND_MARKERS = ("kind: Application", "kind: ApplicationSet", "kind: AppProject")
+ARGOCD_CM_MARKERS = ("name: argocd-cm", "name: argocd-rbac-cm")
+# NuGet manifest filenames (--nuget-path scans a directory containing these).
+NUGET_NAMES = ("nuget.config", "packages.lock.json")
 SKIP_DIRS = {".git", "node_modules", ".venv", "venv", ".scanvenv"}
+
+
+def _is_oci_manifest(head: str) -> bool:
+    """True when a JSON document head looks like an OCI / Docker-v2 image
+    manifest or image index (has schemaVersion + an OCI/Docker media type)."""
+    return '"schemaVersion"' in head and (
+        "vnd.oci.image" in head or "vnd.docker.distribution" in head
+    )
 
 
 def discover(roots: list[str]) -> list[tuple[str, Path, Path]]:
@@ -69,10 +96,14 @@ def discover(roots: list[str]) -> list[tuple[str, Path, Path]]:
         rp = str(p.resolve())
         return any(rp.startswith(str(c)) for c in chart_dirs)
 
-    # Pass 2: Dockerfiles + Tekton/Argo/Kubernetes YAML (skip helm internals).
+    # Pass 2: Dockerfiles + Tekton/Argo CD/Argo/Kubernetes YAML + NuGet + OCI
+    # (skip helm internals).
     for root in roots:
         for dp, dns, fns in os.walk(root):
             dns[:] = [d for d in dns if d not in SKIP_DIRS]
+            # Never descend into an OCI image-layout blobs/ tree: those blobs are
+            # content-addressed payloads, resolved via the layout dir, not scanned.
+            under_blobs = f"{os.sep}blobs{os.sep}" in (dp + os.sep)
             for name in fns:
                 f = Path(dp) / name
                 if under_chart(f):
@@ -80,11 +111,33 @@ def discover(roots: list[str]) -> list[tuple[str, Path, Path]]:
                 if name == "Dockerfile" or name.endswith(".Dockerfile"):
                     out.append(("dockerfile", f.parent, f))
                     continue
+                # NuGet: scan the dir holding the manifest (--nuget-path <dir>).
+                if name.lower() in NUGET_NAMES or name.endswith(".csproj"):
+                    out.append(("nuget", f.parent, f))
+                    continue
+                if name.endswith(".json") and not under_blobs:
+                    try:
+                        head = f.read_text(encoding="utf-8", errors="replace")[:4000]
+                    except OSError:
+                        continue
+                    # OCI: point --oci-manifest at the layout DIR so the
+                    # blobs/sha256/ tree (attestations) resolves; attribute to
+                    # this manifest file.
+                    if _is_oci_manifest(head):
+                        out.append(("oci", f.parent, f))
+                    continue
                 if not name.endswith((".yml", ".yaml")):
                     continue
                 try:
                     head = f.read_text(encoding="utf-8", errors="replace")[:4000]
                 except OSError:
+                    continue
+                # Argo CD before the argoproj.io/ (Argo Workflows) marker: an
+                # AppProject/ApplicationSet also carries argoproj.io/, and the
+                # argocd-cm / argocd-rbac-cm ConfigMaps carry no marker at all.
+                if any(m in head for m in ARGOCD_KIND_MARKERS) or \
+                        any(m in head for m in ARGOCD_CM_MARKERS):
+                    out.append(("argocd", f.parent, f))
                     continue
                 prov = next((p for p, marker in YAML_MARKERS if marker in head), None)
                 if prov is None and "apiVersion:" in head and \

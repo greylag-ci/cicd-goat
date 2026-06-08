@@ -41,13 +41,14 @@ corrupted in transit, not that they came from someone you trust.
 
 | Scanner | Detection |
 |---|---|
-| _all 7_ | ❌ — none of the scanners in this comparison ship a rule that distinguishes "verify with identity pin" from "verify without identity pin" |
+| pipeline-check | `GHA-100` — _`cosign verify` without certificate identity binding_ |
+| others | ❌ — no other scanner here distinguishes "verify with identity pin" from "verify without identity pin" |
 
-This scenario joins #10 / #22 / #19 in the "hard cases" group — its
-primary value is as a target for the next generation of rules. The
-right fix is detectable in static YAML (the `cosign verify` line
-either has `--certificate-identity*` and `--certificate-oidc-issuer`
-or it doesn't), but no scanner here implements that check yet.
+pipeline-check is **solo** on this one. The check is exactly the static-YAML
+signature the older writeup anticipated: the `cosign verify` line either carries
+`--certificate-identity*` **and** `--certificate-oidc-issuer` or it doesn't.
+A formerly "hard case" (alongside #10 / #22 / #19) that a single scanner now
+covers.
 
 ## Fix
 

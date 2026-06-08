@@ -37,14 +37,15 @@ runs the attacker's binary instead of the real one.
 
 | Scanner | Detection |
 |---|---|
+| pipeline-check | `GHA-038` — _Workflow re-enables retired `::set-env` / `::add-path` commands_ |
 | KICS | `60fd272d-…` — _Unsecured Commands_ (fires when `ACTIONS_ALLOW_UNSECURE_COMMANDS=true` is present in `env:`) |
 | Checkov | `CKV_GHA_1` — _Ensure ACTIONS_ALLOW_UNSECURE_COMMANDS isn't true_ |
 | octoscan | `unsecure-commands` — same pattern |
 | others | ❌ — no rule for this specific anti-pattern at present |
 
-This scenario is the only one in the corpus that exercises KICS's
-`unsecured_commands`, Checkov's `CKV_GHA_1`, and octoscan's
-`unsecure-commands` rules.
+This scenario exercises KICS's `unsecured_commands`, Checkov's `CKV_GHA_1`,
+octoscan's `unsecure-commands`, and pipeline-check's `GHA-038` (added in the
+1.x line) — the densest multi-scanner agreement in the GHA corpus.
 
 ## Fix
 

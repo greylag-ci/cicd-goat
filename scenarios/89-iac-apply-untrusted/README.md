@@ -36,10 +36,13 @@ plan-on-PR automation.
 
 | Scanner | Detection |
 |---------|-----------|
-| pipeline-check / zizmor / poutine / Checkov / actionlint / octoscan | reconciled against the first `scanner-comparison` run — see [the matrix](../../docs/MATRIX.md) row 89 |
+| pipeline-check | `GHA-117` — _unattended IaC apply on an untrusted `pull_request` trigger_ |
+| zizmor / poutine / Checkov / actionlint / octoscan | ❌ — no rule for apply-on-PR |
 
-> Whether any scanner flags "apply on `pull_request`" specifically is recorded
-> from real SARIF, not asserted here.
+> pipeline-check is **solo** here. `GHA-117` landed in the 1.11.0 line and 1.12.0
+> widened its apply/destroy vocabulary (OpenTofu `tofu`, `terragrunt run-all`,
+> `destroy`); the canonical bug — running `terraform apply` on a `pull_request`
+> trigger — is recorded from real SARIF, [matrix](../../docs/MATRIX.md) row 89.
 
 ## Fix
 

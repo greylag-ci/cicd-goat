@@ -1,0 +1,32 @@
+# scenarios/147-argocd-rbac-anonymous
+# CICD-SEC-2 (Inadequate IAM) · CICD-SEC-5 — Argo CD — CRITICAL
+#
+# Pattern: the argocd-rbac-cm RBAC policy grants WILDCARD authority (a role with
+# `*, *, *, allow`, and a subject bound to role:admin), while argocd-cm enables
+# ANONYMOUS access. Together: an unauthenticated user lands on a role that can do
+# anything to any application on any cluster Argo CD manages.
+#
+# SAFETY: static fixture nested under scenarios/ — these are Argo CD ConfigMaps;
+# nothing applies them to a cluster here. pipeline-check parses them statically.
+# See README.md.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-rbac-cm
+  namespace: argocd
+data:
+  # DANGER (1) — wildcard RBAC: role:dev can do anything, and alice is admin.
+  policy.csv: |
+    p, role:dev, *, *, *, allow
+    g, alice, role:admin
+  policy.default: role:readonly
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  # DANGER (2) — anonymous (unauthenticated) access enabled.
+  users.anonymous.enabled: "true"
+  url: https://argocd.internal.example.com

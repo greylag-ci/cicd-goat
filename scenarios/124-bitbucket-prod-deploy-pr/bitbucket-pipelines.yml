@@ -1,0 +1,25 @@
+# scenarios/124-bitbucket-prod-deploy-pr
+# CICD-SEC-1 (Insufficient Flow Control) — Bitbucket — CRITICAL
+#
+# Pattern: a step under the `pull-requests:` section is bound to a production-tier
+# `deployment:` environment. The PR branch's code reaches production before it is
+# reviewed or merged, and the production deployment's scoped variables are exposed
+# to PR-controlled steps. Per-PR preview / test / staging environments would be
+# fine — only the production tier on a pull-request pipeline is the bug.
+#
+# SAFETY: static fixture, nested under scenarios/ (Bitbucket runs only the root
+# bitbucket-pipelines.yml). See README.md.
+
+image: atlassian/default-image@sha256:1d3f5a7c9e2b4d6f8a0c2e4b6d8f0a1c3e5b7d9f1a3c5e7b9d0f2a4c6e8b0d2f
+
+pipelines:
+  pull-requests:
+    '**':
+      - step:
+          name: deploy
+          # DANGER — production deployment on a pull-request pipeline. The PR
+          # branch's deploy.sh runs with the production environment's credentials
+          # and ships the change live before review.
+          deployment: production
+          script:
+            - ./deploy.sh

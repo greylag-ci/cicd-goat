@@ -50,14 +50,14 @@ job approved once.
 
 | Scanner | Detection |
 |---|---|
-| _all 7_ | ❌ — no scanner here ships a rule that pairs "secret read inside `environment:`" with "secret consumed in a job without `environment:`" |
+| pipeline-check | `TAINT-009` — _environment-protected secret flows to an unprotected job_ |
+| others | ❌ — no other scanner here pairs "secret read inside `environment:`" with "secret consumed in a job without `environment:`" |
 
-This scenario joins the "hard cases" group (#10 / #22 / #25 / #35) —
-the bug spans two jobs and requires cross-job dataflow that the
-field's current YAML pattern matchers don't carry. The right next-
-generation rule would be a small taint trace: secret → step output
-→ job output → `needs.<>.outputs.*` consumer; if the consumer's job
-has no `environment:`, flag.
+pipeline-check is **solo**. Its taint engine traces exactly the path the older
+writeup described as the "right next-generation rule": secret → step output →
+job output → `needs.<>.outputs.*` consumer, flagging when the consumer's job
+carries no `environment:`. The remaining cross-job "hard cases" (#10 / #22 /
+#25 / #35) still need their own dataflow rules.
 
 ## Fix
 

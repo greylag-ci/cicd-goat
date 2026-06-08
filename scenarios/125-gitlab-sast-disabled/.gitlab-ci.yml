@@ -1,0 +1,36 @@
+# scenarios/125-gitlab-sast-disabled
+# CICD-SEC-7 (Insecure System Configuration) — GitLab CI — MEDIUM
+#
+# Pattern: a `*_DISABLED` CI/CD variable turns off a GitLab-managed security
+# scanner (SAST / Secret Detection / Dependency Scanning / Container Scanning /
+# DAST) pipeline-wide. The rest of the supply-chain controls assume that finding
+# stream exists; a committed credential or known-vulnerable dependency now ships
+# with no pipeline gate to catch it.
+#
+# SAFETY: static fixture, nested under scenarios/ — GitLab runs only the
+# `.gitlab-ci.yml` at the repository root, never a nested one. See README.md.
+
+include:
+  - template: Jobs/SAST.gitlab-ci.yml
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
+
+variables:
+  # DANGER — the managed scanners are switched off pipeline-wide. The included
+  # templates are inert and nothing gates the build on their findings.
+  SAST_DISABLED: "true"
+  SECRET_DETECTION_DISABLED: "true"
+  DEPENDENCY_SCANNING_DISABLED: "true"
+
+stages:
+  - test
+  - deploy
+
+build:
+  stage: test
+  script:
+    - ./build.sh
+
+deploy:
+  stage: deploy
+  script:
+    - ./deploy.sh

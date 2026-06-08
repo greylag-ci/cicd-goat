@@ -1,0 +1,18 @@
+# scenarios/130-buildkite-eval-injection
+# CICD-SEC-4 (Poisoned Pipeline Execution) — Buildkite — HIGH
+#
+# Pattern: a step `command:` entry uses a dangerous shell idiom — `eval "$VAR"`
+# / `sh -c $RAW` / backtick exec — which hands the value full shell-grammar
+# reach regardless of whether its source is currently trusted. The Buildkite
+# analogue of GHA-028 / GL-026 / BB-026 / ADO-027 / CC-027 / DR-017. The
+# `eval "$(ssh-agent -s)"` literal-bootstrap form is intentionally out of scope.
+#
+# SAFETY: static fixture, nested under scenarios/ — Buildkite uploads only the
+# `.buildkite/pipeline.yml` at the repository root, never a nested one.
+# See README.md.
+
+steps:
+  - command:
+      # DANGER — eval / sh -c on a variable: full shell-grammar reach.
+      - eval "$BUILD_CMD"
+      - sh -c $RAW_HOOK
