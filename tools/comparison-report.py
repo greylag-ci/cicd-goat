@@ -11,8 +11,11 @@ rule IDs per scanner, and emits a markdown report:
 
   - per-scanner total findings
   - per-rule counts per scanner
-  - which scenarios (matched by file path under .github/workflows/) were
-    flagged by which scanner
+  - which scenarios (matched by either `.github/workflows/scenario-NN-…`
+    GHA paths OR by the per-scenario `scenarios/NN-…/` tree, which
+    holds the non-GHA fixtures — Dockerfile / .gitlab-ci.yml /
+    Jenkinsfile / composite action / trust-policy / package.json /
+    …) were flagged by which scanner.
 
 Pure stdlib; runs anywhere Python 3.9+ runs.
 """
@@ -26,7 +29,16 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
-SCENARIO_RE = re.compile(r"scenario-(\d+)-[a-z0-9-]+\.yml$")
+# Two alternatives so the scenario-attribution covers both the
+# `scenario-NN-…` GHA workflow filenames AND any path under the
+# per-scenario `scenarios/NN-…/` tree. Without the second
+# alternative, scanners that walk Dockerfile / .gitlab-ci.yml /
+# composite-action / trust-policy / package.json siblings get
+# silently dropped from the matrix — ~80 of the 149 scenarios
+# would attribute zero findings even when a scanner caught them.
+# Matches the regex in tools/regen-readme.py so the two reports
+# stay consistent.
+SCENARIO_RE = re.compile(r"(?:scenario-|scenarios/)(\d+)-")
 
 
 def load_sarif(path: Path) -> dict:
