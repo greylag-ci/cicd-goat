@@ -689,22 +689,41 @@ def main() -> int:
     if args.verify:
         return verify(data, sarif_data)
 
-    # Guard: rewriting the AUTOGEN sections against zero SARIF would flip
-    # every verdict to ❌ and silently corrupt README.md + docs/MATRIX.md.
-    # Caught in CI by `if: hashFiles('sarif/**/*.sarif') != ''`; this is
-    # the local-run guard.
+    # Guard: rewriting the AUTOGEN sections against zero / nearly-zero
+    # SARIF would flip every verdict to ❌ and silently corrupt
+    # README.md + docs/MATRIX.md. Caught in CI by
+    # `if: hashFiles('sarif/**/*.sarif') != ''`; this is the local-run
+    # guard.
     #
-    # Two empty shapes catch the matrix:
-    #   (a) no tools at all — sarif_data == {} (e.g. SARIF dir empty)
-    #   (b) tools present but every per-scenario map empty — e.g. every
-    #       finding URI failed SCENARIO_RE. Without this second check the
-    #       guard passes and every verdict silently flips to ❌.
-    parsed_findings = sum(len(v) for v in sarif_data.values())
-    if (not sarif_data or parsed_findings == 0) and not args.allow_empty_sarif:
+    # Three empty shapes catch the matrix:
+    #   (a) no tools at all — sarif_data == {} (e.g. SARIF dir empty).
+    #   (b) most tools present but their per-scenario maps empty —
+    #       e.g. every finding URI failed SCENARIO_RE, or every
+    #       scanner crashed at once. The previous version of this
+    #       guard summed `len(v)` per tool, but a SINGLE attribution
+    #       by a SINGLE tool let the guard pass even when every
+    #       other tool's column would silently flip to ❌. Now we
+    #       require a majority of configured tools to surface at
+    #       least one attributed finding.
+    #   (c) (subsumed by b) tools present but every per-scenario map
+    #       empty.
+    tools_with_findings = sum(1 for v in sarif_data.values() if v)
+    # ceil(N/2): at least half of the configured tools must have
+    # attributed at least one finding. Tolerates a single scanner
+    # failing (CI flake, tool crash, transient infra) but catches the
+    # systemic case where most are silent.
+    min_required = max(1, (len(sarif_data) + 1) // 2)
+    if (
+        (not sarif_data or tools_with_findings < min_required)
+        and not args.allow_empty_sarif
+    ):
         print(
-            "error: parsed SARIF contains zero tools — refusing to rewrite "
-            "AUTOGEN sections (would mark every verdict ❌). "
-            "Check --sarif-dir path, or pass --allow-empty-sarif to override.",
+            f"error: only {tools_with_findings}/{len(sarif_data)} tools "
+            "surfaced attributed findings — refusing to rewrite AUTOGEN "
+            "sections (would silently mark every verdict ❌ for the "
+            "tools that came back empty). Check --sarif-dir path, the "
+            "per-tool SARIF presence, and the SCENARIO_RE attribution. "
+            "Pass --allow-empty-sarif to override.",
             file=sys.stderr,
         )
         return 2
