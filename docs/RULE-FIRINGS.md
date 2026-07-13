@@ -768,13 +768,13 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | **`DR-002`**, `DR-013` | ✅ |
+| pipeline&#x2011;check | **`DR-002`**, `DR-013`, `DR-019`, `DR-020`, `DR-021`, `DR-022` | ✅ |
 
 ### Scenario 78 — Drone: step `image:` mutable tag (Drone CI)
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | **`DR-001`**, `DR-013` | ✅ |
+| pipeline&#x2011;check | **`DR-001`**, `DR-013`, `DR-022` | ✅ |
 
 ### Scenario 79 — Buildkite: `$BUILDKITE_*` command injection (Buildkite)
 
@@ -880,7 +880,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `DR-002`, **`DR-007`**, `DR-013` | ✅ |
+| pipeline&#x2011;check | `DR-002`, **`DR-007`**, `DR-013`, `DR-022` | ✅ |
 
 ### Scenario 94 — Dockerfile: container runs as root (no USER) (Dockerfile)
 
@@ -1136,7 +1136,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `GHA-015`, `GHA-021`, `GHA-037`, `GHA-060`, **`GHA-120`** | ✅ |
+| pipeline&#x2011;check | `GHA-015`, `GHA-021`, `GHA-037`, `GHA-060`, **`GHA-120`**, `GHA-121` | ✅ |
 | zizmor | `zizmor/artipacked` | ❌ |
 | poutine | _(none)_ | ❌ |
 | KICS | _(none)_ | ❌ |
@@ -1192,7 +1192,7 @@ Same source as the main matrix — auto-rebuilt from the latest
 
 | Scanner | Rules fired | Verdict |
 | :-- | :-- | :-: |
-| pipeline&#x2011;check | `DR-013`, **`DR-017`** | ✅ |
+| pipeline&#x2011;check | `DR-013`, **`DR-017`**, `DR-022` | ✅ |
 
 ### Scenario 130 — Buildkite: dangerous shell idiom (`eval`/`sh -c`) in command (Buildkite)
 
