@@ -47,7 +47,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install pipeline-check (verified)
-        # Pinned to 1.17.0 + sha256 of the wheel from PyPI.  --no-deps
+        # Pinned to 1.19.0 + sha256 of the wheel from PyPI.  --no-deps
         # is intentional: pipeline-check's runtime deps (boto3, click,
         # PyYAML, rich) are installed in a separate, unhashed step
         # so we don't have to track the full transitive hash list.
@@ -56,7 +56,7 @@ jobs:
         run: |
           set -euo pipefail
           pip install --require-hashes --no-deps -r /dev/stdin <<'REQ'
-          pipeline-check==1.17.0 --hash=sha256:28402be6726ae4cb4576b08fbf2e8ab74bcc90afdb3fd1cd376497c588f3cbf8
+          pipeline-check==1.19.0 --hash=sha256:31cec93762f91f7eda1c20b7329f6d1b665db129f168c9454a6851c033871014
           REQ
           pip install 'boto3' 'click' 'PyYAML' 'rich'
       - name: Run pipeline-check (all providers in the corpus)
